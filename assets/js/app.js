@@ -197,16 +197,12 @@
     var header = $("[data-nav]");
     if (!header) return;
 
-    var hero = $("[data-hero]");
-    if (hero && "IntersectionObserver" in window) {
-      new IntersectionObserver(
-        function (entries) {
-          header.dataset.state = entries[0].isIntersecting ? "media" : "solid";
-        },
-        { rootMargin: "-84px 0px 0px 0px", threshold: 0 }
-      ).observe(hero);
-    } else {
-      header.dataset.state = "solid";
+    /* No topo: barra de serviços + aba do logo. Ao rolar: barra branca compacta. */
+    var sentinel = $("[data-top-sentinel]");
+    if (sentinel && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        header.dataset.state = entries[0].isIntersecting ? "top" : "solid";
+      }).observe(sentinel);
     }
 
     var toggle = $(".nav__toggle", header);
@@ -243,9 +239,52 @@
         toggle.focus();
       }
     });
-    window.matchMedia("(min-width: 961px)").addEventListener("change", function (mq) {
+    window.matchMedia("(min-width: 1024px)").addEventListener("change", function (mq) {
       if (mq.matches) setOpen(false);
     });
+  }
+
+  /* ---------- Tamanho do texto (A- / A+), como no site da Petrobras ---------- */
+  function initFontSize() {
+    var steps = [87.5, 100, 112.5, 125];
+    var saved = Number(store.get("ci-font"));
+    var i = steps.indexOf(saved);
+    if (i < 0) i = 1;
+    var labels = $$("[data-font-label]");
+    var buttons = $$("[data-font-step]");
+    if (!buttons.length) return;
+    function apply() {
+      var v = steps[i];
+      root.style.fontSize = v === 100 ? "" : v + "%";
+      labels.forEach(function (l) {
+        l.textContent = String(v).replace(".", ",") + "%";
+      });
+      buttons.forEach(function (b) {
+        var step = Number(b.dataset.fontStep);
+        b.disabled = (step < 0 && i === 0) || (step > 0 && i === steps.length - 1);
+      });
+      store.set("ci-font", String(v));
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        i = Math.max(0, Math.min(steps.length - 1, i + Number(b.dataset.fontStep)));
+        apply();
+      });
+    });
+    apply();
+  }
+
+  /* ---------- Seção debaixo das ondas: anima só quando visível ---------- */
+  function initUndersea() {
+    var sea = $("[data-undersea]");
+    if (!sea || !("IntersectionObserver" in window)) return;
+    sea.classList.add("is-paused");
+    new IntersectionObserver(
+      function (entries) {
+        sea.classList.toggle("is-paused", !entries[0].isIntersecting);
+      },
+      { rootMargin: "120px 0px" }
+    ).observe(sea);
   }
 
   /* ---------- Revelação no scroll ---------- */
@@ -474,7 +513,7 @@
     }
 
     list.setAttribute("aria-busy", "true");
-    list.innerHTML = skeletonHTML(4);
+    list.innerHTML = skeletonHTML(6);
     setTimeout(function () {
       loaded = true;
       list.removeAttribute("aria-busy");
@@ -747,7 +786,7 @@
       loaded = false;
       count.textContent = "Carregando desafios…";
       list.setAttribute("aria-busy", "true");
-      list.innerHTML = skeletonHTML(4);
+      list.innerHTML = skeletonHTML(6);
       setTimeout(function () {
         list.removeAttribute("aria-busy");
         if (fail) {
@@ -826,6 +865,9 @@
 
     update();
     load(simulateError);
+    if (params.get("buscar")) {
+      q.focus();
+    }
   }
 
   /* ---------- Detalhe do desafio ---------- */
@@ -1185,6 +1227,8 @@
   /* ---------- Início ---------- */
   function init() {
     initNav();
+    initFontSize();
+    initUndersea();
     initMarquee();
     initReveal();
     initHeroVideo();

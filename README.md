@@ -20,7 +20,7 @@ Depois abra `http://localhost:8000`.
 
 | Página | Arquivo | O que mostra |
 | --- | --- | --- |
-| Início | `index.html` | Hero com vídeo, busca, números, módulos, desafios abertos, jornada, temas, dúvidas e avisos por e-mail |
+| Início | `index.html` | Hero com vídeo, busca, números "debaixo das ondas", módulos em cards no padrão Petrobras, desafios abertos, jornada, temas, dúvidas e avisos por e-mail |
 | Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
 | Detalhe | `desafio.html?id=…` | Contexto, o que buscamos, critérios, cronograma, documentos e painel de inscrição |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
@@ -35,7 +35,9 @@ Depois abra `http://localhost:8000`.
 - Inscrição a partir de um desafio: "Enviar proposta" leva a `entrar.html?…&acao=proposta`.
 - Cadastro direto: [`entrar.html?aba=cadastro`](entrar.html?aba=cadastro).
 - Tema: o site é sempre claro, mesmo com o sistema em modo escuro.
-- Movimento reduzido: ative a preferência do sistema; o vídeo não inicia e o marquee fica parado.
+- Tamanho do texto: botões A- / A+ na barra do topo (desktop).
+- Busca rápida: o ícone de lupa no header abre `desafios.html?buscar=1` com o campo em foco.
+- Movimento reduzido: ative a preferência do sistema; o vídeo não inicia, o marquee e as ondas ficam parados e as bolhas somem.
 
 ## Estrutura
 
@@ -50,7 +52,7 @@ assets/
   icons/phosphor/       Phosphor Icons, peso light (MIT)
   media/                vídeo do hero (MP4 e WebM), pôster e recortes
 docs/screens/           capturas do protótipo
-DESIGN.md               design system, decisões e pre-flight
+DESIGN.md               design system, análise do site petrobras.com.br e pre-flight
 ```
 
 ## Mídia
@@ -59,6 +61,8 @@ O vídeo do hero e todas as fotos vêm do arquivo `petroleo.mp4` enviado para es
 
 - **Vídeo do hero:** trecho de 5,5 s em vai-e-volta, sem áudio. Pesa 2,3 MB em 1600 px e 0,8 MB em 960 px.
 - **Imagens estáticas:** quadros recortados do mesmo vídeo.
+
+As texturas de reflexo de luz da seção dos números (`caustics-a.webp` e `caustics-b.webp`) foram geradas por código.
 
 O logo oficial vem do Wikimedia Commons. A origem e as regras de uso estão em [`assets/brand/README.md`](assets/brand/README.md).
 

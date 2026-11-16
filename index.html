@@ -19,29 +19,56 @@
   <link rel="stylesheet" href="assets/icons/phosphor/light.css">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>
-    document.documentElement.classList.add("js");
+    (function () {
+      var d = document.documentElement;
+      d.classList.add("js");
+      try {
+        var f = localStorage.getItem("ci-font");
+        if (f && f !== "100") d.style.fontSize = f + "%";
+      } catch (e) {}
+    })();
   </script>
 </head>
 <body data-page="home">
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <span class="top-sentinel" aria-hidden="true" data-top-sentinel></span>
 
-  <header class="site-header" data-nav data-state="media">
-    <nav class="nav" aria-label="Principal">
+  <header class="site-header" data-nav data-state="top">
+    <div class="topbar">
+      <div class="topbar__inner">
+        <p class="topbar__where">Você está em: <strong>Conexões para Inovação</strong></p>
+        <nav class="topbar__links" aria-label="Outros sites da Petrobras">
+          <span class="topbar__label">Acesse também:</span>
+          <a href="https://petrobras.com.br/" target="_blank" rel="noopener">Site Petrobras</a>
+          <a href="https://transparencia.petrobras.com.br/" target="_blank" rel="noopener">Acesso à informação</a>
+          <a href="https://www.investidorpetrobras.com.br/" target="_blank" rel="noopener">Investidores</a>
+          <a href="https://agencia.petrobras.com.br/" target="_blank" rel="noopener">Imprensa</a>
+          <a href="https://canalfornecedor.petrobras.com.br/" target="_blank" rel="noopener">Fornecedores</a>
+        </nav>
+        <div class="topbar__font" role="group" aria-label="Tamanho do texto">
+          <button type="button" data-font-step="-1" aria-label="Diminuir o texto">A-</button>
+          <span data-font-label>100%</span>
+          <button type="button" data-font-step="1" aria-label="Aumentar o texto">A+</button>
+        </div>
+      </div>
+    </div>
+    <div class="mainbar">
       <a class="brand" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
         <img class="brand__logo" src="assets/brand/petrobras-horizontal.svg" alt="" width="133" height="26">
         <span class="brand__name">Conexões para<br>Inovação</span>
       </a>
-      <ul class="nav__links">
-        <li><a class="nav__link" href="#modulos">Módulos</a></li>
-        <li><a class="nav__link" href="desafios.html">Desafios</a></li>
-        <li><a class="nav__link" href="#como-funciona">Como funciona</a></li>
-        <li><a class="nav__link" href="#duvidas">Dúvidas</a></li>
-      </ul>
-      <div class="nav__actions">
+      <nav class="nav" aria-label="Principal">
+        <ul class="nav__links">
+          <li><a class="nav__link" href="#modulos">Módulos</a></li>
+          <li><a class="nav__link" href="desafios.html">Desafios</a></li>
+          <li><a class="nav__link" href="#como-funciona">Como funciona</a></li>
+          <li><a class="nav__link" href="#duvidas">Dúvidas</a></li>
+        </ul>
+        <a class="nav__search" href="desafios.html?buscar=1" aria-label="Buscar desafios"><i class="ph-light ph-magnifying-glass" aria-hidden="true"></i></a>
         <a class="btn btn--primary btn--sm nav__signin" href="entrar.html">Entrar</a>
         <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu"><span></span><span></span></button>
-      </div>
-    </nav>
+      </nav>
+    </div>
   </header>
 
   <div class="menu" id="menu" inert>
@@ -65,8 +92,7 @@
         <img src="assets/media/poster-1600.webp" srcset="assets/media/poster-960.webp 960w, assets/media/poster-1600.webp 1600w" sizes="100vw" alt="" width="1600" height="900" fetchpriority="high">
         <video class="hero__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-src-lg="assets/media/hero-1600" data-src-sm="assets/media/hero-960"></video>
       </div>
-      <div class="hero__scrim"></div>
-      <div class="container hero__inner">
+      <div class="hero__inner">
         <div class="hero__content">
           <p class="eyebrow" data-enter="1">Programa de inovação aberta</p>
           <h1 class="display" id="hero-title" data-enter="2">Inove com a Petrobras.</h1>
@@ -120,9 +146,18 @@
       </div>
     </div>
 
-    <!-- Programa em números -->
-    <section class="section" aria-label="O programa em números">
-      <div class="container">
+    <!-- Programa em números: debaixo das ondas -->
+    <section class="section undersea" aria-label="O programa em números" data-undersea>
+      <div class="undersea__fx" aria-hidden="true">
+        <div class="undersea__caustics"></div>
+        <div class="undersea__rays"><span></span><span></span><span></span><span></span></div>
+        <div class="undersea__bubbles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="undersea__surface">
+          <svg class="undersea__wave undersea__wave--foam" viewBox="0 0 2880 120" preserveAspectRatio="none" focusable="false"><path d="M0 78C120 64 240 64 360 78C480 92 600 92 720 78C840 69 960 69 1080 78C1200 87 1320 87 1440 78C1560 64 1680 64 1800 78C1920 92 2040 92 2160 78C2280 69 2400 69 2520 78C2640 87 2760 87 2880 78V0H0Z"/></svg>
+          <svg class="undersea__wave undersea__wave--air" viewBox="0 0 2880 120" preserveAspectRatio="none" focusable="false"><path d="M0 60C80 44 160 44 240 60C320 76 400 76 480 60C560 50 640 50 720 60C800 70 880 70 960 60C1040 47 1120 47 1200 60C1280 73 1360 73 1440 60C1520 44 1600 44 1680 60C1760 76 1840 76 1920 60C2000 50 2080 50 2160 60C2240 70 2320 70 2400 60C2480 47 2560 47 2640 60C2720 73 2800 73 2880 60V0H0Z"/></svg>
+        </div>
+      </div>
+      <div class="container undersea__content">
         <p class="statement__text reveal">Desde 2019, o Módulo Startups, feito em parceria com o Sebrae, já investiu cerca de <strong>R$ 54 milhões</strong> em <strong>53 startups</strong> de <strong>10 estados</strong>.</p>
         <p class="statement__source small reveal">Fonte: <a class="text-link" href="https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2024/09/startups-edital-de-r-16-milhoes-da-petrobras-esta-aberto-para-envio-de-propostas" target="_blank" rel="noopener">Secom, Governo Federal, setembro de 2024</a>.</p>
       </div>
@@ -137,64 +172,55 @@
         </header>
 
         <div class="bento" data-stagger>
-          <article class="tile tile--a tile--media reveal">
-            <div class="shell"><div class="core">
-              <div class="tile__media"><img src="assets/media/platform-detail.webp" alt="Plataforma de produção em alto-mar ao entardecer, com torre de perfuração e guindastes." width="640" height="800" loading="lazy"></div>
-              <div class="tile__body">
-                <p class="tile__audience">Para startups e pequenas empresas</p>
-                <h3 class="tile__title">Startups</h3>
-                <p class="tile__text">Editais em parceria com o Sebrae, com recursos para desenvolver a solução, mentoria técnica da Petrobras e consultoria de negócios.</p>
-                <a class="tile__cta" href="desafios.html?modulo=startups">Ver desafios de Startups <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
-              </div>
-            </div></div>
+          <article class="tile tile--a reveal">
+            <div class="tile__photo"><img src="assets/media/platform-detail.webp" alt="" width="640" height="800" loading="lazy" style="object-position:50% 30%"></div>
+            <svg class="tile__shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="tile__panel" d="M0 6L86 44C89 45.4 91.4 47.9 92.8 51.2L100 70V100H0Z"/><path class="tile__line" d="M0 15L89 36.4C92.6 37.3 95.4 39.6 97 42.8L100 49"/></svg>
+            <div class="tile__body">
+              <p class="tile__audience">Para startups e pequenas empresas</p>
+              <h3 class="tile__title">Startups</h3>
+              <p class="tile__text">Editais em parceria com o Sebrae, com recursos para desenvolver a solução, mentoria técnica da Petrobras e consultoria de negócios.</p>
+              <a class="tile__cta" href="desafios.html?modulo=startups">Ver desafios de Startups <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+            </div>
           </article>
-
           <article class="tile tile--b reveal">
-            <div class="shell"><div class="core">
-              <span class="tile__icon"><i class="ph-light ph-flask" aria-hidden="true"></i></span>
-              <div class="tile__body">
-                <p class="tile__audience">Para universidades e ICTs</p>
-                <h3 class="tile__title">Parcerias Tecnológicas</h3>
-                <p class="tile__text">Projetos de pesquisa em cooperação com o CENPES, o centro de pesquisas da Petrobras, em temas estratégicos.</p>
-                <a class="tile__cta" href="desafios.html?modulo=parcerias">Ver parcerias abertas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
-              </div>
-            </div></div>
+            <div class="tile__photo"><img src="assets/media/derrick-detail.webp" alt="" width="600" height="360" loading="lazy" style="object-position:30% 20%"></div>
+            <svg class="tile__shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="tile__panel" d="M0 6L86 44C89 45.4 91.4 47.9 92.8 51.2L100 70V100H0Z"/><path class="tile__line" d="M0 15L89 36.4C92.6 37.3 95.4 39.6 97 42.8L100 49"/></svg>
+            <div class="tile__body">
+              <p class="tile__audience">Para universidades e ICTs</p>
+              <h3 class="tile__title">Parcerias Tecnológicas</h3>
+              <p class="tile__text">Pesquisa em cooperação com o CENPES.</p>
+              <a class="tile__cta" href="desafios.html?modulo=parcerias">Ver parcerias abertas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+            </div>
           </article>
-
-          <article class="tile tile--c tile--deep reveal">
-            <div class="shell"><div class="core">
-              <span class="tile__icon"><i class="ph-light ph-target" aria-hidden="true"></i></span>
-              <div class="tile__body">
-                <p class="tile__audience">Para problemas sem solução no mercado</p>
-                <h3 class="tile__title">Encomendas Tecnológicas</h3>
-                <p class="tile__text">Desafios estratégicos com risco tecnológico, que precisam de P&amp;D e ainda não têm resposta pronta.</p>
-                <a class="tile__cta" href="desafios.html?modulo=encomendas">Ver encomendas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
-              </div>
-            </div></div>
+          <article class="tile tile--c reveal">
+            <div class="tile__photo"><img src="assets/media/horizon-distant.webp" alt="" width="720" height="432" loading="lazy" style="object-position:55% 30%"></div>
+            <svg class="tile__shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="tile__panel" d="M0 6L86 44C89 45.4 91.4 47.9 92.8 51.2L100 70V100H0Z"/><path class="tile__line" d="M0 15L89 36.4C92.6 37.3 95.4 39.6 97 42.8L100 49"/></svg>
+            <div class="tile__body">
+              <p class="tile__audience">Para problemas sem solução no mercado</p>
+              <h3 class="tile__title">Encomendas Tecnológicas</h3>
+              <p class="tile__text">Desafios estratégicos que precisam de P&amp;D.</p>
+              <a class="tile__cta" href="desafios.html?modulo=encomendas">Ver encomendas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+            </div>
           </article>
-
           <article class="tile tile--d reveal">
-            <div class="shell"><div class="core">
-              <span class="tile__icon"><i class="ph-light ph-package" aria-hidden="true"></i></span>
-              <div class="tile__body">
-                <p class="tile__audience">Para empresas com tecnologia pronta</p>
-                <h3 class="tile__title">Aquisição de Soluções</h3>
-                <p class="tile__text">Demandas de áreas como SMS, exploração e produção, gás e energia e sustentabilidade.</p>
-                <a class="tile__cta" href="desafios.html?modulo=aquisicao">Ver demandas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
-              </div>
-            </div></div>
+            <div class="tile__photo"><img src="assets/media/sea-texture.webp" alt="" width="800" height="380" loading="lazy" style="object-position:50% 50%"></div>
+            <svg class="tile__shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="tile__panel" d="M0 6L86 44C89 45.4 91.4 47.9 92.8 51.2L100 70V100H0Z"/><path class="tile__line" d="M0 15L89 36.4C92.6 37.3 95.4 39.6 97 42.8L100 49"/></svg>
+            <div class="tile__body">
+              <p class="tile__audience">Para empresas com tecnologia pronta</p>
+              <h3 class="tile__title">Aquisição de Soluções</h3>
+              <p class="tile__text">Soluções existentes para demandas da Petrobras.</p>
+              <a class="tile__cta" href="desafios.html?modulo=aquisicao">Ver demandas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+            </div>
           </article>
-
-          <article class="tile tile--e tile--media reveal">
-            <div class="shell"><div class="core">
-              <div class="tile__media"><img src="assets/media/sea-texture.webp" alt="" width="800" height="380" loading="lazy"></div>
-              <div class="tile__body">
-                <p class="tile__audience">Para quem quer levar tecnologia ao mercado</p>
-                <h3 class="tile__title">Transferência de Tecnologias</h3>
-                <p class="tile__text">Licenciamento de tecnologias desenvolvidas pela Petrobras para empresas que queiram produzir e comercializar.</p>
-                <a class="tile__cta" href="desafios.html?modulo=transferencia&amp;status=todos">Ver tecnologias <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
-              </div>
-            </div></div>
+          <article class="tile tile--e reveal">
+            <div class="tile__photo"><img src="assets/media/horizon-right.webp" alt="" width="1300" height="620" loading="lazy" style="object-position:82% 30%"></div>
+            <svg class="tile__shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="tile__panel" d="M0 6L86 44C89 45.4 91.4 47.9 92.8 51.2L100 70V100H0Z"/><path class="tile__line" d="M0 15L89 36.4C92.6 37.3 95.4 39.6 97 42.8L100 49"/></svg>
+            <div class="tile__body">
+              <p class="tile__audience">Para levar tecnologia ao mercado</p>
+              <h3 class="tile__title">Transferência de Tecnologias</h3>
+              <p class="tile__text">Licenciamento de tecnologias desenvolvidas pela Petrobras.</p>
+              <a class="tile__cta" href="desafios.html?modulo=transferencia&amp;status=todos">Ver tecnologias <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+            </div>
           </article>
         </div>
       </div>

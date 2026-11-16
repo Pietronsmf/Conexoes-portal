@@ -17,29 +17,56 @@
   <link rel="stylesheet" href="assets/icons/phosphor/light.css">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>
-    document.documentElement.classList.add("js");
+    (function () {
+      var d = document.documentElement;
+      d.classList.add("js");
+      try {
+        var f = localStorage.getItem("ci-font");
+        if (f && f !== "100") d.style.fontSize = f + "%";
+      } catch (e) {}
+    })();
   </script>
 </head>
 <body data-page="desafio">
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <span class="top-sentinel" aria-hidden="true" data-top-sentinel></span>
 
-  <header class="site-header" data-nav data-state="solid">
-    <nav class="nav" aria-label="Principal">
+  <header class="site-header" data-nav data-state="top">
+    <div class="topbar">
+      <div class="topbar__inner">
+        <p class="topbar__where">Você está em: <strong>Conexões para Inovação</strong></p>
+        <nav class="topbar__links" aria-label="Outros sites da Petrobras">
+          <span class="topbar__label">Acesse também:</span>
+          <a href="https://petrobras.com.br/" target="_blank" rel="noopener">Site Petrobras</a>
+          <a href="https://transparencia.petrobras.com.br/" target="_blank" rel="noopener">Acesso à informação</a>
+          <a href="https://www.investidorpetrobras.com.br/" target="_blank" rel="noopener">Investidores</a>
+          <a href="https://agencia.petrobras.com.br/" target="_blank" rel="noopener">Imprensa</a>
+          <a href="https://canalfornecedor.petrobras.com.br/" target="_blank" rel="noopener">Fornecedores</a>
+        </nav>
+        <div class="topbar__font" role="group" aria-label="Tamanho do texto">
+          <button type="button" data-font-step="-1" aria-label="Diminuir o texto">A-</button>
+          <span data-font-label>100%</span>
+          <button type="button" data-font-step="1" aria-label="Aumentar o texto">A+</button>
+        </div>
+      </div>
+    </div>
+    <div class="mainbar">
       <a class="brand" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
         <img class="brand__logo" src="assets/brand/petrobras-horizontal.svg" alt="" width="133" height="26">
         <span class="brand__name">Conexões para<br>Inovação</span>
       </a>
-      <ul class="nav__links">
-        <li><a class="nav__link" href="index.html#modulos">Módulos</a></li>
-        <li><a class="nav__link" href="desafios.html" aria-current="page">Desafios</a></li>
-        <li><a class="nav__link" href="index.html#como-funciona">Como funciona</a></li>
-        <li><a class="nav__link" href="index.html#duvidas">Dúvidas</a></li>
-      </ul>
-      <div class="nav__actions">
+      <nav class="nav" aria-label="Principal">
+        <ul class="nav__links">
+          <li><a class="nav__link" href="index.html#modulos">Módulos</a></li>
+          <li><a class="nav__link" href="desafios.html" aria-current="page">Desafios</a></li>
+          <li><a class="nav__link" href="index.html#como-funciona">Como funciona</a></li>
+          <li><a class="nav__link" href="index.html#duvidas">Dúvidas</a></li>
+        </ul>
+        <a class="nav__search" href="desafios.html?buscar=1" aria-label="Buscar desafios"><i class="ph-light ph-magnifying-glass" aria-hidden="true"></i></a>
         <a class="btn btn--primary btn--sm nav__signin" href="entrar.html">Entrar</a>
         <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu"><span></span><span></span></button>
-      </div>
-    </nav>
+      </nav>
+    </div>
   </header>
 
   <div class="menu" id="menu" inert>
