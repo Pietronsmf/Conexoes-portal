@@ -6,8 +6,8 @@
   <title>Entrar · Conexões para Inovação · Protótipo</title>
   <meta name="description" content="Acesso e cadastro no portal Petrobras Conexões para Inovação (protótipo).">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#f2f5f3" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#08110e" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f2f5f3">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Entrar · Conexões para Inovação · Protótipo">
   <meta property="og:description" content="Acesso e cadastro no portal Petrobras Conexões para Inovação (protótipo).">
@@ -17,14 +17,7 @@
   <link rel="stylesheet" href="assets/icons/phosphor/light.css">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script>
-    (function () {
-      var d = document.documentElement;
-      d.classList.add("js");
-      try {
-        var t = localStorage.getItem("ci-theme");
-        if (t === "light" || t === "dark") d.setAttribute("data-theme", t);
-      } catch (e) {}
-    })();
+    document.documentElement.classList.add("js");
   </script>
 </head>
 <body data-page="entrar">
@@ -32,10 +25,9 @@
 
   <header class="site-header" data-nav data-state="solid">
     <nav class="nav" aria-label="Principal">
-      <!-- Substituir pela assinatura oficial Petrobras na versão final -->
       <a class="brand" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
-        <span class="brand__org">Petrobras</span>
-        <span class="brand__name">Conexões para Inovação</span>
+        <img class="brand__logo" src="assets/brand/petrobras-horizontal.svg" alt="" width="133" height="26">
+        <span class="brand__name">Conexões para<br>Inovação</span>
       </a>
       <ul class="nav__links">
         <li><a class="nav__link" href="index.html#modulos">Módulos</a></li>
@@ -69,7 +61,7 @@
       <div class="shell auth__media">
         <div class="core">
           <img src="assets/media/poster-1600.webp" srcset="assets/media/poster-960.webp 960w, assets/media/poster-1600.webp 1600w" sizes="(max-width: 899px) 100vw, 45vw" alt="" width="1600" height="900">
-          <div class="auth__media-text on-media">
+          <div class="auth__media-text">
             <p class="title-lg">Uma conta para todos os módulos do programa.</p>
             <p>Acompanhe suas propostas, salve desafios e receba avisos de novas chamadas.</p>
           </div>
@@ -199,9 +191,9 @@
     <div class="container">
       <div class="footer__grid">
         <div class="footer__brand">
-          <a class="brand" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
-            <span class="brand__org">Petrobras</span>
-            <span class="brand__name">Conexões para Inovação</span>
+          <a class="brand brand--footer" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
+            <img class="brand__logo" src="assets/brand/petrobras-horizontal.svg" alt="" width="153" height="30" loading="lazy">
+            <span class="brand__name">Conexões para<br>Inovação</span>
           </a>
           <p>Programa de inovação aberta da Petrobras para startups, ICTs e empresas.</p>
         </div>
@@ -229,17 +221,6 @@
           <li><span class="is-disabled" aria-disabled="true" title="Disponível na versão final">Termos de uso</span></li>
           <li><span class="is-disabled" aria-disabled="true" title="Disponível na versão final">Acessibilidade</span></li>
         </ul>
-        <div class="theme-pick">
-          <label for="theme-select">Tema</label>
-          <div class="control control--select control--sm">
-            <select class="select select--sm" id="theme-select" data-theme-select>
-              <option value="system">Sistema</option>
-              <option value="light">Claro</option>
-              <option value="dark">Escuro</option>
-            </select>
-            <i class="ph-light ph-caret-down" aria-hidden="true"></i>
-          </div>
-        </div>
       </div>
     </div>
   </footer>

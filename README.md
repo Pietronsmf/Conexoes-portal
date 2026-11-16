@@ -34,7 +34,7 @@ Depois abra `http://localhost:8000`.
 - Não encontrado: [`desafio.html?id=nao-existe`](desafio.html?id=nao-existe).
 - Inscrição a partir de um desafio: "Enviar proposta" leva a `entrar.html?…&acao=proposta`.
 - Cadastro direto: [`entrar.html?aba=cadastro`](entrar.html?aba=cadastro).
-- Tema: seletor "Tema" no rodapé (Sistema, Claro, Escuro).
+- Tema: o site é sempre claro, mesmo com o sistema em modo escuro.
 - Movimento reduzido: ative a preferência do sistema; o vídeo não inicia e o marquee fica parado.
 
 ## Estrutura
@@ -45,6 +45,7 @@ assets/
   css/styles.css        tokens, base, componentes e páginas
   js/data.js            módulos, temas e desafios ilustrativos
   js/app.js             navegação, vídeo, filtros, estados, formulários
+  brand/                logo oficial Petrobras (horizontal e símbolo BR)
   fonts/                Geist e Geist Mono (OFL)
   icons/phosphor/       Phosphor Icons, peso light (MIT)
   media/                vídeo do hero (MP4 e WebM), pôster e recortes
@@ -59,10 +60,16 @@ O vídeo do hero e todas as fotos vêm do arquivo `petroleo.mp4` enviado para es
 - **Vídeo do hero:** trecho de 5,5 s em vai-e-volta, sem áudio. Pesa 2,3 MB em 1600 px e 0,8 MB em 960 px.
 - **Imagens estáticas:** quadros recortados do mesmo vídeo.
 
+O logo oficial vem do Wikimedia Commons. A origem e as regras de uso estão em [`assets/brand/README.md`](assets/brand/README.md).
+
 Os desafios em `assets/js/data.js` são ilustrativos. Os prazos são relativos à data de hoje, para o protótipo sempre ter chamadas abertas.
 
 ## Capturas
 
-| Claro | Escuro | Mobile |
+| Home | Mobile |
+| --- | --- |
+| ![Home no desktop](docs/screens/home-claro.jpg) | ![Home no mobile](docs/screens/mobile.jpg) |
+
+| Desafios | Detalhe | Cadastro |
 | --- | --- | --- |
-| ![Home clara](docs/screens/home-claro.jpg) | ![Home escura](docs/screens/home-escuro.jpg) | ![Mobile](docs/screens/mobile.jpg) |
+| ![Lista de desafios](docs/screens/desafios.jpg) | ![Detalhe do desafio](docs/screens/desafio.jpg) | ![Cadastro](docs/screens/entrar.jpg) |

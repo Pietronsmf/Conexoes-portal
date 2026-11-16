@@ -192,24 +192,6 @@
     return "";
   }
 
-  /* ---------- Tema ---------- */
-  function initTheme() {
-    var sel = $("[data-theme-select]");
-    if (!sel) return;
-    var saved = store.get("ci-theme");
-    sel.value = saved === "light" || saved === "dark" ? saved : "system";
-    sel.addEventListener("change", function () {
-      var v = sel.value;
-      if (v === "system") {
-        root.removeAttribute("data-theme");
-        store.remove("ci-theme");
-      } else {
-        root.setAttribute("data-theme", v);
-        store.set("ci-theme", v);
-      }
-    });
-  }
-
   /* ---------- Navegação ---------- */
   function initNav() {
     var header = $("[data-nav]");
@@ -1202,7 +1184,6 @@
 
   /* ---------- Início ---------- */
   function init() {
-    initTheme();
     initNav();
     initMarquee();
     initReveal();
