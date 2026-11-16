@@ -1,0 +1,1221 @@
+/* =====================================================================
+   Petrobras Conexões para Inovação · protótipo
+   JavaScript sem dependências. Cada página declara data-page no <body>.
+   ===================================================================== */
+(function () {
+  "use strict";
+
+  var CI = (window.CI = window.CI || {});
+  var doc = document;
+  var root = doc.documentElement;
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  /* ---------- Utilidades ---------- */
+  var $ = function (sel, ctx) {
+    return (ctx || doc).querySelector(sel);
+  };
+  var $$ = function (sel, ctx) {
+    return Array.prototype.slice.call((ctx || doc).querySelectorAll(sel));
+  };
+
+  var store = {
+    get: function (k) {
+      try {
+        return window.localStorage.getItem(k);
+      } catch (e) {
+        return null;
+      }
+    },
+    set: function (k, v) {
+      try {
+        window.localStorage.setItem(k, v);
+      } catch (e) {
+        /* armazenamento indisponível: segue sem lembrar */
+      }
+    },
+    remove: function (k) {
+      try {
+        window.localStorage.removeItem(k);
+      } catch (e) {
+        /* idem */
+      }
+    },
+  };
+
+  var ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) {
+      return ESC[ch];
+    });
+  }
+
+  function norm(s) {
+    return String(s || "")
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase();
+  }
+
+  /* ---------- Datas (prazos relativos a hoje) ---------- */
+  var DAY = 86400000;
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  var fmtLongIntl = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric" });
+
+  function addDays(n) {
+    return new Date(today.getTime() + n * DAY);
+  }
+  function fmtShort(d) {
+    return d.getDate() + " " + MESES[d.getMonth()] + " " + d.getFullYear();
+  }
+  function fmtLong(d) {
+    return fmtLongIntl.format(d);
+  }
+  function isoDate(d) {
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var dd = String(d.getDate()).padStart(2, "0");
+    return d.getFullYear() + "-" + m + "-" + dd;
+  }
+
+  function status(c) {
+    var d = c.prazoDias;
+    if (d < 0) return { key: "encerrado", label: "Encerrado", left: "" };
+    var left = d === 0 ? "Último dia" : d === 1 ? "Falta 1 dia" : "Faltam " + d + " dias";
+    if (d <= 10) return { key: "prazo", label: "Últimos dias", left: left };
+    return { key: "aberto", label: "Inscrições abertas", left: left };
+  }
+  CI.status = status;
+
+  /* ---------- Componentes renderizados ---------- */
+  function cardHTML(c, i) {
+    var m = CI.modulos[c.modulo];
+    var s = status(c);
+    var prazo = addDays(c.prazoDias);
+    var foot =
+      s.key === "encerrado"
+        ? '<span class="deadline__label">Encerrado em</span><time class="deadline__value" datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + "</time>"
+        : '<span class="deadline__label">Propostas até</span><span class="deadline__value"><time datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + '</time> <span class="deadline__left">· ' + s.left + "</span></span>";
+    return (
+      '<article class="card card--' + s.key + ' is-new" style="--i:' + (i || 0) + '">' +
+      '<div class="shell"><div class="core">' +
+      '<div class="card__top">' +
+      '<span class="card__module"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i>' + esc(m.nome) + "</span>" +
+      '<span class="status status--' + s.key + '">' + s.label + "</span>" +
+      "</div>" +
+      '<h3 class="card__title"><a href="desafio.html?id=' + encodeURIComponent(c.id) + '">' + esc(c.titulo) + "</a></h3>" +
+      '<p class="card__summary">' + esc(c.resumo) + "</p>" +
+      '<div class="card__tags"><span class="tag">' + esc(c.area) + '</span><span class="tag">' + esc(c.tema) + "</span></div>" +
+      '<div class="card__foot"><div class="deadline">' + foot + "</div>" +
+      '<span class="card__go" aria-hidden="true"><i class="ph-light ph-arrow-right"></i></span></div>' +
+      "</div></div></article>"
+    );
+  }
+
+  function skeletonHTML(n) {
+    var one =
+      '<div class="card card--skeleton" aria-hidden="true"><div class="shell"><div class="core">' +
+      '<div class="skel skel--row"><span class="skel skel--pill"></span><span class="skel skel--pill-sm"></span></div>' +
+      '<div class="skel skel--title"></div><div class="skel skel--title-2"></div>' +
+      '<div class="skel skel--text"></div><div class="skel skel--text-2"></div>' +
+      '<div class="skel skel--foot"></div>' +
+      "</div></div></div>";
+    var out = "";
+    for (var i = 0; i < n; i++) out += one;
+    return out;
+  }
+
+  function stateHTML(o) {
+    var kind = o.kind || "vazio";
+    return (
+      '<div class="state state--' + kind + '" role="' + (kind === "erro" ? "alert" : "status") + '"><div class="shell"><div class="core">' +
+      '<span class="state__icon"><i class="ph-light ph-' + o.icon + '" aria-hidden="true"></i></span>' +
+      '<h3 class="title-md">' + o.title + "</h3>" +
+      "<p>" + o.text + "</p>" +
+      (o.actions ? '<div class="state__actions">' + o.actions + "</div>" : "") +
+      "</div></div></div>"
+    );
+  }
+
+  /* ---------- Toast ---------- */
+  function toast(msg, icon) {
+    var region = $("[data-toasts]");
+    if (!region) return;
+    var t = doc.createElement("div");
+    t.className = "toast";
+    t.innerHTML = '<i class="ph-light ph-' + (icon || "check-circle") + '" aria-hidden="true"></i><span>' + esc(msg) + "</span>";
+    region.appendChild(t);
+    setTimeout(function () {
+      t.classList.add("is-leaving");
+      setTimeout(function () {
+        t.remove();
+      }, 220);
+    }, 2600);
+  }
+  CI.toast = toast;
+
+  /* ---------- Botão ocupado ---------- */
+  function setBusy(btn, label) {
+    var l = $(".btn__label", btn) || btn;
+    if (label) {
+      btn.dataset.label = l.textContent;
+      l.textContent = label;
+      btn.classList.add("is-busy");
+      btn.setAttribute("aria-busy", "true");
+    } else {
+      l.textContent = btn.dataset.label || l.textContent;
+      btn.classList.remove("is-busy");
+      btn.removeAttribute("aria-busy");
+    }
+  }
+
+  /* ---------- Erros de campo ---------- */
+  function setFieldError(input, msg) {
+    var wrap = input.closest(".field") || input.closest(".check-wrap");
+    if (!wrap) return;
+    var err = $(".field__error", wrap);
+    wrap.classList.toggle("is-invalid", !!msg);
+    var label = input.closest(".check");
+    if (label) label.classList.toggle("is-invalid", !!msg);
+    input.setAttribute("aria-invalid", msg ? "true" : "false");
+    if (err) {
+      err.hidden = !msg;
+      err.innerHTML = msg ? '<i class="ph-light ph-warning-circle" aria-hidden="true"></i>' + esc(msg) : "";
+    }
+  }
+
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function emailError(v) {
+    v = v.trim();
+    if (!v) return "Informe seu e-mail.";
+    if (!EMAIL_RE.test(v)) return "Confira o formato do e-mail, por exemplo nome@empresa.com.br.";
+    return "";
+  }
+
+  /* ---------- Tema ---------- */
+  function initTheme() {
+    var sel = $("[data-theme-select]");
+    if (!sel) return;
+    var saved = store.get("ci-theme");
+    sel.value = saved === "light" || saved === "dark" ? saved : "system";
+    sel.addEventListener("change", function () {
+      var v = sel.value;
+      if (v === "system") {
+        root.removeAttribute("data-theme");
+        store.remove("ci-theme");
+      } else {
+        root.setAttribute("data-theme", v);
+        store.set("ci-theme", v);
+      }
+    });
+  }
+
+  /* ---------- Navegação ---------- */
+  function initNav() {
+    var header = $("[data-nav]");
+    if (!header) return;
+
+    var hero = $("[data-hero]");
+    if (hero && "IntersectionObserver" in window) {
+      new IntersectionObserver(
+        function (entries) {
+          header.dataset.state = entries[0].isIntersecting ? "media" : "solid";
+        },
+        { rootMargin: "-84px 0px 0px 0px", threshold: 0 }
+      ).observe(hero);
+    } else {
+      header.dataset.state = "solid";
+    }
+
+    var toggle = $(".nav__toggle", header);
+    var menu = $("#menu");
+    if (!toggle || !menu) return;
+    var outside = $$("main, footer");
+
+    function setOpen(open) {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+      menu.classList.toggle("is-open", open);
+      if (open) menu.removeAttribute("inert");
+      else menu.setAttribute("inert", "");
+      outside.forEach(function (el) {
+        el.inert = open;
+      });
+      header.dataset.menu = open ? "open" : "closed";
+      root.classList.toggle("is-locked", open);
+      if (open) {
+        var first = $("a", menu);
+        if (first) first.focus({ preventScroll: true });
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+    menu.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setOpen(false);
+    });
+    doc.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && menu.classList.contains("is-open")) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    window.matchMedia("(min-width: 961px)").addEventListener("change", function (mq) {
+      if (mq.matches) setOpen(false);
+    });
+  }
+
+  /* ---------- Revelação no scroll ---------- */
+  function initReveal() {
+    $$("[data-stagger]").forEach(function (g) {
+      Array.prototype.forEach.call(g.children, function (child, i) {
+        child.style.setProperty("--i", i);
+      });
+    });
+    var els = $$(".reveal");
+    if (!("IntersectionObserver" in window)) {
+      els.forEach(function (el) {
+        el.classList.add("is-in");
+      });
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            en.target.classList.add("is-in");
+            io.unobserve(en.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+    );
+    els.forEach(function (el) {
+      io.observe(el);
+    });
+  }
+
+  /* ---------- Vídeo do hero ---------- */
+  function initHeroVideo() {
+    var video = $(".hero__video");
+    if (!video) return;
+    var btn = $("[data-video-toggle]");
+    var icon = btn && $("i", btn);
+    var small = window.matchMedia("(max-width: 767px)").matches;
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var userPaused = reduceMotion.matches || !!saveData;
+
+    function setBtn(playing) {
+      if (!btn) return;
+      btn.setAttribute("aria-label", playing ? "Pausar vídeo de fundo" : "Reproduzir vídeo de fundo");
+      icon.className = "ph-light " + (playing ? "ph-pause" : "ph-play");
+    }
+    /* H.264 quando houver suporte; VP9/WebM como alternativa */
+    var ext = video.canPlayType('video/mp4; codecs="avc1.640028"') ? ".mp4" : video.canPlayType('video/webm; codecs="vp9"') ? ".webm" : "";
+    if (!ext) {
+      if (btn) btn.hidden = true;
+      return;
+    }
+    function load() {
+      if (!video.getAttribute("src") && ext) {
+        video.src = (small ? video.dataset.srcSm : video.dataset.srcLg) + ext;
+        video.defaultPlaybackRate = 0.8;
+        video.playbackRate = 0.8;
+      }
+    }
+    function play() {
+      load();
+      var p = video.play();
+      if (p && p.catch) {
+        p.catch(function () {
+          setBtn(false);
+        });
+      }
+      setBtn(true);
+    }
+
+    video.addEventListener("playing", function () {
+      video.classList.add("is-playing");
+    });
+
+    if (userPaused) setBtn(false);
+    else play();
+
+    if (btn) {
+      btn.addEventListener("click", function () {
+        if (video.paused) {
+          userPaused = false;
+          play();
+        } else {
+          userPaused = true;
+          video.pause();
+          setBtn(false);
+        }
+      });
+    }
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        if (userPaused || !video.getAttribute("src")) return;
+        if (entries[0].isIntersecting) video.play().catch(function () {});
+        else video.pause();
+      }).observe(video);
+    }
+  }
+
+  /* ---------- Filtro segmentado com recorte animado ---------- */
+  function createSeg(el, opts) {
+    var inner = $(".seg__inner", el);
+    var track = $(".seg__track", el);
+    var layer = $(".seg__active", el);
+    function buttons() {
+      return $$(".seg__btn", track);
+    }
+    function sync() {
+      layer.innerHTML = track.innerHTML;
+      $$(".seg__btn", layer).forEach(function (b) {
+        b.setAttribute("tabindex", "-1");
+        b.removeAttribute("aria-pressed");
+        b.removeAttribute("aria-controls");
+      });
+    }
+    function place(animate) {
+      var active = $('[aria-pressed="true"]', track) || buttons()[0];
+      if (!active) return;
+      var l = active.offsetLeft;
+      var r = Math.max(0, inner.offsetWidth - l - active.offsetWidth);
+      if (!animate) layer.style.transition = "none";
+      layer.style.clipPath = "inset(0 " + r + "px 0 " + l + "px round 999px)";
+      if (!animate) {
+        void layer.offsetWidth;
+        layer.style.transition = "";
+      }
+      if (l < el.scrollLeft || l + active.offsetWidth > el.scrollLeft + el.clientWidth) {
+        el.scrollTo({ left: Math.max(0, l - 24), behavior: reduceMotion.matches || !animate ? "auto" : "smooth" });
+      }
+    }
+    function setValue(v, animate) {
+      buttons().forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.value === v));
+      });
+      place(animate);
+    }
+    function setCounts(counts) {
+      buttons().forEach(function (b) {
+        var c = $(".seg__count", b);
+        if (c) c.textContent = counts[b.dataset.value] || 0;
+      });
+      sync();
+      place(false);
+    }
+    track.addEventListener("click", function (e) {
+      var b = e.target.closest(".seg__btn");
+      if (!b || b.getAttribute("aria-pressed") === "true") return;
+      setValue(b.dataset.value, true);
+      if (opts && opts.onChange) opts.onChange(b.dataset.value);
+    });
+    sync();
+    place(false);
+    window.addEventListener(
+      "resize",
+      function () {
+        place(false);
+      },
+      { passive: true }
+    );
+    if (doc.fonts && doc.fonts.ready) {
+      doc.fonts.ready.then(function () {
+        place(false);
+      });
+    }
+    return { setValue: setValue, setCounts: setCounts };
+  }
+
+  function countByModule(list) {
+    var counts = { "": list.length };
+    CI.ordemModulos.forEach(function (k) {
+      counts[k] = list.filter(function (c) {
+        return c.modulo === k;
+      }).length;
+    });
+    return counts;
+  }
+
+  function byDeadline(a, b) {
+    var ca = a.prazoDias < 0;
+    var cb = b.prazoDias < 0;
+    if (ca !== cb) return ca ? 1 : -1;
+    return ca ? b.prazoDias - a.prazoDias : a.prazoDias - b.prazoDias;
+  }
+
+  /* ---------- Home: desafios abertos ---------- */
+  function initHome() {
+    var list = $("[data-home-list]");
+    if (!list) return;
+    var open = CI.desafios
+      .filter(function (c) {
+        return c.prazoDias >= 0;
+      })
+      .sort(byDeadline);
+    var current = "";
+    var loaded = false;
+
+    var seg = createSeg($('[data-seg="home"]'), {
+      onChange: function (v) {
+        current = v;
+        render();
+      },
+    });
+    seg.setCounts(countByModule(open));
+
+    function render() {
+      if (!loaded) return;
+      var items = open
+        .filter(function (c) {
+          return !current || c.modulo === current;
+        })
+        .slice(0, 6);
+      if (!items.length) {
+        var nome = CI.modulos[current].nome;
+        list.innerHTML = stateHTML({
+          icon: "calendar-blank",
+          title: "Nenhuma chamada aberta em " + esc(nome) + " agora",
+          text: "Novas chamadas são publicadas ao longo do ano. Cadastre seu e-mail e avisamos quando abrir uma no seu tema.",
+          actions:
+            '<a class="btn btn--secondary btn--sm" href="#avisos">Receber avisos</a>' +
+            '<a class="btn btn--secondary btn--sm" href="desafios.html?modulo=' + current + '&amp;status=todos">Ver chamadas encerradas</a>',
+        });
+        return;
+      }
+      list.innerHTML = items.map(cardHTML).join("");
+    }
+
+    list.setAttribute("aria-busy", "true");
+    list.innerHTML = skeletonHTML(4);
+    setTimeout(function () {
+      loaded = true;
+      list.removeAttribute("aria-busy");
+      render();
+    }, 650);
+  }
+
+  /* ---------- Jornada ---------- */
+  function initSteps() {
+    var ol = $("[data-steps]");
+    if (!ol) return;
+    var steps = $$(".step", ol);
+    function activate() {
+      ol.style.setProperty("--p", 1);
+      steps.forEach(function (s, i) {
+        if (reduceMotion.matches) s.classList.add("is-active");
+        else
+          setTimeout(function () {
+            s.classList.add("is-active");
+          }, 80 + i * (1300 / Math.max(1, steps.length - 1)));
+      });
+    }
+    if (!("IntersectionObserver" in window)) return activate();
+    var io = new IntersectionObserver(
+      function (entries) {
+        if (entries[0].isIntersecting) {
+          activate();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(ol);
+  }
+
+  /* ---------- Faixa de temas ---------- */
+  function initMarquee() {
+    $$("[data-marquee]").forEach(function (m) {
+      var track = $(".marquee__track", m);
+      var group = $(".marquee__group", m);
+      if (!track || !group) return;
+      var clone = group.cloneNode(true);
+      clone.setAttribute("aria-hidden", "true");
+      $$("a", clone).forEach(function (a) {
+        a.setAttribute("tabindex", "-1");
+      });
+      track.appendChild(clone);
+    });
+  }
+
+  /* ---------- Dúvidas: abas verticais no desktop, details no mobile ---------- */
+  function initFaq() {
+    var wrap = $("[data-faq]");
+    if (!wrap) return;
+    var items = $$("details", wrap).map(function (d) {
+      return { q: $("summary span", d).textContent.trim(), a: $(".faq-details__body", d).innerHTML };
+    });
+    if (!items.length) return;
+
+    var faq = doc.createElement("div");
+    faq.className = "faq";
+    faq.innerHTML =
+      '<div class="faq__list" role="tablist" aria-orientation="vertical" aria-label="Perguntas frequentes">' +
+      items
+        .map(function (it, i) {
+          return (
+            '<button class="faq__q" type="button" role="tab" id="faq-tab-' + i + '" aria-controls="faq-panel" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '">' +
+            "<span>" + esc(it.q) + '</span><i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>'
+          );
+        })
+        .join("") +
+      "</div>" +
+      '<div class="shell faq__panel"><div class="core" role="tabpanel" id="faq-panel" aria-labelledby="faq-tab-0" tabindex="0"></div></div>';
+    wrap.insertBefore(faq, wrap.firstChild);
+
+    var tabs = $$(".faq__q", faq);
+    var panel = $('[role="tabpanel"]', faq);
+    function show(i, focus) {
+      tabs.forEach(function (t, j) {
+        t.setAttribute("aria-selected", String(i === j));
+        t.tabIndex = i === j ? 0 : -1;
+      });
+      panel.setAttribute("aria-labelledby", tabs[i].id);
+      panel.innerHTML = '<div class="faq__answer"><h3 class="title-lg">' + esc(items[i].q) + "</h3>" + items[i].a + "</div>";
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () {
+        show(i);
+      });
+    });
+    $(".faq__list", faq).addEventListener("keydown", function (e) {
+      var i = tabs.indexOf(doc.activeElement);
+      if (i < 0) return;
+      var n = null;
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") n = (i + 1) % tabs.length;
+      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") n = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === "Home") n = 0;
+      else if (e.key === "End") n = tabs.length - 1;
+      if (n !== null) {
+        e.preventDefault();
+        show(n, true);
+      }
+    });
+    show(0);
+  }
+
+  /* ---------- Avisos por e-mail ---------- */
+  function initNewsletter() {
+    var form = $("[data-newsletter]");
+    if (!form) return;
+    var email = form.elements.email;
+    var success = $("[data-newsletter-success]");
+    var btn = $('[type="submit"]', form);
+
+    email.addEventListener("input", function () {
+      if (email.getAttribute("aria-invalid") === "true") setFieldError(email, emailError(email.value));
+    });
+    email.addEventListener("blur", function () {
+      if (email.value.trim()) setFieldError(email, emailError(email.value));
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var msg = emailError(email.value);
+      setFieldError(email, msg);
+      if (msg) {
+        email.focus();
+        return;
+      }
+      setBusy(btn, "Enviando…");
+      setTimeout(function () {
+        setBusy(btn, false);
+        $("[data-success-email]", success).textContent = email.value.trim();
+        form.hidden = true;
+        success.hidden = false;
+        success.focus();
+      }, 700);
+    });
+    $("[data-newsletter-reset]", success).addEventListener("click", function () {
+      success.hidden = true;
+      form.hidden = false;
+      form.reset();
+      setFieldError(email, "");
+      email.focus();
+    });
+  }
+
+  /* ---------- Lista completa de desafios ---------- */
+  function matches(c, q) {
+    if (!q) return true;
+    var hay = norm([c.titulo, c.resumo, c.area, c.tema, CI.modulos[c.modulo].nome].join(" "));
+    return norm(q)
+      .split(/\s+/)
+      .filter(Boolean)
+      .every(function (w) {
+        return hay.indexOf(w) !== -1;
+      });
+  }
+
+  function initListing() {
+    var page = $("[data-listing]");
+    if (!page) return;
+    var params = new URLSearchParams(location.search);
+    var state = {
+      q: (params.get("q") || "").trim(),
+      modulo: CI.modulos[params.get("modulo")] ? params.get("modulo") : "",
+      area: params.get("area") || "",
+      status: params.get("status") === "todos" ? "todos" : "abertos",
+      ordem: params.get("ordem") === "recentes" ? "recentes" : "prazo",
+    };
+    var simulateError = params.get("simular") === "erro";
+
+    var list = $("[data-list]");
+    var count = $("[data-count]");
+    var form = $("[data-filters]");
+    var q = $("#f-q");
+    var clear = $("[data-clear-q]");
+    var area = $("#f-area");
+    var ordem = $("#f-ordem");
+    var abertos = $("#f-abertos");
+
+    var areas = CI.desafios
+      .map(function (c) {
+        return c.area;
+      })
+      .filter(function (a, i, arr) {
+        return arr.indexOf(a) === i;
+      })
+      .sort(function (a, b) {
+        return a.localeCompare(b, "pt-BR");
+      });
+    area.insertAdjacentHTML(
+      "beforeend",
+      areas
+        .map(function (a) {
+          return '<option value="' + esc(a) + '">' + esc(a) + "</option>";
+        })
+        .join("")
+    );
+    if (areas.indexOf(state.area) === -1) state.area = "";
+
+    q.value = state.q;
+    area.value = state.area;
+    ordem.value = state.ordem;
+    abertos.checked = state.status === "abertos";
+    clear.hidden = !state.q;
+
+    var seg = createSeg($('[data-seg="listing"]'), {
+      onChange: function (v) {
+        state.modulo = v;
+        update();
+      },
+    });
+    seg.setValue(state.modulo, false);
+
+    var loaded = false;
+
+    function pool() {
+      return CI.desafios.filter(function (c) {
+        return (state.status === "todos" || c.prazoDias >= 0) && (!state.area || c.area === state.area) && matches(c, state.q);
+      });
+    }
+
+    function syncURL() {
+      var p = new URLSearchParams();
+      if (state.q) p.set("q", state.q);
+      if (state.modulo) p.set("modulo", state.modulo);
+      if (state.area) p.set("area", state.area);
+      if (state.status === "todos") p.set("status", "todos");
+      if (state.ordem === "recentes") p.set("ordem", "recentes");
+      var qs = p.toString();
+      try {
+        history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+      } catch (e) {
+        /* file:// em alguns navegadores */
+      }
+    }
+
+    function emptyHTML() {
+      var title = state.q ? "Nenhum desafio encontrado para “" + esc(state.q) + "”" : "Nenhum desafio com esses filtros";
+      var text = state.status === "abertos" ? "Tente outro termo, troque o módulo ou inclua as chamadas encerradas." : "Tente outro termo ou troque o módulo.";
+      var actions = '<button class="btn btn--secondary btn--sm" type="button" data-reset>Limpar filtros</button>';
+      if (state.status === "abertos") actions += '<button class="btn btn--secondary btn--sm" type="button" data-include-closed>Incluir encerrados</button>';
+      return stateHTML({ icon: "magnifying-glass", title: title, text: text, actions: actions });
+    }
+
+    function update() {
+      syncURL();
+      if (!loaded) return;
+      var base = pool();
+      seg.setCounts(countByModule(base));
+      var items = base.filter(function (c) {
+        return !state.modulo || c.modulo === state.modulo;
+      });
+      items.sort(
+        state.ordem === "recentes"
+          ? function (a, b) {
+              return a.publicadoDias - b.publicadoDias;
+            }
+          : byDeadline
+      );
+      var n = items.length;
+      var word = n === 1 ? "desafio" : "desafios";
+      var suffix = state.status === "abertos" ? (n === 1 ? " aberto" : " abertos") : "";
+      count.textContent = n + " " + word + suffix;
+      list.innerHTML = n ? items.map(cardHTML).join("") : emptyHTML();
+    }
+
+    function load(fail) {
+      loaded = false;
+      count.textContent = "Carregando desafios…";
+      list.setAttribute("aria-busy", "true");
+      list.innerHTML = skeletonHTML(4);
+      setTimeout(function () {
+        list.removeAttribute("aria-busy");
+        if (fail) {
+          count.textContent = "";
+          list.innerHTML = stateHTML({
+            kind: "erro",
+            icon: "warning-circle",
+            title: "Não foi possível carregar os desafios",
+            text: "Verifique sua conexão e tente novamente. Se o problema continuar, escreva para canal.startups@petrobras.com.br.",
+            actions: '<button class="btn btn--primary btn--sm" type="button" data-retry>Tentar novamente</button>',
+          });
+          return;
+        }
+        loaded = true;
+        update();
+      }, 650);
+    }
+
+    function reset() {
+      state.q = "";
+      state.modulo = "";
+      state.area = "";
+      state.status = "abertos";
+      q.value = "";
+      area.value = "";
+      abertos.checked = true;
+      clear.hidden = true;
+      seg.setValue("", true);
+      update();
+      q.focus();
+    }
+
+    list.addEventListener("click", function (e) {
+      if (e.target.closest("[data-reset]")) reset();
+      else if (e.target.closest("[data-include-closed]")) {
+        abertos.checked = false;
+        state.status = "todos";
+        update();
+      } else if (e.target.closest("[data-retry]")) load(false);
+    });
+
+    var timer;
+    q.addEventListener("input", function () {
+      clear.hidden = !q.value;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        state.q = q.value.trim();
+        update();
+      }, 180);
+    });
+    clear.addEventListener("click", function () {
+      q.value = "";
+      clear.hidden = true;
+      state.q = "";
+      update();
+      q.focus();
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearTimeout(timer);
+      state.q = q.value.trim();
+      update();
+    });
+    area.addEventListener("change", function () {
+      state.area = area.value;
+      update();
+    });
+    ordem.addEventListener("change", function () {
+      state.ordem = ordem.value;
+      update();
+    });
+    abertos.addEventListener("change", function () {
+      state.status = abertos.checked ? "abertos" : "todos";
+      update();
+    });
+
+    update();
+    load(simulateError);
+  }
+
+  /* ---------- Detalhe do desafio ---------- */
+  var MEDIA_VARIANTS = [
+    { src: "assets/media/horizon-right.webp", pos: "70% 28%", w: 1300, h: 620 },
+    { src: "assets/media/poster-1600.webp", pos: "30% 62%", w: 1600, h: 900 },
+    { src: "assets/media/sea-texture.webp", pos: "50% 50%", w: 800, h: 380 },
+  ];
+
+  function getSaved() {
+    try {
+      var v = JSON.parse(store.get("ci-salvos") || "[]");
+      return Array.isArray(v) ? v : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function initDetail() {
+    var host = $("[data-detail]");
+    if (!host) return;
+    var id = new URLSearchParams(location.search).get("id");
+    var c = id
+      ? CI.desafios.find(function (x) {
+          return x.id === id;
+        })
+      : CI.desafios[0];
+
+    if (!c) {
+      doc.title = "Desafio não encontrado · Conexões para Inovação";
+      host.innerHTML =
+        '<div class="container page-head">' +
+        stateHTML({
+          icon: "magnifying-glass",
+          title: "Não encontramos este desafio",
+          text: "O endereço pode estar incompleto ou a chamada foi removida. Veja a lista com todos os desafios do programa.",
+          actions: '<a class="btn btn--primary btn--sm" href="desafios.html">Ver desafios</a><a class="btn btn--secondary btn--sm" href="index.html">Ir para o início</a>',
+        }) +
+        "</div>";
+      return;
+    }
+
+    var idx = CI.desafios.indexOf(c);
+    var m = CI.modulos[c.modulo];
+    var s = status(c);
+    var prazo = addDays(c.prazoDias);
+    var pub = addDays(-c.publicadoDias);
+    var media = MEDIA_VARIANTS[idx % MEDIA_VARIANTS.length];
+    var closed = s.key === "encerrado";
+    var nextUrl = "entrar.html?next=" + encodeURIComponent("desafio.html?id=" + c.id) + "&acao=proposta";
+
+    doc.title = c.titulo + " · Conexões para Inovação";
+
+    var related = CI.desafios
+      .filter(function (x) {
+        return x !== c && x.prazoDias >= 0;
+      })
+      .sort(function (a, b) {
+        var sa = a.modulo === c.modulo ? 0 : 1;
+        var sb = b.modulo === c.modulo ? 0 : 1;
+        return sa - sb || a.prazoDias - b.prazoDias;
+      })
+      .slice(0, 2);
+
+    var cta = closed
+      ? '<span class="btn btn--secondary btn--block" aria-disabled="true">Inscrições encerradas</span>'
+      : '<a class="btn btn--primary btn--icon btn--block" href="' + nextUrl + '"><span class="btn__label">Enviar proposta</span><span class="btn__icon"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></a>';
+
+    host.innerHTML =
+      '<div class="container">' +
+      '<header class="detail-head">' +
+      '<nav aria-label="Trilha de navegação"><ol class="crumbs">' +
+      '<li><a href="index.html">Início</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +
+      '<li><a href="desafios.html">Desafios</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +
+      '<li><a href="desafios.html?modulo=' + c.modulo + '">' + esc(m.nome) + "</a></li></ol></nav>" +
+      '<span class="status status--' + s.key + '">' + s.label + "</span>" +
+      '<h1 class="title-xl">' + esc(c.titulo) + "</h1>" +
+      '<p class="lead">' + esc(c.resumo) + "</p>" +
+      '<div class="meta-row"><span class="tag">' + esc(m.nome) + '</span><span class="tag">' + esc(c.area) + '</span><span class="tag">' + esc(c.tema) + "</span></div>" +
+      "</header>" +
+      '<div class="shell detail-media"><div class="core"><img src="' + media.src + '" alt="" width="' + media.w + '" height="' + media.h + '" style="object-position:' + media.pos + '"></div></div>' +
+      '<div class="detail-grid">' +
+      '<article class="prose">' +
+      '<section class="prose-section" aria-labelledby="sec-contexto"><h2 class="title-lg" id="sec-contexto">Contexto</h2><p>' + esc(c.contexto) + "</p></section>" +
+      '<section class="prose-section" aria-labelledby="sec-busca"><h2 class="title-lg" id="sec-busca">O que buscamos</h2><ul class="checklist">' +
+      c.buscamos
+        .map(function (b) {
+          return '<li><i class="ph-light ph-check" aria-hidden="true"></i><span>' + esc(b) + "</span></li>";
+        })
+        .join("") +
+      "</ul></section>" +
+      '<section class="prose-section" aria-labelledby="sec-quem"><h2 class="title-lg" id="sec-quem">Quem pode participar</h2><p>' +
+      esc(m.publico) + ". Os requisitos completos de elegibilidade, documentação e propriedade intelectual estão no edital.</p></section>" +
+      '<section class="prose-section" aria-labelledby="sec-criterios"><h2 class="title-lg" id="sec-criterios">Como avaliamos</h2><div class="criteria">' +
+      CI.criterios
+        .map(function (k) {
+          return '<div class="criterion"><i class="ph-light ph-' + k.icone + '" aria-hidden="true"></i><h3>' + esc(k.titulo) + "</h3><p>" + esc(k.texto) + "</p></div>";
+        })
+        .join("") +
+      "</div></section>" +
+      '<section class="prose-section" aria-labelledby="sec-crono"><h2 class="title-lg" id="sec-crono">Cronograma</h2><ol class="timeline">' +
+      '<li><time datetime="' + isoDate(pub) + '">' + fmtLong(pub) + "</time><span>Publicação da chamada</span></li>" +
+      '<li><time datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time><span>Fim das inscrições</span></li>" +
+      '<li><time datetime="' + isoDate(addDays(c.prazoDias + 30)) + '">' + fmtLong(addDays(c.prazoDias + 30)) + "</time><span>Resultado preliminar <em>(previsão)</em></span></li>" +
+      '<li><time datetime="' + isoDate(addDays(c.prazoDias + 75)) + '">' + fmtLong(addDays(c.prazoDias + 75)) + "</time><span>Início dos projetos <em>(previsão)</em></span></li>" +
+      "</ol></section>" +
+      '<section class="prose-section" aria-labelledby="sec-docs"><h2 class="title-lg" id="sec-docs">Documentos</h2><ul class="docs">' +
+      [
+        ["file-pdf", "Edital completo", "PDF"],
+        ["file-text", "Anexo técnico do desafio", "PDF"],
+        ["file-text", "Modelo de proposta", "DOCX"],
+      ]
+        .map(function (d) {
+          return (
+            '<li class="doc" aria-disabled="true"><i class="ph-light ph-' + d[0] + '" aria-hidden="true"></i>' +
+            "<div><strong>" + d[1] + "</strong><span>" + d[2] + '</span></div><span class="doc__state">Disponível na versão final</span></li>'
+          );
+        })
+        .join("") +
+      "</ul></section>" +
+      "</article>" +
+      '<aside class="aside" aria-label="Prazo e inscrição"><div class="shell"><div class="core" data-panel>' +
+      '<div class="aside__deadline"><span class="small">' + (closed ? "Inscrições encerradas em" : "Propostas até") + "</span>" +
+      '<time class="aside__date" datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time>" +
+      (s.left ? '<span class="aside__left">' + s.left + "</span>" : "") +
+      "</div>" +
+      '<div class="aside__actions">' + cta +
+      '<div class="aside__secondary">' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-save aria-pressed="false"><i class="ph-light ph-bookmark-simple" aria-hidden="true"></i><span class="btn__label">Salvar</span></button>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-copy><i class="ph-light ph-link-simple" aria-hidden="true"></i><span class="btn__label">Copiar link</span></button>' +
+      "</div></div>" +
+      '<dl class="facts">' +
+      "<div><dt>Módulo</dt><dd>" + esc(m.nome) + "</dd></div>" +
+      "<div><dt>Área</dt><dd>" + esc(c.area) + "</dd></div>" +
+      "<div><dt>Formato</dt><dd>" + esc(m.formato) + "</dd></div>" +
+      "<div><dt>Publicado em</dt><dd>" + fmtShort(pub) + "</dd></div>" +
+      "</dl>" +
+      "</div></div></aside>" +
+      "</div>" +
+      (related.length
+        ? '<section class="related" aria-labelledby="rel-title"><h2 class="title-lg" id="rel-title">Outros desafios abertos</h2><div class="cards">' + related.map(cardHTML).join("") + "</div></section>"
+        : "") +
+      "</div>" +
+      (closed
+        ? ""
+        : '<div class="mobile-bar" data-mobile-bar inert>' +
+          '<div class="mobile-bar__info"><span>Propostas até</span><strong>' + fmtShort(prazo) + "</strong></div>" +
+          '<a class="btn btn--primary btn--sm" href="' + nextUrl + '">Enviar proposta</a></div>');
+
+    /* Salvar no navegador */
+    var save = $("[data-save]", host);
+    function paintSave() {
+      var on = getSaved().indexOf(c.id) !== -1;
+      save.setAttribute("aria-pressed", String(on));
+      $(".btn__label", save).textContent = on ? "Salvo" : "Salvar";
+    }
+    paintSave();
+    save.addEventListener("click", function () {
+      var list = getSaved();
+      var i = list.indexOf(c.id);
+      if (i === -1) list.push(c.id);
+      else list.splice(i, 1);
+      store.set("ci-salvos", JSON.stringify(list));
+      paintSave();
+      toast(i === -1 ? "Desafio salvo neste navegador." : "Desafio removido dos salvos.", i === -1 ? "bookmark-simple" : "x");
+    });
+
+    /* Copiar link */
+    var copy = $("[data-copy]", host);
+    copy.addEventListener("click", function () {
+      var url = location.href;
+      var done = function () {
+        $(".btn__label", copy).textContent = "Copiado";
+        toast("Link copiado.", "link-simple");
+        setTimeout(function () {
+          $(".btn__label", copy).textContent = "Copiar link";
+        }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, function () {
+          toast("Não foi possível copiar. Use o endereço da barra do navegador.", "warning-circle");
+        });
+      } else {
+        toast("Não foi possível copiar. Use o endereço da barra do navegador.", "warning-circle");
+      }
+    });
+
+    /* Barra fixa no mobile quando o painel sai da tela */
+    var bar = $("[data-mobile-bar]");
+    var panel = $("[data-panel]", host);
+    if (bar && panel && "IntersectionObserver" in window) {
+      doc.body.classList.add("has-mobile-bar");
+      new IntersectionObserver(function (entries) {
+        var e = entries[0];
+        var show = !e.isIntersecting && e.boundingClientRect.top < 0;
+        bar.classList.toggle("is-visible", show);
+        bar.inert = !show;
+      }).observe(panel);
+    }
+  }
+
+  /* ---------- Entrar / criar cadastro ---------- */
+  function cnpjChars(v) {
+    return v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14);
+  }
+  function maskCNPJ(v) {
+    var s = cnpjChars(v);
+    var out = s.slice(0, 2);
+    if (s.length > 2) out += "." + s.slice(2, 5);
+    if (s.length > 5) out += "." + s.slice(5, 8);
+    if (s.length > 8) out += "/" + s.slice(8, 12);
+    if (s.length > 12) out += "-" + s.slice(12, 14);
+    return out;
+  }
+  /* Aceita o CNPJ numérico e o alfanumérico (em vigor desde julho de 2026) */
+  function validCNPJ(v) {
+    var s = cnpjChars(v);
+    if (!/^[A-Z0-9]{12}[0-9]{2}$/.test(s) || /^(.)\1{13}$/.test(s)) return false;
+    function dv(n) {
+      var w = n === 12 ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2] : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+      var sum = 0;
+      for (var i = 0; i < n; i++) sum += (s.charCodeAt(i) - 48) * w[i];
+      var r = sum % 11;
+      return r < 2 ? 0 : 11 - r;
+    }
+    return dv(12) === +s[12] && dv(13) === +s[13];
+  }
+  CI._validCNPJ = validCNPJ;
+
+  function initAuth() {
+    var host = $("[data-auth]");
+    if (!host) return;
+    var params = new URLSearchParams(location.search);
+    var next = params.get("next") || "";
+    var safeNext = /^[a-z0-9-]+\.html(\?[\w=&%.-]*)?$/i.test(next) ? next : "desafios.html";
+    var forProposal = params.get("acao") === "proposta";
+
+    var note = $("[data-auth-note]");
+    if (note && forProposal) note.hidden = false;
+
+    var panels = { entrar: $("#painel-entrar"), cadastro: $("#painel-cadastro") };
+    var seg = createSeg($('[data-seg="auth"]'), {
+      onChange: function (v) {
+        Object.keys(panels).forEach(function (k) {
+          panels[k].hidden = k !== v;
+        });
+        var first = $("input, select", panels[v]);
+        if (first) first.focus();
+      },
+    });
+    var startTab = params.get("aba") === "cadastro" ? "cadastro" : "entrar";
+    seg.setValue(startTab, false);
+    Object.keys(panels).forEach(function (k) {
+      panels[k].hidden = k !== startTab;
+    });
+
+    /* Mostrar/ocultar senha */
+    $$("[data-toggle-password]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var input = $("#" + b.getAttribute("aria-controls"));
+        var show = input.type === "password";
+        input.type = show ? "text" : "password";
+        b.setAttribute("aria-pressed", String(show));
+        b.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+        $("i", b).className = "ph-light " + (show ? "ph-eye-slash" : "ph-eye");
+      });
+    });
+
+    /* Máscara de CNPJ */
+    var cnpj = $("#c-cnpj");
+    if (cnpj) {
+      cnpj.addEventListener("input", function () {
+        cnpj.value = maskCNPJ(cnpj.value);
+      });
+    }
+
+    var rules = {
+      "l-email": emailError,
+      "l-senha": function (v) {
+        return v ? "" : "Informe sua senha.";
+      },
+      "c-tipo": function (v) {
+        return v ? "" : "Escolha o tipo de organização.";
+      },
+      "c-org": function (v) {
+        return v.trim() ? "" : "Informe o nome da organização.";
+      },
+      "c-cnpj": function (v) {
+        if (!v.trim()) return "Informe o CNPJ.";
+        return validCNPJ(v) ? "" : "CNPJ inválido. Confira os 14 caracteres.";
+      },
+      "c-nome": function (v) {
+        return v.trim().length >= 3 ? "" : "Informe seu nome completo.";
+      },
+      "c-email": emailError,
+      "c-senha": function (v) {
+        if (v.length < 8) return "Use pelo menos 8 caracteres.";
+        if (!/[A-Za-z]/.test(v) || !/[0-9]/.test(v)) return "Combine letras e números.";
+        return "";
+      },
+    };
+
+    function check(input) {
+      var rule = rules[input.id];
+      var msg = "";
+      if (input.type === "checkbox") msg = input.checked ? "" : "Aceite os termos para continuar.";
+      else if (rule) msg = rule(input.value);
+      setFieldError(input, msg);
+      return msg;
+    }
+
+    $$("form[data-auth-form]", host).forEach(function (form) {
+      var inputs = $$("input, select", form).filter(function (i) {
+        return rules[i.id] || i.type === "checkbox";
+      });
+      inputs.forEach(function (i) {
+        i.addEventListener("blur", function () {
+          if (i.value) check(i);
+        });
+        i.addEventListener(i.type === "checkbox" || i.tagName === "SELECT" ? "change" : "input", function () {
+          if (i.getAttribute("aria-invalid") === "true") check(i);
+        });
+      });
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var firstBad = null;
+        inputs.forEach(function (i) {
+          if (check(i) && !firstBad) firstBad = i;
+        });
+        if (firstBad) {
+          firstBad.focus();
+          return;
+        }
+        var btn = $('[type="submit"]', form);
+        setBusy(btn, form.dataset.authForm === "entrar" ? "Entrando…" : "Criando cadastro…");
+        setTimeout(function () {
+          setBusy(btn, false);
+          var ok = $("[data-auth-success]", form.parentNode);
+          var emailField = $('input[type="email"]', form);
+          $("[data-auth-email]", ok).textContent = emailField ? emailField.value.trim() : "";
+          var msgEl = $("[data-auth-next]", ok);
+          if (msgEl) {
+            msgEl.textContent = forProposal
+              ? "Na versão final, o formulário de proposta abriria agora."
+              : "Na versão final, você seguiria para a sua área no portal.";
+          }
+          var go = $("[data-auth-go]", ok);
+          if (go) go.href = safeNext;
+          form.hidden = true;
+          ok.hidden = false;
+          ok.focus();
+        }, 800);
+      });
+    });
+  }
+
+  /* ---------- Início ---------- */
+  function init() {
+    initTheme();
+    initNav();
+    initMarquee();
+    initReveal();
+    initHeroVideo();
+    initHome();
+    initSteps();
+    initFaq();
+    initNewsletter();
+    initListing();
+    initDetail();
+    initAuth();
+  }
+
+  if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
