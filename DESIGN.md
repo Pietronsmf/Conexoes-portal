@@ -190,7 +190,18 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
   - Formulário num cartão branco: e-mail, botão e os temas em chips, com marcação múltipla.
   - Ao lado, uma prévia do aviso: um e-mail com um desafio real do tema escolhido, que muda junto com os chips.
   - O sucesso confirma o e-mail e os temas ("sobre Robótica e Corrosão").
-- **Outros:** filtro segmentado, estados (skeleton, vazio, erro), dúvidas em abas, formulários com validação (CNPJ numérico e alfanumérico), painel do desafio com barra fixa no celular, toast.
+- **Página do desafio:**
+  - Cabeçalho em painel verde da marca, com a foto do módulo à direita, trilha, módulo e estado, título com barra amarela, resumo e os dados principais (área, tema, formato).
+  - O cartão de prazo sobe 300 px sobre o cabeçalho, para a contagem, a barra do prazo e "Enviar proposta" aparecerem sem rolar. Ao rolar, ele fica fixo.
+  - Junto do cartão, o índice "Nesta página" marca a seção atual (`IntersectionObserver`). Em telas baixas ou com texto em 125%, o cartão rola por dentro.
+  - As seções são numeradas (01 a 06), como num documento. "O que buscamos" vira uma grade de itens com check; "Quem pode participar", um destaque verde claro; os critérios ganham número e ícone.
+  - O cronograma é uma linha com os 4 marcos: o trecho já percorrido fica em verde, o próximo marco em destaque e o selo "Hoje" fica na posição real entre os marcos. No celular, a linha fica na vertical.
+  - Celular: o cartão de prazo vem logo após o cabeçalho e a barra fixa embaixo mostra os dias que faltam.
+- **Dúvidas frequentes:**
+  - Perguntas numeradas, com ícone do tema. A pergunta aberta ganha o fio amarelo, o ícone em verde e a seta.
+  - Painel com "Pergunta 3 de 5", botões de anterior e próxima, a resposta com barra amarela, um link útil por pergunta (módulos, cadastro, jornada, desafios, Aquisição de Soluções) e um ícone grande e discreto do tema no canto.
+  - Abaixo, um contato para quem não achou a resposta. No celular e sem JS, as mesmas perguntas numeradas em lista que abre e fecha.
+- **Outros:** filtro segmentado, estados (skeleton, vazio, erro), formulários com validação (CNPJ numérico e alfanumérico), toast.
 
 ## 8. Acessibilidade
 

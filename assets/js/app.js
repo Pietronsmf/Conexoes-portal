@@ -723,9 +723,11 @@
     var wrap = $("[data-faq]");
     if (!wrap) return;
     var items = $$("details", wrap).map(function (d) {
-      return { q: $("summary span", d).textContent.trim(), a: $(".faq-details__body", d).innerHTML };
+      return { q: $(".faq-q", d).textContent.trim(), a: $(".faq-details__body", d).innerHTML, icon: d.dataset.icon || "question" };
     });
     if (!items.length) return;
+    var n = items.length;
+    var current = 0;
 
     var faq = doc.createElement("div");
     faq.className = "faq";
@@ -735,23 +737,40 @@
         .map(function (it, i) {
           return (
             '<button class="faq__q" type="button" role="tab" id="faq-tab-' + i + '" aria-controls="faq-panel" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '">' +
-            "<span>" + esc(it.q) + '</span><i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>'
+            '<span class="faq__num" aria-hidden="true">' + String(i + 1).padStart(2, "0") + "</span>" +
+            '<span class="faq__qicon" aria-hidden="true"><i class="ph-light ph-' + it.icon + '"></i></span>' +
+            '<span class="faq__qtext">' + esc(it.q) + "</span>" +
+            '<i class="ph-light ph-arrow-right faq__arrow" aria-hidden="true"></i></button>'
           );
         })
         .join("") +
       "</div>" +
-      '<div class="shell faq__panel"><div class="core" role="tabpanel" id="faq-panel" aria-labelledby="faq-tab-0" tabindex="0"></div></div>';
+      '<div class="faq__panel" role="tabpanel" id="faq-panel" aria-labelledby="faq-tab-0" tabindex="0">' +
+      '<div class="faq__bar"><span class="faq__count" data-faq-count></span>' +
+      '<div class="faq__nav">' +
+      '<button class="faq__step" type="button" data-step="-1" aria-label="Pergunta anterior"><i class="ph-light ph-arrow-left" aria-hidden="true"></i></button>' +
+      '<button class="faq__step" type="button" data-step="1" aria-label="Próxima pergunta"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>' +
+      "</div></div>" +
+      '<div class="faq__body" data-faq-body></div>' +
+      "</div>";
     wrap.insertBefore(faq, wrap.firstChild);
 
     var tabs = $$(".faq__q", faq);
     var panel = $('[role="tabpanel"]', faq);
+    var body = $("[data-faq-body]", faq);
+    var count = $("[data-faq-count]", faq);
     function show(i, focus) {
+      current = i;
       tabs.forEach(function (t, j) {
         t.setAttribute("aria-selected", String(i === j));
         t.tabIndex = i === j ? 0 : -1;
       });
       panel.setAttribute("aria-labelledby", tabs[i].id);
-      panel.innerHTML = '<div class="faq__answer"><h3 class="title-lg">' + esc(items[i].q) + "</h3>" + items[i].a + "</div>";
+      count.textContent = "Pergunta " + (i + 1) + " de " + n;
+      body.innerHTML =
+        '<div class="faq__answer">' +
+        '<i class="faq__mark ph-light ph-' + items[i].icon + '" aria-hidden="true"></i>' +
+        '<h3 class="title-lg">' + esc(items[i].q) + "</h3>" + items[i].a + "</div>";
       if (focus) tabs[i].focus();
     }
     tabs.forEach(function (t, i) {
@@ -759,17 +778,22 @@
         show(i);
       });
     });
+    $$("[data-step]", faq).forEach(function (b) {
+      b.addEventListener("click", function () {
+        show((current + Number(b.dataset.step) + n) % n);
+      });
+    });
     $(".faq__list", faq).addEventListener("keydown", function (e) {
       var i = tabs.indexOf(doc.activeElement);
       if (i < 0) return;
-      var n = null;
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") n = (i + 1) % tabs.length;
-      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") n = (i - 1 + tabs.length) % tabs.length;
-      else if (e.key === "Home") n = 0;
-      else if (e.key === "End") n = tabs.length - 1;
-      if (n !== null) {
+      var k = null;
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") k = (i + 1) % n;
+      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") k = (i - 1 + n) % n;
+      else if (e.key === "Home") k = 0;
+      else if (e.key === "End") k = n - 1;
+      if (k !== null) {
         e.preventDefault();
-        show(n, true);
+        show(k, true);
       }
     });
     show(0);
@@ -1063,12 +1087,6 @@
   }
 
   /* ---------- Detalhe do desafio ---------- */
-  var MEDIA_VARIANTS = [
-    { src: "assets/media/horizon-right.webp", pos: "70% 28%", w: 1300, h: 620 },
-    { src: "assets/media/poster-1600.webp", pos: "30% 62%", w: 1600, h: 900 },
-    { src: "assets/media/sea-texture.webp", pos: "50% 50%", w: 800, h: 380 },
-  ];
-
   function getSaved() {
     try {
       var v = JSON.parse(store.get("ci-salvos") || "[]");
@@ -1102,14 +1120,13 @@
       return;
     }
 
-    var idx = CI.desafios.indexOf(c);
     var m = CI.modulos[c.modulo];
     var s = status(c);
     var prazo = addDays(c.prazoDias);
     var pub = addDays(-c.publicadoDias);
-    var media = MEDIA_VARIANTS[idx % MEDIA_VARIANTS.length];
     var closed = s.key === "encerrado";
-    var nextUrl = "entrar.html?next=" + encodeURIComponent("desafio.html?id=" + c.id) + "&acao=proposta";
+    var cd = countdown(c);
+    var nextUrl = proposalHref(c);
 
     doc.title = c.titulo + " · Conexões para Inovação";
 
@@ -1128,75 +1145,145 @@
       ? '<span class="btn btn--secondary btn--block" aria-disabled="true">Inscrições encerradas</span>'
       : '<a class="btn btn--primary btn--icon btn--block" href="' + nextUrl + '"><span class="btn__label">Enviar proposta</span><span class="btn__icon"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></a>';
 
+    /* Linha do tempo: marcos em dias a partir de hoje; "Hoje" fica entre o último marco passado e o próximo */
+    var marcos = [
+      { d: -c.publicadoDias, label: "Publicação da chamada" },
+      { d: c.prazoDias, label: "Fim das inscrições" },
+      { d: c.prazoDias + 30, label: "Resultado preliminar", prev: true },
+      { d: c.prazoDias + 75, label: "Início dos projetos", prev: true },
+    ];
+    var k = -1;
+    marcos.forEach(function (mc, j) {
+      if (mc.d <= 0) k = j;
+    });
+    var pos = k < 0 ? 0 : k >= marcos.length - 1 ? marcos.length - 1 : k + (0 - marcos[k].d) / (marcos[k + 1].d - marcos[k].d);
+    var nowX = (12.5 + 25 * pos).toFixed(2) + "%";
+    var timeline =
+      '<ol class="tl" style="--now-x:' + nowX + '">' +
+      marcos
+        .map(function (mc, j) {
+          var dt = addDays(mc.d);
+          var cls = mc.d <= 0 ? " is-done" : j === k + 1 ? " is-next" : "";
+          var note = j === 1 && !closed ? '<span class="tl__note">' + s.left + "</span>" : mc.prev ? '<span class="tl__note">previsão</span>' : "";
+          return (
+            '<li class="tl__item' + cls + '"><span class="tl__dot" aria-hidden="true"></span>' +
+            '<time datetime="' + isoDate(dt) + '">' + fmtShort(dt) + '</time><span class="tl__label">' + mc.label + "</span>" + note + "</li>" +
+            (j === k ? '<li class="tl__now"><span>Hoje</span></li>' : "")
+          );
+        })
+        .join("") +
+      "</ol>";
+
+    var secs = [
+      ["contexto", "Contexto"],
+      ["buscamos", "O que buscamos"],
+      ["participar", "Quem pode participar"],
+      ["avaliacao", "Como avaliamos"],
+      ["cronograma", "Cronograma"],
+      ["documentos", "Documentos"],
+    ];
+    function num(i) {
+      return String(i + 1).padStart(2, "0");
+    }
+    function sec(i, body) {
+      var id = secs[i][0];
+      return (
+        '<section class="prose-section" id="' + id + '" aria-labelledby="' + id + '-t">' +
+        '<h2 class="title-lg prose-title" id="' + id + '-t"><span class="prose-num" aria-hidden="true">' + num(i) + "</span>" + secs[i][1] + "</h2>" +
+        body + "</section>"
+      );
+    }
+
     host.innerHTML =
       '<div class="container">' +
-      '<header class="detail-head">' +
+      '<header class="dhero dhero--' + s.key + '">' +
+      '<img class="dhero__photo" src="assets/media/modulo-' + c.modulo + '.webp" alt="" width="1200" height="800">' +
+      '<div class="dhero__body">' +
       '<nav aria-label="Trilha de navegação"><ol class="crumbs">' +
       '<li><a href="index.html">Início</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +
       '<li><a href="desafios.html">Desafios</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +
       '<li><a href="desafios.html?modulo=' + c.modulo + '">' + esc(m.nome) + "</a></li></ol></nav>" +
-      '<span class="status status--' + s.key + '">' + s.label + "</span>" +
-      '<h1 class="title-xl">' + esc(c.titulo) + "</h1>" +
-      '<p class="lead">' + esc(c.resumo) + "</p>" +
-      '<div class="meta-row"><span class="tag">' + esc(m.nome) + '</span><span class="tag">' + esc(c.area) + '</span><span class="tag">' + esc(c.tema) + "</span></div>" +
-      "</header>" +
-      '<div class="shell detail-media"><div class="core"><img src="' + media.src + '" alt="" width="' + media.w + '" height="' + media.h + '" style="object-position:' + media.pos + '"></div></div>' +
+      '<div class="dhero__top"><span class="dhero__module"><span class="dhero__icon"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i></span>' + esc(m.nome) + "</span>" +
+      '<span class="status status--' + s.key + '">' + s.label + "</span></div>" +
+      '<h1 class="dhero__title">' + esc(c.titulo) + "</h1>" +
+      '<p class="dhero__lead">' + esc(c.resumo) + "</p>" +
+      '<dl class="dhero__facts">' +
+      "<div><dt>Área</dt><dd>" + esc(c.area) + "</dd></div>" +
+      "<div><dt>Tema</dt><dd>" + esc(c.tema) + "</dd></div>" +
+      "<div><dt>Formato</dt><dd>" + esc(m.formato) + "</dd></div>" +
+      "</dl>" +
+      "</div></header>" +
       '<div class="detail-grid">' +
       '<article class="prose">' +
-      '<section class="prose-section" aria-labelledby="sec-contexto"><h2 class="title-lg" id="sec-contexto">Contexto</h2><p>' + esc(c.contexto) + "</p></section>" +
-      '<section class="prose-section" aria-labelledby="sec-busca"><h2 class="title-lg" id="sec-busca">O que buscamos</h2><ul class="checklist">' +
-      c.buscamos
-        .map(function (b) {
-          return '<li><i class="ph-light ph-check" aria-hidden="true"></i><span>' + esc(b) + "</span></li>";
-        })
-        .join("") +
-      "</ul></section>" +
-      '<section class="prose-section" aria-labelledby="sec-quem"><h2 class="title-lg" id="sec-quem">Quem pode participar</h2><p>' +
-      esc(m.publico) + ". Os requisitos completos de elegibilidade, documentação e propriedade intelectual estão no edital.</p></section>" +
-      '<section class="prose-section" aria-labelledby="sec-criterios"><h2 class="title-lg" id="sec-criterios">Como avaliamos</h2><div class="criteria">' +
-      CI.criterios
-        .map(function (k) {
-          return '<div class="criterion"><i class="ph-light ph-' + k.icone + '" aria-hidden="true"></i><h3>' + esc(k.titulo) + "</h3><p>" + esc(k.texto) + "</p></div>";
-        })
-        .join("") +
-      "</div></section>" +
-      '<section class="prose-section" aria-labelledby="sec-crono"><h2 class="title-lg" id="sec-crono">Cronograma</h2><ol class="timeline">' +
-      '<li><time datetime="' + isoDate(pub) + '">' + fmtLong(pub) + "</time><span>Publicação da chamada</span></li>" +
-      '<li><time datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time><span>Fim das inscrições</span></li>" +
-      '<li><time datetime="' + isoDate(addDays(c.prazoDias + 30)) + '">' + fmtLong(addDays(c.prazoDias + 30)) + "</time><span>Resultado preliminar <em>(previsão)</em></span></li>" +
-      '<li><time datetime="' + isoDate(addDays(c.prazoDias + 75)) + '">' + fmtLong(addDays(c.prazoDias + 75)) + "</time><span>Início dos projetos <em>(previsão)</em></span></li>" +
-      "</ol></section>" +
-      '<section class="prose-section" aria-labelledby="sec-docs"><h2 class="title-lg" id="sec-docs">Documentos</h2><ul class="docs">' +
-      [
-        ["file-pdf", "Edital completo", "PDF"],
-        ["file-text", "Anexo técnico do desafio", "PDF"],
-        ["file-text", "Modelo de proposta", "DOCX"],
-      ]
-        .map(function (d) {
-          return (
-            '<li class="doc" aria-disabled="true"><i class="ph-light ph-' + d[0] + '" aria-hidden="true"></i>' +
-            "<div><strong>" + d[1] + "</strong><span>" + d[2] + '</span></div><span class="doc__state">Disponível na versão final</span></li>'
-          );
-        })
-        .join("") +
-      "</ul></section>" +
+      sec(0, "<p>" + esc(c.contexto) + "</p>") +
+      sec(
+        1,
+        '<ul class="wants">' +
+          c.buscamos
+            .map(function (b) {
+              return '<li><span class="wants__icon" aria-hidden="true"><i class="ph-light ph-check"></i></span><span>' + esc(b) + "</span></li>";
+            })
+            .join("") +
+          "</ul>"
+      ) +
+      sec(
+        2,
+        '<div class="callout"><span class="callout__icon" aria-hidden="true"><i class="ph-light ph-users-three"></i></span><div>' +
+          '<p class="callout__title">' + esc(m.publico) + "</p>" +
+          "<p>Os requisitos completos de elegibilidade, documentação e propriedade intelectual estão no edital.</p></div></div>"
+      ) +
+      sec(
+        3,
+        '<div class="criteria">' +
+          CI.criterios
+            .map(function (cr, i) {
+              return (
+                '<div class="criterion"><span class="criterion__num" aria-hidden="true">' + num(i) + '</span><i class="ph-light ph-' + cr.icone + '" aria-hidden="true"></i>' +
+                "<h3>" + esc(cr.titulo) + "</h3><p>" + esc(cr.texto) + "</p></div>"
+              );
+            })
+            .join("") +
+          "</div>"
+      ) +
+      sec(4, timeline) +
+      sec(
+        5,
+        '<ul class="docs">' +
+          [
+            ["file-pdf", "Edital completo", "PDF"],
+            ["file-text", "Anexo técnico do desafio", "PDF"],
+            ["file-text", "Modelo de proposta", "DOCX"],
+          ]
+            .map(function (dc) {
+              return (
+                '<li class="doc" aria-disabled="true"><i class="ph-light ph-' + dc[0] + '" aria-hidden="true"></i>' +
+                "<div><strong>" + dc[1] + "</strong><span>" + dc[2] + '</span></div><span class="doc__state">Disponível na versão final</span></li>'
+              );
+            })
+            .join("") +
+          "</ul>"
+      ) +
       "</article>" +
-      '<aside class="aside" aria-label="Prazo e inscrição"><div class="shell"><div class="core" data-panel>' +
-      '<div class="aside__deadline"><span class="small">' + (closed ? "Inscrições encerradas em" : "Propostas até") + "</span>" +
-      '<time class="aside__date" datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time>" +
-      (s.left ? '<span class="aside__left">' + s.left + "</span>" : "") +
-      "</div>" +
+      '<aside class="aside aside--' + s.key + '" aria-label="Prazo e inscrição" style="--p:' + progress(c) + '"><div class="shell"><div class="core" data-panel>' +
+      (closed
+        ? '<div class="aside__count"><span class="small">Inscrições encerradas em</span><time class="aside__date" datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time></div>"
+        : '<div class="aside__count">' +
+          '<p class="countdown countdown--xl"><span class="countdown__num">' + cd.num + '</span><span class="countdown__unit">' + cd.long + "</span></p>" +
+          '<span class="meter meter--xl' + (s.key === "prazo" ? " meter--warn" : "") + '" aria-hidden="true"><span class="meter__bar"></span></span>' +
+          '<p class="aside__line">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time></p>" +
+          "</div>") +
       '<div class="aside__actions">' + cta +
       '<div class="aside__secondary">' +
       '<button class="btn btn--secondary btn--sm" type="button" data-save aria-pressed="false"><i class="ph-light ph-bookmark-simple" aria-hidden="true"></i><span class="btn__label">Salvar</span></button>' +
       '<button class="btn btn--secondary btn--sm" type="button" data-copy><i class="ph-light ph-link-simple" aria-hidden="true"></i><span class="btn__label">Copiar link</span></button>' +
       "</div></div>" +
-      '<dl class="facts">' +
-      "<div><dt>Módulo</dt><dd>" + esc(m.nome) + "</dd></div>" +
-      "<div><dt>Área</dt><dd>" + esc(c.area) + "</dd></div>" +
-      "<div><dt>Formato</dt><dd>" + esc(m.formato) + "</dd></div>" +
-      "<div><dt>Publicado em</dt><dd>" + fmtShort(pub) + "</dd></div>" +
-      "</dl>" +
+      '<nav class="toc" aria-label="Nesta página"><p class="toc__title">Nesta página</p><ol>' +
+      secs
+        .map(function (sc, i) {
+          return '<li><a href="#' + sc[0] + '"><span class="toc__num" aria-hidden="true">' + num(i) + "</span>" + sc[1] + "</a></li>";
+        })
+        .join("") +
+      "</ol></nav>" +
       "</div></div></aside>" +
       "</div>" +
       (related.length
@@ -1206,7 +1293,7 @@
       (closed
         ? ""
         : '<div class="mobile-bar" data-mobile-bar inert>' +
-          '<div class="mobile-bar__info"><span>Propostas até</span><strong>' + fmtShort(prazo) + "</strong></div>" +
+          '<div class="mobile-bar__info"><strong>' + s.left + "</strong><span>Propostas até " + fmtShort(prazo) + "</span></div>" +
           '<a class="btn btn--primary btn--sm" href="' + nextUrl + '">Enviar proposta</a></div>');
 
     /* Salvar no navegador */
@@ -1258,6 +1345,30 @@
         bar.classList.toggle("is-visible", show);
         bar.inert = !show;
       }).observe(panel);
+    }
+
+    /* Índice "Nesta página": marca a seção que está no centro da tela */
+    var links = $$(".toc a", host);
+    var sections = links.map(function (a) {
+      return $(a.getAttribute("href"), host);
+    });
+    if (links.length && "IntersectionObserver" in window) {
+      var spy = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            var i = sections.indexOf(e.target);
+            links.forEach(function (a, j) {
+              if (i === j) a.setAttribute("aria-current", "true");
+              else a.removeAttribute("aria-current");
+            });
+          });
+        },
+        { rootMargin: "-35% 0px -60% 0px" }
+      );
+      sections.forEach(function (sct) {
+        if (sct) spy.observe(sct);
+      });
     }
   }
 

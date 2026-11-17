@@ -22,7 +22,7 @@ Depois abra `http://localhost:8000`.
 | --- | --- | --- |
 | Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, desafios abertos (destaque com contagem regressiva e lista dos próximos prazos), jornada, temas, dúvidas e avisos por e-mail com escolha de temas e prévia do aviso |
 | Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
-| Detalhe | `desafio.html?id=…` | Contexto, o que buscamos, critérios, cronograma, documentos e painel de inscrição |
+| Detalhe | `desafio.html?id=…` | Cabeçalho com a foto do módulo, cartão de prazo fixo com índice da página, seções numeradas, cronograma com o marcador "Hoje", documentos e outros desafios |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
 | 404 | `404.html` | Página não encontrada |
 
@@ -65,7 +65,7 @@ Os vídeos e os quadros das páginas internas vêm do arquivo `petroleo.mp4` env
 
 - **Vídeo do hero:** trecho de 5,5 s em vai-e-volta, sem áudio. Pesa 2,3 MB em 1600 px e 0,8 MB em 960 px. É exibido espelhado (por CSS), para a plataforma ficar à direita do texto.
 - **Vídeo do mar:** recorte do mar no canto inferior direito do mesmo trecho, também em vai-e-volta. Pesa 1,1 MB em 1280 px e 0,3 MB em 640 px.
-- **Pôsteres e imagens das páginas internas:** quadros do mesmo vídeo.
+- **Pôsteres:** quadros do mesmo vídeo (hero e página de entrada). A página de cada desafio usa a foto do seu módulo.
 
 As fotos dos cards de módulo são do [Pexels](https://www.pexels.com/license/) (uso livre, atribuição opcional; os créditos ficam aqui):
 
