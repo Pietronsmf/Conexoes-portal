@@ -98,7 +98,7 @@ Títulos de seção em negrito (32 px, cinza `#373737`), seguidos de uma barra a
 
 ### Cor
 
-Neutros levemente esverdeados, **um acento interativo** (verde Petrobras) e o **amarelo da marca só em linhas e barras finas**, nunca em texto, botão ou fundo.
+Neutros levemente esverdeados, **um acento interativo** (verde Petrobras) e o **amarelo da marca só em linhas e barras finas**, nunca em texto, botão ou fundo. A exceção segue o site da Petrobras: em fundo escuro, links e o botão de contorno podem ser amarelos.
 
 | Token | Valor | Uso |
 | --- | --- | --- |
@@ -119,6 +119,7 @@ Contraste medido (WCAG):
   - Hero: título acima de 8:1, subtítulo acima de 7,7:1, parágrafo acima de 5,6:1.
   - Header sobre o vídeo: menu acima de 7,8:1, barra de serviços acima de 13:1.
   - Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
+  - Cards de foto dos desafios (todas as fotos, de 390 a 1440 px, com os filtros): módulo acima de 5,3:1, dias e data acima de 6,4:1, título acima de 6,9:1.
 
 ### Tipografia
 
@@ -179,12 +180,13 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
 - **Mar contínuo (busca e números):** a seção sobe 180 px por baixo do hero e o vídeo do mar entra em fusão com o mar do próprio hero, sem emenda. O mar escurece aos poucos até a frase, que fica na frente em branco, com os números sublinhados em amarelo. A busca continua sobre a linha d'água. Ondas na cor da página fecham a seção. Em retrato, o mar começa com uma onda.
 - **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque. Cada módulo tem uma foto que mostra o seu público: equipe de startup com braço robótico, laboratório (universidades e ICTs), torre de refinaria (problemas da operação), técnico em campo (soluções prontas) e peças impressas em 3D (tecnologia que sai para o mercado). Cada foto tem enquadramento próprio para o desktop e para cards estreitos (`--pos` e `--pos-sm`).
 - **Card de desafio (lista, detalhe):** moldura dupla; módulo com ícone em bloco verde claro e selo de estado com ponto; título com barra amarela; resumo em 2 linhas; tags; rodapé em faixa cinza com a contagem regressiva em Geist Mono, a data e a barra de prazo (verde, ou âmbar nos últimos dias).
-- **Desafios na home:**
-  - O que encerra primeiro vira o destaque, num painel verde profundo da marca: título grande, contagem de dias em destaque, barra amarela do prazo e "Enviar proposta".
-  - Os próximos 4 ficam numa lista compacta, com o número de dias à direita, para comparar prazos de relance.
-  - O filtro por módulo vale para os dois. O link do rodapé acompanha o filtro ("Ver os 4 desafios de Startups").
-  - Com um só desafio no módulo, o lado direito explica e oferece as chamadas encerradas e os avisos. Sem nenhum, aparece o estado vazio.
-  - O carregamento usa skeletons no formato do destaque e das linhas.
+- **Desafios na home (vitrine):** inspirada nos cards de tecnologia do petrobras.com.br.
+  - Seção escura, com uma plataforma em cinza bem discreta no canto. Título à esquerda e texto à direita, com o resumo do momento ("9 chamadas abertas, e 2 encerram nos próximos 10 dias") e o link amarelo para a lista completa.
+  - Os desafios ficam em grupos com rótulo em caixa alta e uma frase: "Encerram primeiro" (os 3 prazos mais próximos) e "Publicadas recentemente" (os 3 mais novos entre os demais).
+  - Card de foto: cada desafio tem a sua foto, inteira no alto e coberta por um degradê verde embaixo. Por cima vêm o módulo em caixa alta, o título em negrito, os dias e a data, e o botão branco "Ver desafio". Nos últimos dias, aparece um selo âmbar no canto. O verde atrás do texto é preso ao bloco de texto, então a leitura não depende da foto nem da altura do card.
+  - O filtro por módulo vale para os grupos. Com menos de 3 desafios num grupo, o espaço vira um atalho para a lista do módulo. Sem nenhum, aparece o estado vazio.
+  - No fim, o botão de contorno amarelo acompanha o filtro ("Ver os 4 desafios de Startups").
+  - O carregamento usa skeletons no formato dos cards.
 - **Avisos por e-mail:**
   - Painel verde profundo com as linhas da marca do hero.
   - Formulário num cartão branco: e-mail, botão e os temas em chips, com marcação múltipla.
@@ -198,9 +200,9 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
   - O cronograma é uma linha com os 4 marcos: o trecho já percorrido fica em verde, o próximo marco em destaque e o selo "Hoje" fica na posição real entre os marcos. No celular, a linha fica na vertical.
   - Celular: o cartão de prazo vem logo após o cabeçalho e a barra fixa embaixo mostra os dias que faltam.
 - **Dúvidas frequentes:**
-  - Perguntas numeradas, com ícone do tema. A pergunta aberta ganha o fio amarelo, o ícone em verde e a seta.
-  - Painel com "Pergunta 3 de 5", botões de anterior e próxima, a resposta com barra amarela, um link útil por pergunta (módulos, cadastro, jornada, desafios, Aquisição de Soluções) e um ícone grande e discreto do tema no canto.
-  - Abaixo, um contato para quem não achou a resposta. No celular e sem JS, as mesmas perguntas numeradas em lista que abre e fecha.
+  - Perguntas com ícone do tema, sem numeração. A pergunta aberta ganha o fio amarelo, o ícone em verde e a seta.
+  - Painel com botões de anterior e próxima, a resposta com barra amarela, um link útil por pergunta (módulos, cadastro, jornada, desafios, Aquisição de Soluções) e um ícone grande e discreto do tema no canto.
+  - Abaixo, um contato para quem não achou a resposta. No celular e sem JS, as mesmas perguntas em lista que abre e fecha.
 - **Outros:** filtro segmentado, estados (skeleton, vazio, erro), formulários com validação (CNPJ numérico e alfanumérico), toast.
 
 ## 8. Acessibilidade

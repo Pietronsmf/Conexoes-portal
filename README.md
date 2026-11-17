@@ -20,7 +20,7 @@ Depois abra `http://localhost:8000`.
 
 | Página | Arquivo | O que mostra |
 | --- | --- | --- |
-| Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, desafios abertos (destaque com contagem regressiva e lista dos próximos prazos), jornada, temas, dúvidas e avisos por e-mail com escolha de temas e prévia do aviso |
+| Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, vitrine escura de desafios com uma foto para cada um, no estilo do petrobras.com.br, jornada, temas, dúvidas e avisos por e-mail com escolha de temas e prévia do aviso |
 | Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
 | Detalhe | `desafio.html?id=…` | Cabeçalho com a foto do módulo, cartão de prazo fixo com índice da página, seções numeradas, cronograma com o marcador "Hoje", documentos e outros desafios |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
@@ -30,7 +30,7 @@ Depois abra `http://localhost:8000`.
 
 - Carregando: qualquer lista mostra skeleton por 650 ms (simula a API).
 - Vazio: [`desafios.html?q=xyz`](desafios.html?q=xyz), ou o filtro "Transferência" na home.
-- Um só desafio no módulo: filtro "Encomendas" na home (destaque e, ao lado, as chamadas encerradas e os avisos).
+- Poucos desafios no módulo: filtro "Encomendas" na home (o card do desafio e, ao lado, um atalho para a lista do módulo).
 - Avisos por e-mail: marque temas e veja a prévia mudar; o sucesso lista os temas escolhidos.
 - Erro: [`desafios.html?simular=erro`](desafios.html?simular=erro), depois "Tentar novamente".
 - Não encontrado: [`desafio.html?id=nao-existe`](desafio.html?id=nao-existe).
@@ -54,7 +54,8 @@ assets/
   brand/                logo oficial Petrobras (horizontal e símbolo BR)
   fonts/                Geist e Geist Mono (OFL)
   icons/phosphor/       Phosphor Icons, peso light (MIT)
-  media/                vídeos do hero e do mar (MP4 e WebM), pôsteres e fotos
+  media/                vídeos do hero e do mar (MP4 e WebM), pôsteres, fotos dos módulos
+  media/desafios/       uma foto por desafio
 docs/screens/           capturas do protótipo
 DESIGN.md               design system, análise do site petrobras.com.br e pre-flight
 ```
@@ -76,6 +77,23 @@ As fotos dos cards de módulo são do [Pexels](https://www.pexels.com/license/) 
 | Encomendas Tecnológicas | [Oil Refinery Plant](https://www.pexels.com/photo/oil-refinery-plant-15970032/) | Jakub Pabis |
 | Aquisição de Soluções | [Engineer in Industrial Factory Using Tablet](https://www.pexels.com/photo/engineer-in-industrial-factory-using-tablet-32845694/) | Sergey Sergeev |
 | Transferência de Tecnologias | [Peças metálicas impressas em 3D](https://www.pexels.com/photo/engineer-holding-clean-energy-battery-3861437/) | ThisIsEngineering |
+
+Cada desafio também tem a sua foto (`assets/media/desafios/<id>.webp`), usada nos cards da home e no cabeçalho da página do desafio. Também são do Pexels:
+
+| Desafio | Foto | Autor |
+| --- | --- | --- |
+| Inspeção autônoma de cascos de FPSO | [Offshore Oil Drillship in Türkiye's Coastal Waters](https://www.pexels.com/photo/offshore-oil-drillship-in-turkiye-s-coastal-waters-29190138/) | Faruk Yıldız |
+| Materiais poliméricos | [Close-Up Shot of a Person Holding a Flask](https://www.pexels.com/photo/close-up-shot-of-a-person-holding-a-flask-9628826/) | Ivan S |
+| Monitoramento de corrosão | [Valve on Industrial Pipe](https://www.pexels.com/photo/valve-on-industrial-pipe-12194246/) | David McElwee |
+| Inspeção de umbilicais | [Workers on Vessel](https://www.pexels.com/photo/workers-on-vessel-15190641/) | Gustavo F. de Carvalho-Souza |
+| Emissões de metano | [Pine Bend Oil Refinery](https://www.pexels.com/photo/pine-bend-oil-refinery-in-rosemount-minnesota-united-states-10407691/) | Tom Fisk |
+| Armazenamento de energia | [Offshore Platform on the Sea](https://www.pexels.com/photo/offshore-platform-on-the-sea-16169309/) | Maahid Photos |
+| Modelagem geológica | [Layers in a Rock Formation](https://www.pexels.com/photo/layers-in-a-rock-formation-11110872/) | Vladimir Konoplev |
+| Captura de CO₂ | [Smoke from chimneys of factory](https://www.pexels.com/photo/smoke-from-chimneys-of-factory-4394351/) | K |
+| Drones para inspeção | [Man Operating Underwater Camera](https://www.pexels.com/photo/man-operating-underwater-camera-12720469/) | Jordan Bergendahl |
+| Catalisadores | [Person Holding Glass Flasks](https://www.pexels.com/photo/person-holding-glass-flasks-3082451/) | Chokniti Khongchum |
+| Gêmeo digital | [Industrial Worker Using Tablet in Factory](https://www.pexels.com/photo/industrial-worker-using-tablet-in-factory-32845692/) | Sergey Sergeev |
+| Sensoriamento por fibra óptica | [Close-Up Shot of a Green and Blue Fiber Optic](https://www.pexels.com/photo/close-up-shot-of-a-green-and-blue-fiber-optic-12932191/) | Atlantic Ambience |
 
 Na versão final, o ideal é trocar essas fotos por imagens do banco da Petrobras (CENPES, plataformas, refinarias).
 

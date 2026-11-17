@@ -140,70 +140,50 @@
     );
   }
 
-  /* Home: o desafio que encerra primeiro ganha destaque */
-  function featureHTML(c) {
+  /* Home: card de foto com degradê verde, como os cards de tecnologia do site Petrobras */
+  function photoCardHTML(c, i) {
     var m = CI.modulos[c.modulo];
     var s = status(c);
     var prazo = addDays(c.prazoDias);
-    var cd = countdown(c);
     return (
-      '<article class="feature feature--' + s.key + ' is-new" style="--p:' + progress(c) + '" data-item>' +
-      '<div class="feature__top">' +
-      '<span class="feature__module"><span class="feature__icon"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i></span>' + esc(m.nome) + "</span>" +
-      '<span class="status status--' + s.key + '">' + s.label + "</span>" +
-      "</div>" +
-      '<p class="feature__flag"><i class="ph-light ph-hourglass-medium" aria-hidden="true"></i>Encerra primeiro</p>' +
-      '<h3 class="feature__title"><a href="desafio.html?id=' + encodeURIComponent(c.id) + '">' + esc(c.titulo) + "</a></h3>" +
-      '<p class="feature__summary">' + esc(c.resumo) + "</p>" +
-      '<div class="feature__tags"><span class="tag">' + esc(c.area) + '</span><span class="tag">' + esc(c.tema) + "</span></div>" +
-      '<div class="feature__foot">' +
-      '<p class="countdown countdown--lg"><span class="countdown__num">' + cd.num + '</span><span class="countdown__unit">' + cd.long + "</span></p>" +
-      meterHTML(" meter--lg") +
-      '<div class="feature__actions">' +
-      '<p class="feature__date">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time></p>" +
-      '<a class="btn btn--light btn--icon feature__cta" href="' + proposalHref(c) + '"><span class="btn__label">Enviar proposta</span><span class="btn__icon"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></a>' +
-      "</div></div></article>"
-    );
-  }
-
-  /* Home: os próximos, em lista compacta para comparar prazos */
-  function rowHTML(c, i) {
-    var m = CI.modulos[c.modulo];
-    var s = status(c);
-    var prazo = addDays(c.prazoDias);
-    var cd = countdown(c);
-    return (
-      '<li class="row row--' + s.key + ' is-new" style="--i:' + (i || 0) + ";--p:" + progress(c) + '" data-item>' +
-      /* nome acessível em frase, em vez dos pedaços colados */
-      '<a class="row__link" href="desafio.html?id=' + encodeURIComponent(c.id) + '" aria-label="' +
+      '<li class="pcard pcard--' + s.key + ' is-new" style="--i:' + (i || 0) + '" data-item>' +
+      '<a class="pcard__link" href="desafio.html?id=' + encodeURIComponent(c.id) + '" aria-label="' +
       esc(c.titulo + ". " + m.nome + ", " + s.label.toLowerCase() + ". Propostas até " + fmtShort(prazo) + ", " + s.left.toLowerCase() + ".") + '">' +
-      '<span class="row__icon" aria-hidden="true"><i class="ph-light ph-' + m.icone + '"></i></span>' +
-      '<span class="row__main">' +
-      '<span class="row__meta">' + esc(m.nome) + '<span class="status status--' + s.key + ' status--sm">' + s.label + "</span></span>" +
-      '<span class="row__title">' + esc(c.titulo) + "</span>" +
-      '<span class="row__date">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + "</time></span>" +
-      "</span>" +
-      '<span class="row__time"><span class="row__num">' + cd.num + '</span><span class="row__unit">' + cd.short + "</span>" + meterHTML() + "</span>" +
-      '<span class="row__go" aria-hidden="true"><i class="ph-light ph-arrow-right"></i></span>' +
-      "</a></li>"
+      '<img class="pcard__img" src="assets/media/desafios/' + c.id + '.webp" alt="" width="1200" height="800" loading="lazy" style="object-position:' + (c.foco == null ? 50 : c.foco) + '% 50%">' +
+      (s.key === "prazo" ? '<span class="pcard__flag"><span class="status status--prazo status--sm">Últimos dias</span></span>' : "") +
+      '<span class="pcard__body">' +
+      '<span class="pcard__module">' + esc(m.nome) + "</span>" +
+      '<span class="pcard__title">' + esc(c.titulo) + "</span>" +
+      '<span class="pcard__meta">' + s.left + " · até " + fmtShort(prazo) + "</span>" +
+      '<span class="pcard__btn">Ver desafio <i class="ph-light ph-arrow-right"></i></span>' +
+      "</span></a></li>"
     );
   }
 
-  function boardSkeletonHTML() {
-    var row =
-      '<li class="row row--skeleton"><div class="row__link">' +
-      '<span class="skel skel--icon"></span>' +
-      '<span class="row__main"><span class="skel skel--text-2"></span><span class="skel skel--title"></span></span>' +
-      '<span class="skel skel--num"></span>' +
-      "</div></li>";
+  /* Quando um grupo tem menos de 3 desafios, o espaço vira um atalho para a lista */
+  function moreCardHTML(href, label) {
     return (
-      '<div class="feature feature--skeleton" aria-hidden="true">' +
-      '<span class="skel skel--dark skel--pill"></span>' +
-      '<span class="skel skel--dark skel--title"></span><span class="skel skel--dark skel--title-2"></span>' +
-      '<span class="skel skel--dark skel--text"></span><span class="skel skel--dark skel--text-2"></span>' +
-      '<span class="skel skel--dark skel--foot"></span>' +
-      "</div>" +
-      '<ol class="rows" aria-hidden="true">' + row + row + row + row + "</ol>"
+      '<li class="pcard pcard--more"><a class="pcard__link" href="' + href + '">' +
+      '<span class="pcard__more-icon" aria-hidden="true"><i class="ph-light ph-squares-four"></i></span>' +
+      '<span class="pcard__body"><span class="pcard__title">' + label + "</span>" +
+      '<span class="pcard__btn">Abrir a lista <i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></span></a></li>'
+    );
+  }
+
+  function groupHTML(label, text, cards) {
+    return (
+      '<div class="sgroup"><h3 class="sgroup__label">' + label + "</h3>" +
+      '<p class="sgroup__text">' + text + "</p>" +
+      '<ul class="sgrid">' + cards + "</ul></div>"
+    );
+  }
+
+  function showcaseSkeletonHTML() {
+    var one = '<li class="pcard pcard--skeleton"><span class="skel skel--dark"></span></li>';
+    return (
+      '<div class="sgroup" aria-hidden="true"><span class="skel skel--dark skel--label"></span>' +
+      '<span class="skel skel--dark skel--text-2"></span>' +
+      '<ul class="sgrid">' + one + one + one + "</ul></div>"
     );
   }
 
@@ -613,6 +593,7 @@
     var current = "";
     var loaded = false;
     var allLink = $("[data-home-all]");
+    var summary = $("[data-home-summary]");
 
     var seg = createSeg($('[data-seg="home"]'), {
       onChange: function (v) {
@@ -622,7 +603,17 @@
     });
     seg.setCounts(countByModule(open));
 
-    /* o link do rodapé acompanha o filtro */
+    if (summary) {
+      var urgent = open.filter(function (c) {
+        return status(c).key === "prazo";
+      }).length;
+      summary.innerHTML =
+        "Agora são <strong>" + open.length + " chamadas abertas</strong>" +
+        (urgent ? ", e <strong>" + urgent + (urgent === 1 ? " encerra" : " encerram") + " nos próximos 10 dias</strong>" : "") +
+        '. As já encerradas ficam na <a href="desafios.html?status=todos">lista completa de desafios</a>.';
+    }
+
+    /* o botão do rodapé acompanha o filtro */
     function paintAll(n) {
       if (!allLink) return;
       var nome = current ? CI.modulos[current].nome : "";
@@ -657,17 +648,40 @@
         });
         return;
       }
-      var rest = items.slice(1, 5);
-      var side = rest.length
-        ? '<ol class="rows" aria-label="Próximos prazos">' + rest.map(rowHTML).join("") + "</ol>"
-        : '<div class="rows rows--note"><p>É a única chamada aberta em ' + esc(CI.modulos[current].nome) + " agora.</p>" +
-          '<a class="link-arrow" href="desafios.html?modulo=' + current + '&amp;status=todos">Ver chamadas encerradas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>' +
-          '<a class="link-arrow" href="#avisos">Receber avisos deste tema <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a></div>';
-      list.innerHTML = featureHTML(items[0]) + side;
+      var nomeMod = current ? CI.modulos[current].nome : "";
+      var listHref = current ? "desafios.html?modulo=" + current : "desafios.html";
+      var first = items.slice(0, 3);
+      var rest = items.slice(3);
+      var recent = rest
+        .slice()
+        .sort(function (a, b) {
+          return (a.publicadoDias || 0) - (b.publicadoDias || 0);
+        })
+        .slice(0, 3);
+      var more = function (n) {
+        return n < 3 ? moreCardHTML(listHref, current ? "Ver todos os desafios de " + esc(nomeMod) : "Ver todos os desafios") : "";
+      };
+      var html = groupHTML(
+        current && !rest.length ? "Chamadas abertas em " + esc(nomeMod) : "Encerram primeiro",
+        current && !rest.length ? "Do prazo mais próximo para o mais distante." : "As propostas destas chamadas fecham antes. Vale começar por elas.",
+        first.map(photoCardHTML).join("") + (rest.length ? "" : more(first.length))
+      );
+      if (recent.length) {
+        html += groupHTML(
+          "Publicadas recentemente",
+          "Chamadas abertas há menos tempo, com mais prazo para preparar a proposta.",
+          recent
+            .map(function (c, i) {
+              return photoCardHTML(c, i + 3);
+            })
+            .join("") + more(recent.length)
+        );
+      }
+      list.innerHTML = html;
     }
 
     list.setAttribute("aria-busy", "true");
-    list.innerHTML = boardSkeletonHTML();
+    list.innerHTML = showcaseSkeletonHTML();
     setTimeout(function () {
       loaded = true;
       list.removeAttribute("aria-busy");
@@ -737,7 +751,6 @@
         .map(function (it, i) {
           return (
             '<button class="faq__q" type="button" role="tab" id="faq-tab-' + i + '" aria-controls="faq-panel" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? 0 : -1) + '">' +
-            '<span class="faq__num" aria-hidden="true">' + String(i + 1).padStart(2, "0") + "</span>" +
             '<span class="faq__qicon" aria-hidden="true"><i class="ph-light ph-' + it.icon + '"></i></span>' +
             '<span class="faq__qtext">' + esc(it.q) + "</span>" +
             '<i class="ph-light ph-arrow-right faq__arrow" aria-hidden="true"></i></button>'
@@ -746,7 +759,7 @@
         .join("") +
       "</div>" +
       '<div class="faq__panel" role="tabpanel" id="faq-panel" aria-labelledby="faq-tab-0" tabindex="0">' +
-      '<div class="faq__bar"><span class="faq__count" data-faq-count></span>' +
+      '<div class="faq__bar">' +
       '<div class="faq__nav">' +
       '<button class="faq__step" type="button" data-step="-1" aria-label="Pergunta anterior"><i class="ph-light ph-arrow-left" aria-hidden="true"></i></button>' +
       '<button class="faq__step" type="button" data-step="1" aria-label="Próxima pergunta"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>' +
@@ -758,7 +771,6 @@
     var tabs = $$(".faq__q", faq);
     var panel = $('[role="tabpanel"]', faq);
     var body = $("[data-faq-body]", faq);
-    var count = $("[data-faq-count]", faq);
     function show(i, focus) {
       current = i;
       tabs.forEach(function (t, j) {
@@ -766,7 +778,6 @@
         t.tabIndex = i === j ? 0 : -1;
       });
       panel.setAttribute("aria-labelledby", tabs[i].id);
-      count.textContent = "Pergunta " + (i + 1) + " de " + n;
       body.innerHTML =
         '<div class="faq__answer">' +
         '<i class="faq__mark ph-light ph-' + items[i].icon + '" aria-hidden="true"></i>' +
@@ -1197,7 +1208,7 @@
     host.innerHTML =
       '<div class="container">' +
       '<header class="dhero dhero--' + s.key + '">' +
-      '<img class="dhero__photo" src="assets/media/modulo-' + c.modulo + '.webp" alt="" width="1200" height="800">' +
+      '<img class="dhero__photo" src="assets/media/desafios/' + c.id + '.webp" alt="" width="1200" height="800">' +
       '<div class="dhero__body">' +
       '<nav aria-label="Trilha de navegação"><ol class="crumbs">' +
       '<li><a href="index.html">Início</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +

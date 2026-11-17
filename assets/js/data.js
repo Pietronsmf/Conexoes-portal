@@ -66,10 +66,13 @@
   /*
     prazoDias: dias até o fim das inscrições (negativo = encerrado)
     publicadoDias: há quantos dias a chamada foi publicada
+    foco: posição horizontal (%) do assunto na foto, para recortes estreitos
+    foto: assets/media/desafios/<id>.webp (créditos no README)
   */
   CI.desafios = [
     {
       id: "inspecao-autonoma-cascos-fpso",
+      foco: 30,
       modulo: "startups",
       titulo: "Inspeção autônoma de cascos de FPSO com robôs submarinos",
       resumo: "Robôs ou sistemas embarcados que inspecionem cascos de unidades flutuantes sem parar a produção e sem depender de mergulho.",
@@ -87,6 +90,7 @@
     },
     {
       id: "polimeros-integridade-nao-metalicos",
+      foco: 29,
       modulo: "parcerias",
       titulo: "Materiais poliméricos para integridade de estruturas não metálicas",
       resumo: "Cooperação com universidades e ICTs para entender envelhecimento e falha de polímeros em sistemas submarinos, poços e transição energética.",
@@ -104,6 +108,7 @@
     },
     {
       id: "monitoramento-corrosao-tempo-real",
+      foco: 33,
       modulo: "startups",
       titulo: "Monitoramento de corrosão em tempo real em linhas de processo",
       resumo: "Sensores e análise de dados para acompanhar a taxa de corrosão em tubulações de refinarias sem interromper a operação.",
@@ -121,6 +126,7 @@
     },
     {
       id: "umbilicais-intervencao-pocos",
+      foco: 18,
       modulo: "parcerias",
       titulo: "Inspeção de umbilicais de serviço para intervenção em poços submarinos",
       resumo: "Métodos para avaliar a integridade de umbilicais usados em intervenções, antes e depois de cada operação.",
@@ -137,6 +143,7 @@
     },
     {
       id: "metano-sensoriamento-remoto",
+      foco: 50,
       modulo: "aquisicao",
       titulo: "Detecção e quantificação de emissões de metano por sensoriamento remoto",
       resumo: "Soluções prontas, com satélite, drone ou sensores fixos, para medir emissões de metano em ativos de produção.",
@@ -153,6 +160,7 @@
     },
     {
       id: "armazenamento-energia-plataformas",
+      foco: 18,
       modulo: "startups",
       titulo: "Armazenamento de energia para plataformas desabitadas",
       resumo: "Baterias ou outras tecnologias que garantam energia estável em instalações offshore não tripuladas.",
@@ -170,6 +178,7 @@
     },
     {
       id: "modelagem-geologica-ia",
+      foco: 50,
       modulo: "aquisicao",
       titulo: "Modelagem geológica assistida por IA para reservatórios do pré-sal",
       resumo: "Ferramentas de interpretação sísmica e modelagem que reduzam o tempo de construção de modelos de reservatório.",
@@ -186,6 +195,7 @@
     },
     {
       id: "captura-co2-baixa-pressao",
+      foco: 50,
       modulo: "encomendas",
       titulo: "Captura de CO₂ em correntes de baixa pressão",
       resumo: "Desenvolvimento de rota tecnológica para capturar CO₂ em correntes diluídas, sem solução comercial disponível hoje.",
@@ -203,6 +213,7 @@
     },
     {
       id: "drones-inspecao-tochas",
+      foco: 76,
       modulo: "startups",
       titulo: "Drones para inspeção de tochas e chaminés em operação",
       resumo: "Inspeção visual e térmica de estruturas altas sem andaimes e sem parar a unidade.",
@@ -219,6 +230,7 @@
     },
     {
       id: "catalisadores-alquilacao-aromaticos",
+      foco: 71,
       modulo: "encomendas",
       titulo: "Catalisadores para alquilação de aromáticos",
       resumo: "Encomenda tecnológica para catalisador com maior seletividade e vida útil no processo de alquilação.",
@@ -234,6 +246,7 @@
     },
     {
       id: "gemeo-digital-compressores",
+      foco: 7,
       modulo: "startups",
       titulo: "Gêmeo digital para manutenção preditiva de compressores",
       resumo: "Modelos que combinem física e dados de operação para prever falhas em compressores.",
@@ -249,6 +262,7 @@
     },
     {
       id: "licenciamento-sensor-fibra-optica",
+      foco: 50,
       modulo: "transferencia",
       titulo: "Licenciamento de tecnologia de sensoriamento por fibra óptica",
       resumo: "Oferta de licença de tecnologia desenvolvida pela Petrobras para monitoramento por fibra óptica.",
