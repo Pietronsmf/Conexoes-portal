@@ -86,7 +86,7 @@ Títulos de seção em negrito (32 px, cinza `#373737`), seguidos de uma barra a
 ## 4. Marca
 
 - **Assinatura:** logo oficial Petrobras horizontal (símbolo BR + PETROBRAS), fio vertical e o nome do programa em duas linhas, dentro do segmento branco da ilha do header. Tamanhos: 26 px de altura no header, 22 px no celular e 30 px no rodapé.
-- **Favicon:** símbolo BR sobre quadrado branco.
+- **Favicon:** o símbolo BR ocupando o ícone inteiro, sem moldura branca.
 - **Uso:** o logo aparece sempre sobre branco, nas cores originais. Não recolorir, não aplicar sombra, não colocar sobre foto.
 - **Origem e regras:** ver [`assets/brand/README.md`](assets/brand/README.md). Na versão final, usar os arquivos do manual de marca oficial.
 
@@ -158,6 +158,9 @@ Geist (texto e títulos) e Geist Mono (contadores), auto-hospedadas, licença OF
 | Vídeos | Hero e mar em loop vai-e-volta de 11 s a 0,8x; só tocam visíveis; os dois botões de pausa controlam ambos | Atmosfera e continuidade (WCAG 2.2.2) |
 | Ondas | Na saída do mar, espuma e borda na cor da página deslizam em sentidos opostos (19 s e 13 s); em retrato, uma onda também abre o mar | Passagem do mar para a página |
 | Seções e cards | Revelação no scroll, entrada escalonada após filtrar | Ritmo de leitura e mudança de estado |
+| Barra de prazo | Preenche até a fração do período que já passou, ao aparecer (1,1 s) | Mostrar o tempo restante sem precisar ler a data |
+| Estado "Últimos dias" | O ponto do selo pulsa devagar | Urgência, sem piscar o card inteiro |
+| Prévia do aviso | Troca com fade e leve subida ao mudar os temas | Ligar a escolha ao resultado |
 | Filtro segmentado | Recorte `clip-path` desliza até o ativo | Continuidade |
 
 As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`). Com `prefers-reduced-motion` ou economia de dados, os vídeos não iniciam (o botão passa a "reproduzir"), as ondas ficam paradas e o marquee vira lista.
@@ -175,8 +178,19 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
   - Em retrato, o vídeo vira um bloco no topo que escurece até a cor do mar; o texto fica abaixo, sobre o fundo escuro, e as linhas ficam no canto do vídeo.
 - **Mar contínuo (busca e números):** a seção sobe 180 px por baixo do hero e o vídeo do mar entra em fusão com o mar do próprio hero, sem emenda. O mar escurece aos poucos até a frase, que fica na frente em branco, com os números sublinhados em amarelo. A busca continua sobre a linha d'água. Ondas na cor da página fecham a seção. Em retrato, o mar começa com uma onda.
 - **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque. Cada módulo tem uma foto que mostra o seu público: equipe de startup com braço robótico, laboratório (universidades e ICTs), torre de refinaria (problemas da operação), técnico em campo (soluções prontas) e peças impressas em 3D (tecnologia que sai para o mercado). Cada foto tem enquadramento próprio para o desktop e para cards estreitos (`--pos` e `--pos-sm`).
-- **Card de desafio:** moldura dupla, status, título com barra amarela, prazo e contagem regressiva.
-- **Outros:** filtro segmentado, estados (skeleton, vazio, erro), dúvidas em abas, avisos por e-mail em duas colunas, formulários com validação (CNPJ numérico e alfanumérico), painel do desafio com barra fixa no celular, toast.
+- **Card de desafio (lista, detalhe):** moldura dupla; módulo com ícone em bloco verde claro e selo de estado com ponto; título com barra amarela; resumo em 2 linhas; tags; rodapé em faixa cinza com a contagem regressiva em Geist Mono, a data e a barra de prazo (verde, ou âmbar nos últimos dias).
+- **Desafios na home:**
+  - O que encerra primeiro vira o destaque, num painel verde profundo da marca: título grande, contagem de dias em destaque, barra amarela do prazo e "Enviar proposta".
+  - Os próximos 4 ficam numa lista compacta, com o número de dias à direita, para comparar prazos de relance.
+  - O filtro por módulo vale para os dois. O link do rodapé acompanha o filtro ("Ver os 4 desafios de Startups").
+  - Com um só desafio no módulo, o lado direito explica e oferece as chamadas encerradas e os avisos. Sem nenhum, aparece o estado vazio.
+  - O carregamento usa skeletons no formato do destaque e das linhas.
+- **Avisos por e-mail:**
+  - Painel verde profundo com as linhas da marca do hero.
+  - Formulário num cartão branco: e-mail, botão e os temas em chips, com marcação múltipla.
+  - Ao lado, uma prévia do aviso: um e-mail com um desafio real do tema escolhido, que muda junto com os chips.
+  - O sucesso confirma o e-mail e os temas ("sobre Robótica e Corrosão").
+- **Outros:** filtro segmentado, estados (skeleton, vazio, erro), dúvidas em abas, formulários com validação (CNPJ numérico e alfanumérico), painel do desafio com barra fixa no celular, toast.
 
 ## 8. Acessibilidade
 

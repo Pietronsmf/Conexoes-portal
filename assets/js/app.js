@@ -87,28 +87,123 @@
   }
   CI.status = status;
 
+  /* Fração do período de inscrição que já passou (barra de prazo) */
+  function progress(c) {
+    if (c.prazoDias < 0) return 1;
+    var pub = c.publicadoDias || 0;
+    var total = pub + c.prazoDias;
+    var p = total > 0 ? pub / total : 1;
+    return Math.max(0.04, Math.min(1, p)).toFixed(3);
+  }
+
+  /* Contagem regressiva: número grande + unidade */
+  function countdown(c) {
+    var d = c.prazoDias;
+    if (d < 0) return null;
+    if (d === 0) return { num: "Hoje", unit: "último<br>dia", long: "último dia para<br>enviar a proposta", short: "último dia" };
+    if (d === 1) return { num: "1", unit: "dia<br>restante", long: "dia para enviar<br>a proposta", short: "dia" };
+    return { num: String(d), unit: "dias<br>restantes", long: "dias para enviar<br>a proposta", short: "dias" };
+  }
+
+  function meterHTML(extra) {
+    return '<span class="meter' + (extra || "") + '" aria-hidden="true"><span class="meter__bar"></span></span>';
+  }
+
+  function proposalHref(c) {
+    return "entrar.html?next=" + encodeURIComponent("desafio.html?id=" + c.id) + "&acao=proposta";
+  }
+
   /* ---------- Componentes renderizados ---------- */
   function cardHTML(c, i) {
     var m = CI.modulos[c.modulo];
     var s = status(c);
     var prazo = addDays(c.prazoDias);
-    var foot =
+    var cd = countdown(c);
+    var when =
       s.key === "encerrado"
-        ? '<span class="deadline__label">Encerrado em</span><time class="deadline__value" datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + "</time>"
-        : '<span class="deadline__label">Propostas até</span><span class="deadline__value"><time datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + '</time> <span class="deadline__left">· ' + s.left + "</span></span>";
+        ? '<div class="card__when"><span class="deadline__label">Encerrado em <time datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + "</time></span>" + meterHTML() + "</div>"
+        : '<p class="countdown"><span class="countdown__num">' + cd.num + '</span><span class="countdown__unit">' + cd.unit + "</span></p>" +
+          '<div class="card__when"><span class="deadline__label">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + "</time></span>" + meterHTML() + "</div>";
     return (
-      '<article class="card card--' + s.key + ' is-new" style="--i:' + (i || 0) + '">' +
+      '<article class="card card--' + s.key + ' is-new" style="--i:' + (i || 0) + ";--p:" + progress(c) + '">' +
       '<div class="shell"><div class="core">' +
       '<div class="card__top">' +
-      '<span class="card__module"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i>' + esc(m.nome) + "</span>" +
+      '<span class="card__module"><span class="card__icon"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i></span>' + esc(m.nome) + "</span>" +
       '<span class="status status--' + s.key + '">' + s.label + "</span>" +
       "</div>" +
       '<h3 class="card__title"><a href="desafio.html?id=' + encodeURIComponent(c.id) + '">' + esc(c.titulo) + "</a></h3>" +
       '<p class="card__summary">' + esc(c.resumo) + "</p>" +
       '<div class="card__tags"><span class="tag">' + esc(c.area) + '</span><span class="tag">' + esc(c.tema) + "</span></div>" +
-      '<div class="card__foot"><div class="deadline">' + foot + "</div>" +
+      '<div class="card__foot">' + when +
       '<span class="card__go" aria-hidden="true"><i class="ph-light ph-arrow-right"></i></span></div>' +
       "</div></div></article>"
+    );
+  }
+
+  /* Home: o desafio que encerra primeiro ganha destaque */
+  function featureHTML(c) {
+    var m = CI.modulos[c.modulo];
+    var s = status(c);
+    var prazo = addDays(c.prazoDias);
+    var cd = countdown(c);
+    return (
+      '<article class="feature feature--' + s.key + ' is-new" style="--p:' + progress(c) + '" data-item>' +
+      '<div class="feature__top">' +
+      '<span class="feature__module"><span class="feature__icon"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i></span>' + esc(m.nome) + "</span>" +
+      '<span class="status status--' + s.key + '">' + s.label + "</span>" +
+      "</div>" +
+      '<p class="feature__flag"><i class="ph-light ph-hourglass-medium" aria-hidden="true"></i>Encerra primeiro</p>' +
+      '<h3 class="feature__title"><a href="desafio.html?id=' + encodeURIComponent(c.id) + '">' + esc(c.titulo) + "</a></h3>" +
+      '<p class="feature__summary">' + esc(c.resumo) + "</p>" +
+      '<div class="feature__tags"><span class="tag">' + esc(c.area) + '</span><span class="tag">' + esc(c.tema) + "</span></div>" +
+      '<div class="feature__foot">' +
+      '<p class="countdown countdown--lg"><span class="countdown__num">' + cd.num + '</span><span class="countdown__unit">' + cd.long + "</span></p>" +
+      meterHTML(" meter--lg") +
+      '<div class="feature__actions">' +
+      '<p class="feature__date">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time></p>" +
+      '<a class="btn btn--light btn--icon feature__cta" href="' + proposalHref(c) + '"><span class="btn__label">Enviar proposta</span><span class="btn__icon"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></a>' +
+      "</div></div></article>"
+    );
+  }
+
+  /* Home: os próximos, em lista compacta para comparar prazos */
+  function rowHTML(c, i) {
+    var m = CI.modulos[c.modulo];
+    var s = status(c);
+    var prazo = addDays(c.prazoDias);
+    var cd = countdown(c);
+    return (
+      '<li class="row row--' + s.key + ' is-new" style="--i:' + (i || 0) + ";--p:" + progress(c) + '" data-item>' +
+      /* nome acessível em frase, em vez dos pedaços colados */
+      '<a class="row__link" href="desafio.html?id=' + encodeURIComponent(c.id) + '" aria-label="' +
+      esc(c.titulo + ". " + m.nome + ", " + s.label.toLowerCase() + ". Propostas até " + fmtShort(prazo) + ", " + s.left.toLowerCase() + ".") + '">' +
+      '<span class="row__icon" aria-hidden="true"><i class="ph-light ph-' + m.icone + '"></i></span>' +
+      '<span class="row__main">' +
+      '<span class="row__meta">' + esc(m.nome) + '<span class="status status--' + s.key + ' status--sm">' + s.label + "</span></span>" +
+      '<span class="row__title">' + esc(c.titulo) + "</span>" +
+      '<span class="row__date">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtShort(prazo) + "</time></span>" +
+      "</span>" +
+      '<span class="row__time"><span class="row__num">' + cd.num + '</span><span class="row__unit">' + cd.short + "</span>" + meterHTML() + "</span>" +
+      '<span class="row__go" aria-hidden="true"><i class="ph-light ph-arrow-right"></i></span>' +
+      "</a></li>"
+    );
+  }
+
+  function boardSkeletonHTML() {
+    var row =
+      '<li class="row row--skeleton"><div class="row__link">' +
+      '<span class="skel skel--icon"></span>' +
+      '<span class="row__main"><span class="skel skel--text-2"></span><span class="skel skel--title"></span></span>' +
+      '<span class="skel skel--num"></span>' +
+      "</div></li>";
+    return (
+      '<div class="feature feature--skeleton" aria-hidden="true">' +
+      '<span class="skel skel--dark skel--pill"></span>' +
+      '<span class="skel skel--dark skel--title"></span><span class="skel skel--dark skel--title-2"></span>' +
+      '<span class="skel skel--dark skel--text"></span><span class="skel skel--dark skel--text-2"></span>' +
+      '<span class="skel skel--dark skel--foot"></span>' +
+      "</div>" +
+      '<ol class="rows" aria-hidden="true">' + row + row + row + row + "</ol>"
     );
   }
 
@@ -118,7 +213,7 @@
       '<div class="skel skel--row"><span class="skel skel--pill"></span><span class="skel skel--pill-sm"></span></div>' +
       '<div class="skel skel--title"></div><div class="skel skel--title-2"></div>' +
       '<div class="skel skel--text"></div><div class="skel skel--text-2"></div>' +
-      '<div class="skel skel--foot"></div>' +
+      '<div class="skel-foot"><span class="skel skel--num"></span><span class="skel skel--text"></span></div>' +
       "</div></div></div>";
     var out = "";
     for (var i = 0; i < n; i++) out += one;
@@ -517,6 +612,7 @@
       .sort(byDeadline);
     var current = "";
     var loaded = false;
+    var allLink = $("[data-home-all]");
 
     var seg = createSeg($('[data-seg="home"]'), {
       onChange: function (v) {
@@ -526,13 +622,29 @@
     });
     seg.setCounts(countByModule(open));
 
+    /* o link do rodapé acompanha o filtro */
+    function paintAll(n) {
+      if (!allLink) return;
+      var nome = current ? CI.modulos[current].nome : "";
+      var label = !n
+        ? "Ver todos os desafios"
+        : current
+        ? n === 1
+          ? "Ver o desafio de " + nome
+          : "Ver os " + n + " desafios de " + nome
+        : n === 1
+        ? "Ver o desafio aberto"
+        : "Ver os " + n + " desafios abertos";
+      allLink.firstChild.nodeValue = label + " ";
+      allLink.href = current && n ? "desafios.html?modulo=" + current : "desafios.html";
+    }
+
     function render() {
       if (!loaded) return;
-      var items = open
-        .filter(function (c) {
-          return !current || c.modulo === current;
-        })
-        .slice(0, 6);
+      var items = open.filter(function (c) {
+        return !current || c.modulo === current;
+      });
+      paintAll(items.length);
       if (!items.length) {
         var nome = CI.modulos[current].nome;
         list.innerHTML = stateHTML({
@@ -545,11 +657,17 @@
         });
         return;
       }
-      list.innerHTML = items.map(cardHTML).join("");
+      var rest = items.slice(1, 5);
+      var side = rest.length
+        ? '<ol class="rows" aria-label="Próximos prazos">' + rest.map(rowHTML).join("") + "</ol>"
+        : '<div class="rows rows--note"><p>É a única chamada aberta em ' + esc(CI.modulos[current].nome) + " agora.</p>" +
+          '<a class="link-arrow" href="desafios.html?modulo=' + current + '&amp;status=todos">Ver chamadas encerradas <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>' +
+          '<a class="link-arrow" href="#avisos">Receber avisos deste tema <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a></div>';
+      list.innerHTML = featureHTML(items[0]) + side;
     }
 
     list.setAttribute("aria-busy", "true");
-    list.innerHTML = skeletonHTML(6);
+    list.innerHTML = boardSkeletonHTML();
     setTimeout(function () {
       loaded = true;
       list.removeAttribute("aria-busy");
@@ -664,6 +782,41 @@
     var email = form.elements.email;
     var success = $("[data-newsletter-success]");
     var btn = $('[type="submit"]', form);
+    var mail = $("[data-mail]");
+
+    function chosen() {
+      return $$('input[name="tema"]:checked', form).map(function (i) {
+        return i.value;
+      });
+    }
+    function joinPt(a) {
+      return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " e " + a[a.length - 1];
+    }
+    /* A prévia mostra um aviso real do tema escolhido (ou o próximo prazo, sem escolha) */
+    function paintPreview(animate) {
+      if (!mail) return;
+      var temas = chosen();
+      var pick = CI.desafios
+        .filter(function (c) {
+          return c.prazoDias >= 0 && (!temas.length || temas.indexOf(c.tema) !== -1);
+        })
+        .sort(byDeadline)[0];
+      $("[data-mail-subject]", mail).textContent = pick ? "Novo desafio aberto em " + pick.tema : "Avisos de " + temas[0];
+      $("[data-mail-title]", mail).textContent = pick ? pick.titulo : "Quando abrir uma chamada neste tema, ela chega assim: resumo, prazo e link.";
+      $("[data-mail-meta]", mail).textContent = pick
+        ? CI.modulos[pick.modulo].nome + " · propostas até " + fmtShort(addDays(pick.prazoDias))
+        : "Nenhuma chamada aberta neste tema agora";
+      if (animate && !reduceMotion.matches) {
+        mail.classList.remove("is-swap");
+        void mail.offsetWidth;
+        mail.classList.add("is-swap");
+      }
+    }
+
+    form.addEventListener("change", function (e) {
+      if (e.target.name === "tema") paintPreview(true);
+    });
+    paintPreview(false);
 
     email.addEventListener("input", function () {
       if (email.getAttribute("aria-invalid") === "true") setFieldError(email, emailError(email.value));
@@ -681,8 +834,10 @@
       }
       setBusy(btn, "Enviando…");
       setTimeout(function () {
+        var temas = chosen();
         setBusy(btn, false);
         $("[data-success-email]", success).textContent = email.value.trim();
+        $("[data-success-topics]", success).textContent = temas.length ? "sobre " + joinPt(temas) : "sobre todos os temas";
         form.hidden = true;
         success.hidden = false;
         success.focus();
@@ -693,6 +848,7 @@
       form.hidden = false;
       form.reset();
       setFieldError(email, "");
+      paintPreview(false);
       email.focus();
     });
   }

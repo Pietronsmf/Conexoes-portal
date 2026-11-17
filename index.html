@@ -253,11 +253,11 @@
           </div>
         </div>
 
-        <div class="cards" data-home-list aria-live="polite"></div>
+        <div class="board" data-home-list aria-live="polite"></div>
 
         <div class="section-foot">
           <p class="small">Desafios e prazos ilustrativos, criados para este protótipo.</p>
-          <a class="link-arrow" href="desafios.html">Ver desafios abertos <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+          <a class="link-arrow" href="desafios.html" data-home-all>Ver desafios abertos <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
         </div>
       </div>
     </section>
@@ -365,48 +365,63 @@
     <!-- Avisos por e-mail -->
     <section class="section section--flush-top" id="avisos" aria-labelledby="avisos-title">
       <div class="container">
-        <div class="shell cta reveal">
-          <div class="core cta__core">
-            <div class="cta__content">
-              <h2 class="title-xl" id="avisos-title">Receba os próximos desafios por e-mail</h2>
-              <p class="cta__text">Avisamos quando abrir uma chamada no seu tema. Você pode cancelar quando quiser.</p>
+        <div class="cta reveal">
+          <svg class="cta__lines" viewBox="0 0 1600 900" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false"><path class="cta__line cta__line--brand" d="M1650 101L1220 931"/><path class="cta__line cta__line--light" d="M1641 230L1465.4 606.6Q1440 661 1383.1 679.9L626.7 931"/></svg>
+          <div class="cta__content">
+            <h2 class="title-xl" id="avisos-title">Receba os próximos desafios por e-mail</h2>
+            <p class="cta__text">Escolha os temas da sua equipe. Quando abrir uma chamada, você recebe o resumo, o prazo e o link para enviar a proposta.</p>
+            <div class="cta__panel">
               <form class="cta__form" data-newsletter novalidate>
-                <div class="field">
-                  <label class="field__label" for="nl-email">E-mail</label>
-                  <input class="input" id="nl-email" name="email" type="email" autocomplete="email" placeholder="nome@empresa.com.br" aria-describedby="nl-email-error">
-                  <p class="field__error" id="nl-email-error" hidden></p>
-                </div>
-                <div class="field">
-                  <label class="field__label" for="nl-tema">Tema de interesse</label>
-                  <div class="control control--select">
-                    <select class="select" id="nl-tema" name="tema">
-                      <option value="">Todos os temas</option>
-                      <option>Tecnologias digitais</option>
-                      <option>Robótica</option>
-                      <option>Inspeção</option>
-                      <option>Armazenamento e geração de energia</option>
-                      <option>Redução de carbono</option>
-                      <option>Modelagem geológica</option>
-                      <option>Corrosão</option>
-                    </select>
-                    <i class="ph-light ph-caret-down" aria-hidden="true"></i>
+                <div class="cta__row">
+                  <div class="field">
+                    <label class="field__label" for="nl-email">E-mail</label>
+                    <input class="input" id="nl-email" name="email" type="email" autocomplete="email" placeholder="nome@empresa.com.br" aria-describedby="nl-email-error">
+                    <p class="field__error" id="nl-email-error" hidden></p>
                   </div>
+                  <button class="btn btn--primary btn--icon" type="submit">
+                    <span class="btn__label">Receber avisos</span>
+                    <span class="btn__icon"><i class="ph-light ph-envelope-simple" aria-hidden="true"></i></span>
+                  </button>
                 </div>
-                <button class="btn btn--primary btn--icon" type="submit">
-                  <span class="btn__label">Receber avisos</span>
-                  <span class="btn__icon"><i class="ph-light ph-envelope-simple" aria-hidden="true"></i></span>
-                </button>
+                <fieldset class="topics">
+                  <legend class="topics__legend">Temas de interesse <span class="topics__hint">Sem escolha, avisamos de todos.</span></legend>
+                  <div class="topics__list">
+                  <label class="topic"><input type="checkbox" name="tema" value="Tecnologias digitais"><span><i class="ph-light ph-cpu" aria-hidden="true"></i>Tecnologias digitais</span></label>
+                  <label class="topic"><input type="checkbox" name="tema" value="Robótica"><span><i class="ph-light ph-robot" aria-hidden="true"></i>Robótica</span></label>
+                  <label class="topic"><input type="checkbox" name="tema" value="Inspeção"><span><i class="ph-light ph-scan" aria-hidden="true"></i>Inspeção</span></label>
+                  <label class="topic"><input type="checkbox" name="tema" value="Armazenamento e geração de energia"><span><i class="ph-light ph-battery-charging" aria-hidden="true"></i>Armazenamento e geração de energia</span></label>
+                  <label class="topic"><input type="checkbox" name="tema" value="Redução de carbono"><span><i class="ph-light ph-leaf" aria-hidden="true"></i>Redução de carbono</span></label>
+                  <label class="topic"><input type="checkbox" name="tema" value="Modelagem geológica"><span><i class="ph-light ph-mountains" aria-hidden="true"></i>Modelagem geológica</span></label>
+                  <label class="topic"><input type="checkbox" name="tema" value="Corrosão"><span><i class="ph-light ph-drop-half-bottom" aria-hidden="true"></i>Corrosão</span></label>
+                  </div>
+                </fieldset>
               </form>
               <div class="cta__success" data-newsletter-success role="status" tabindex="-1" hidden>
-                <i class="ph-light ph-check" aria-hidden="true"></i>
+                <span class="cta__success-icon"><i class="ph-light ph-check" aria-hidden="true"></i></span>
                 <div>
-                  <p><strong>Pronto.</strong> Os próximos desafios vão chegar em <span data-success-email></span>.</p>
+                  <p><strong>Pronto.</strong> Vamos avisar em <span data-success-email></span> <span data-success-topics></span>.</p>
                   <p>Protótipo: nenhum e-mail foi cadastrado de verdade.</p>
                   <button type="button" data-newsletter-reset>Usar outro e-mail</button>
                 </div>
               </div>
             </div>
-            <div class="cta__media"><img src="assets/media/horizon-right.webp" alt="" width="1300" height="620" loading="lazy"></div>
+            <p class="cta__note"><i class="ph-light ph-lock-simple" aria-hidden="true"></i>Um e-mail por chamada aberta. Você cancela com um clique.</p>
+          </div>
+          <div class="cta__preview" aria-hidden="true">
+            <p class="cta__preview-label"><i class="ph-light ph-bell-ringing"></i>Prévia do aviso</p>
+            <div class="mail-stack">
+              <div class="mail mail--back"></div>
+              <div class="mail" data-mail>
+                <div class="mail__head">
+                  <img src="assets/brand/petrobras-simbolo.svg" alt="" width="32" height="32">
+                  <div><p class="mail__from">Conexões para Inovação</p><p class="mail__to">para você · agora</p></div>
+                </div>
+                <p class="mail__subject" data-mail-subject>Novo desafio aberto</p>
+                <p class="mail__title" data-mail-title>Inspeção autônoma de cascos de FPSO com robôs submarinos</p>
+                <p class="mail__meta" data-mail-meta>Startups</p>
+                <span class="mail__btn">Ver o desafio <i class="ph-light ph-arrow-right"></i></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

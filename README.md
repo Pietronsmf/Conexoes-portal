@@ -20,7 +20,7 @@ Depois abra `http://localhost:8000`.
 
 | Página | Arquivo | O que mostra |
 | --- | --- | --- |
-| Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, desafios abertos, jornada, temas, dúvidas e avisos por e-mail |
+| Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, desafios abertos (destaque com contagem regressiva e lista dos próximos prazos), jornada, temas, dúvidas e avisos por e-mail com escolha de temas e prévia do aviso |
 | Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
 | Detalhe | `desafio.html?id=…` | Contexto, o que buscamos, critérios, cronograma, documentos e painel de inscrição |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
@@ -30,6 +30,8 @@ Depois abra `http://localhost:8000`.
 
 - Carregando: qualquer lista mostra skeleton por 650 ms (simula a API).
 - Vazio: [`desafios.html?q=xyz`](desafios.html?q=xyz), ou o filtro "Transferência" na home.
+- Um só desafio no módulo: filtro "Encomendas" na home (destaque e, ao lado, as chamadas encerradas e os avisos).
+- Avisos por e-mail: marque temas e veja a prévia mudar; o sucesso lista os temas escolhidos.
 - Erro: [`desafios.html?simular=erro`](desafios.html?simular=erro), depois "Tentar novamente".
 - Não encontrado: [`desafio.html?id=nao-existe`](desafio.html?id=nao-existe).
 - Inscrição a partir de um desafio: "Enviar proposta" leva a `entrar.html?…&acao=proposta`.
