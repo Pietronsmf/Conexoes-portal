@@ -120,7 +120,7 @@ Contraste medido (WCAG):
   - Header sobre o vídeo: menu acima de 7,8:1, barra de serviços acima de 13:1.
   - Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
   - Cards de foto dos desafios (todas as fotos, de 390 a 1440 px, com os filtros): módulo acima de 5,3:1, dias e data acima de 6,4:1, título acima de 6,9:1.
-  - Textos da vitrine sobre a foto de fundo (10 posições de rolagem, de 390 a 1440 px): abertura acima de 5,3:1, descrição dos grupos acima de 6,3:1, rótulos acima de 9:1, nota final acima de 5,4:1.
+  - Textos da vitrine sobre a foto de fundo (10 posições de rolagem, de 390 a 1440 px): abertura acima de 5,6:1, descrição dos grupos acima de 6,2:1, rótulos acima de 8:1, nota final acima de 5,2:1.
 
 ### Tipografia
 
@@ -184,7 +184,7 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
 - **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque. Cada módulo tem uma foto que mostra o seu público: equipe de startup com braço robótico, laboratório (universidades e ICTs), torre de refinaria (problemas da operação), técnico em campo (soluções prontas) e peças impressas em 3D (tecnologia que sai para o mercado). Cada foto tem enquadramento próprio para o desktop e para cards estreitos (`--pos` e `--pos-sm`).
 - **Card de desafio (lista, detalhe):** moldura dupla; módulo com ícone em bloco verde claro e selo de estado com ponto; título com barra amarela; resumo em 2 linhas; tags; rodapé em faixa cinza com a contagem regressiva em Geist Mono, a data e a barra de prazo (verde, ou âmbar nos últimos dias).
 - **Desafios na home (vitrine):** inspirada nos cards de tecnologia do petrobras.com.br.
-  - Fundo: vista aérea de uma plataforma no mar azul, levemente desfocada e com véu azul-escuro. A foto fica presa à tela (sticky) enquanto o conteúdo rola por cima e para no fim da seção.
+  - Fundo: vista aérea de uma plataforma no mar, nas cores do primeiro bloco da página. Um mapa de gradiente feito com a paleta do vídeo de abertura deixa o mar verde-acinzentado e as estruturas com a luz quente do pôr do sol. A foto é levemente desfocada e leva o mesmo véu do mar contínuo. Ela fica presa à tela (sticky) enquanto o conteúdo rola por cima e para no fim da seção.
   - Entrada e saída suaves: degradês longos e com curva (cerca de 300 px no desktop) fazem a página clara se dissolver na foto e voltar ao claro no fim.
   - Título à esquerda e texto à direita, com o resumo do momento ("9 chamadas abertas, e 2 encerram nos próximos 10 dias") e o link amarelo para a lista completa.
   - Os desafios ficam em grupos com rótulo em caixa alta e uma frase: "Encerram primeiro" (os 3 prazos mais próximos) e "Publicadas recentemente" (os 3 mais novos entre os demais).

@@ -2310,7 +2310,7 @@ html:not(.js) .statement__text strong::after {
   position: relative;
   isolation: isolate;
   color: #ffffff;
-  background: #06131d;
+  background: #0b1a1b;
   view-timeline-name: --showcase;
   --focus: #ffffff;
 }
@@ -2328,24 +2328,26 @@ html:not(.js) .statement__text strong::after {
   height: 100lvh;
   overflow: hidden;
 }
-/* vista aérea do mar com a plataforma: levemente desfocada, para os cards ficarem em primeiro plano */
+/* vista aérea do mar com a plataforma, nas cores do hero (mapa de gradiente feito com a paleta
+   do vídeo de abertura: mar verde-acinzentado e luz quente); levemente desfocada, para os cards
+   ficarem em primeiro plano */
 .showcase__photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 55% 50%;
   transform-origin: 50% 50%;
-  filter: blur(2px) saturate(1.08);
+  filter: blur(2px);
 }
-/* véu azul-escuro para leitura: mais forte à esquerda (onde começam os textos) e nas bordas */
+/* mesmo véu do mar contínuo (--sea-scrim), mais forte à esquerda, onde começam os textos */
 .showcase__sticky::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(120% 85% at 60% 50%, rgb(3 14 24 / 0) 30%, rgb(3 14 24 / 0.5) 100%),
-    linear-gradient(90deg, rgb(3 14 24 / 0.5) 0%, rgb(3 14 24 / 0.2) 55%, rgb(3 14 24 / 0.1) 100%),
-    linear-gradient(180deg, rgb(3 14 24 / 0.55) 0%, rgb(3 14 24 / 0.42) 45%, rgb(3 14 24 / 0.6) 100%);
+    radial-gradient(120% 85% at 60% 50%, rgb(4 24 26 / 0) 30%, rgb(4 24 26 / 0.4) 100%),
+    linear-gradient(90deg, rgb(4 24 26 / 0.4) 0%, rgb(4 24 26 / 0.16) 55%, rgb(4 24 26 / 0.08) 100%),
+    linear-gradient(180deg, rgb(4 24 26 / 0.68) 0%, rgb(4 24 26 / 0.6) 45%, rgb(4 24 26 / 0.7) 100%);
 }
 /* Entrada e saída suaves: a página clara se dissolve na foto, num degradê com curva */
 .showcase::before,
