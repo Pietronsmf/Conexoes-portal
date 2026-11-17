@@ -120,6 +120,7 @@ Contraste medido (WCAG):
   - Header sobre o vídeo: menu acima de 7,8:1, barra de serviços acima de 13:1.
   - Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
   - Cards de foto dos desafios (todas as fotos, de 390 a 1440 px, com os filtros): módulo acima de 5,3:1, dias e data acima de 6,4:1, título acima de 6,9:1.
+  - Textos da vitrine sobre a foto de fundo (10 posições de rolagem, de 390 a 1440 px): abertura acima de 5,3:1, descrição dos grupos acima de 6,3:1, rótulos acima de 9:1, nota final acima de 5,4:1.
 
 ### Tipografia
 
@@ -156,6 +157,8 @@ Geist (texto e títulos) e Geist Mono (contadores), auto-hospedadas, licença OF
 | Menu | Barra amarela cresce no hover e marca a página atual | Localização |
 | Hero | Fade + subida + desfoque, escalonado | Hierarquia na primeira dobra |
 | Linhas da marca | Entram uma vez, de cima para baixo (recorte com `clip-path`), depois do texto | Assinatura da marca sem disputar com o título |
+| Fundo da vitrine | Foto presa à tela (sticky) e leve aproximação ligada à rolagem (`animation-timeline`, onde o navegador suporta) | Profundidade: os cards passam por cima do mar |
+| Cards da vitrine | Sobem e aparecem quando entram na tela, em sequência por coluna (90 ms) | Ritmo de leitura, também ao trocar o filtro |
 | Vídeos | Hero e mar em loop vai-e-volta de 11 s a 0,8x; só tocam visíveis; os dois botões de pausa controlam ambos | Atmosfera e continuidade (WCAG 2.2.2) |
 | Ondas | Na saída do mar, espuma e borda na cor da página deslizam em sentidos opostos (19 s e 13 s); em retrato, uma onda também abre o mar | Passagem do mar para a página |
 | Seções e cards | Revelação no scroll, entrada escalonada após filtrar | Ritmo de leitura e mudança de estado |
@@ -181,7 +184,9 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
 - **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque. Cada módulo tem uma foto que mostra o seu público: equipe de startup com braço robótico, laboratório (universidades e ICTs), torre de refinaria (problemas da operação), técnico em campo (soluções prontas) e peças impressas em 3D (tecnologia que sai para o mercado). Cada foto tem enquadramento próprio para o desktop e para cards estreitos (`--pos` e `--pos-sm`).
 - **Card de desafio (lista, detalhe):** moldura dupla; módulo com ícone em bloco verde claro e selo de estado com ponto; título com barra amarela; resumo em 2 linhas; tags; rodapé em faixa cinza com a contagem regressiva em Geist Mono, a data e a barra de prazo (verde, ou âmbar nos últimos dias).
 - **Desafios na home (vitrine):** inspirada nos cards de tecnologia do petrobras.com.br.
-  - Seção escura, com uma plataforma em cinza bem discreta no canto. Título à esquerda e texto à direita, com o resumo do momento ("9 chamadas abertas, e 2 encerram nos próximos 10 dias") e o link amarelo para a lista completa.
+  - Fundo: vista aérea de uma plataforma no mar azul, levemente desfocada e com véu azul-escuro. A foto fica presa à tela (sticky) enquanto o conteúdo rola por cima e para no fim da seção.
+  - Entrada e saída suaves: degradês longos e com curva (cerca de 300 px no desktop) fazem a página clara se dissolver na foto e voltar ao claro no fim.
+  - Título à esquerda e texto à direita, com o resumo do momento ("9 chamadas abertas, e 2 encerram nos próximos 10 dias") e o link amarelo para a lista completa.
   - Os desafios ficam em grupos com rótulo em caixa alta e uma frase: "Encerram primeiro" (os 3 prazos mais próximos) e "Publicadas recentemente" (os 3 mais novos entre os demais).
   - Card de foto: cada desafio tem a sua foto, inteira no alto e coberta por um degradê verde embaixo. Por cima vêm o módulo em caixa alta, o título em negrito, os dias e a data, e o botão branco "Ver desafio". Nos últimos dias, aparece um selo âmbar no canto. O verde atrás do texto é preso ao bloco de texto, então a leitura não depende da foto nem da altura do card.
   - O filtro por módulo vale para os grupos. Com menos de 3 desafios num grupo, o espaço vira um atalho para a lista do módulo. Sem nenhum, aparece o estado vazio.

@@ -231,7 +231,13 @@
 
     <!-- Desafios abertos -->
     <section class="showcase" id="desafios" aria-labelledby="desafios-title">
-      <div class="showcase__bg" aria-hidden="true"></div>
+      <!-- foto fixa no fundo enquanto o conteúdo da seção rola por cima -->
+      <div class="showcase__bg" aria-hidden="true">
+        <div class="showcase__sticky">
+          <img class="showcase__photo" src="assets/media/vitrine-1920.webp" srcset="assets/media/vitrine-1080.webp 1080w, assets/media/vitrine-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="1280" loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="showcase__inner">
       <div class="container">
         <header class="showcase__head reveal">
           <h2 class="title-xl" id="desafios-title">Desafios com inscrições abertas</h2>
@@ -263,6 +269,7 @@
           <a class="btn-outline" href="desafios.html" data-home-all>Ver desafios abertos <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
           <p class="showcase__note">Desafios e prazos ilustrativos, criados para este protótipo.</p>
         </div>
+      </div>
       </div>
     </section>
 

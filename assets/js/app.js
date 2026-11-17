@@ -146,7 +146,7 @@
     var s = status(c);
     var prazo = addDays(c.prazoDias);
     return (
-      '<li class="pcard pcard--' + s.key + ' is-new" style="--i:' + (i || 0) + '" data-item>' +
+      '<li class="pcard pcard--' + s.key + '" style="--col:' + ((i || 0) % 3) + '" data-item>' +
       '<a class="pcard__link" href="desafio.html?id=' + encodeURIComponent(c.id) + '" aria-label="' +
       esc(c.titulo + ". " + m.nome + ", " + s.label.toLowerCase() + ". Propostas até " + fmtShort(prazo) + ", " + s.left.toLowerCase() + ".") + '">' +
       '<img class="pcard__img" src="assets/media/desafios/' + c.id + '.webp" alt="" width="1200" height="800" loading="lazy" style="object-position:' + (c.foco == null ? 50 : c.foco) + '% 50%">' +
@@ -163,7 +163,7 @@
   /* Quando um grupo tem menos de 3 desafios, o espaço vira um atalho para a lista */
   function moreCardHTML(href, label) {
     return (
-      '<li class="pcard pcard--more"><a class="pcard__link" href="' + href + '">' +
+      '<li class="pcard pcard--more" style="--col:2"><a class="pcard__link" href="' + href + '">' +
       '<span class="pcard__more-icon" aria-hidden="true"><i class="ph-light ph-squares-four"></i></span>' +
       '<span class="pcard__body"><span class="pcard__title">' + label + "</span>" +
       '<span class="pcard__btn">Abrir a lista <i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></span></a></li>'
@@ -678,6 +678,32 @@
         );
       }
       list.innerHTML = html;
+      revealCards(list);
+    }
+
+    /* os cards sobem e aparecem quando entram na tela, em sequência por coluna */
+    function revealCards(scope) {
+      var cards = $$(".pcard", scope);
+      if (reduceMotion.matches || !("IntersectionObserver" in window)) {
+        cards.forEach(function (c) {
+          c.classList.add("is-in");
+        });
+        return;
+      }
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add("is-in");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+      );
+      cards.forEach(function (c) {
+        io.observe(c);
+      });
     }
 
     list.setAttribute("aria-busy", "true");

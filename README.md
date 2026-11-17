@@ -78,6 +78,8 @@ As fotos dos cards de módulo são do [Pexels](https://www.pexels.com/license/) 
 | Aquisição de Soluções | [Engineer in Industrial Factory Using Tablet](https://www.pexels.com/photo/engineer-in-industrial-factory-using-tablet-32845694/) | Sergey Sergeev |
 | Transferência de Tecnologias | [Peças metálicas impressas em 3D](https://www.pexels.com/photo/engineer-holding-clean-energy-battery-3861437/) | ThisIsEngineering |
 
+O fundo da vitrine de desafios é a foto [Aerial View of Complex Platform](https://www.pexels.com/photo/aerial-view-of-complex-platform-9336590/), de Aron Razif, também do Pexels (`assets/media/vitrine-1920.webp` e `vitrine-1080.webp`).
+
 Cada desafio também tem a sua foto (`assets/media/desafios/<id>.webp`), usada nos cards da home e no cabeçalho da página do desafio. Também são do Pexels:
 
 | Desafio | Foto | Autor |
