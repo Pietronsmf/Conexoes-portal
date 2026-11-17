@@ -319,7 +319,6 @@ button {
 .detail-head h1::after,
 .cta__content .title-xl::after,
 .notfound h1::after,
-.related h2::after,
 .hero h1::after {
   content: "";
   display: block;
@@ -3727,52 +3726,80 @@ html:not(.js) .statement__text strong::after {
 }
 
 /* ---------- Detalhe do desafio ---------- */
-/* Cabeçalho em painel da marca com a foto do módulo; o cartão de prazo sobe sobre o painel
-   (primeira tela) e acompanha a rolagem com o índice da página. */
+/* Topo como o da página principal: foto do desafio em tela cheia, escurecida, com as linhas da
+   marca e o header Petrobras por cima; um degradê suave leva ao conteúdo claro. O cartão de
+   prazo sobe sobre o topo (primeira tela) e acompanha a rolagem com o índice da página. */
 .dhero {
+  --fade: clamp(120px, 12vw, 180px);
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 440px;
-  margin-top: calc(var(--header-offset) + 20px);
-  padding: clamp(24px, 3.4vw, 44px) clamp(22px, 4vw, 56px) clamp(32px, 4.4vw, 56px);
-  border-radius: 32px;
   color: #ffffff;
-  background:
-    radial-gradient(70% 90% at 0% 0%, rgb(0 133 66 / 0.32) 0%, rgb(0 133 66 / 0) 60%),
-    var(--deep);
-  box-shadow: 0 40px 80px -44px hsl(150 70% 10% / 0.6);
+  background: var(--media-bg);
   --focus: #ffffff;
 }
 .dhero__photo {
   position: absolute;
-  top: 0;
-  right: 0;
-  z-index: -1;
-  width: 52%;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.8);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
 }
-/* verde da marca por cima da foto, mais fechado embaixo */
-.dhero::after {
-  content: "";
+/* mesmo escurecimento do hero da home: mais forte atrás do texto e no topo (header) */
+.dhero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(180deg, rgb(var(--hero-shade) / 0.62) 0, rgb(var(--hero-shade) / 0) 300px),
+    linear-gradient(
+      90deg,
+      rgb(var(--hero-shade) / 0.8) 0%,
+      rgb(var(--hero-shade) / 0.68) 42%,
+      rgb(var(--hero-shade) / 0.44) 68%,
+      rgb(var(--hero-shade) / 0.34) 100%
+    );
+}
+.dhero__lines {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    linear-gradient(90deg, rgb(7 41 28 / 0) 50%, rgb(7 41 28 / 0.3) 100%),
-    linear-gradient(0deg, rgb(7 41 28 / 0.7) 0%, rgb(7 41 28 / 0) 55%);
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+/* saída suave para o conteúdo claro */
+.dhero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--fade);
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    rgb(var(--bg-rgb)) 0%,
+    rgb(var(--bg-rgb) / 0.9) 14%,
+    rgb(var(--bg-rgb) / 0.66) 34%,
+    rgb(var(--bg-rgb) / 0.36) 58%,
+    rgb(var(--bg-rgb) / 0.12) 82%,
+    rgb(var(--bg-rgb) / 0) 100%
+  );
 }
 .dhero__body {
   position: relative;
-  max-width: min(720px, 60%);
+  z-index: 1;
+  padding-block: calc(var(--topbar-h) + var(--tab-h) + 36px) calc(var(--fade) + 56px);
+}
+.dhero__content {
+  max-width: min(760px, 60%);
 }
 .dhero .crumbs,
 .dhero .crumbs a {
-  color: rgb(255 255 255 / 0.74);
+  color: rgb(255 255 255 / 0.8);
 }
 .dhero .crumbs a:hover {
   color: #ffffff;
@@ -3782,7 +3809,7 @@ html:not(.js) .statement__text strong::after {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 14px;
-  margin-top: 28px;
+  margin-top: 26px;
 }
 .dhero__module {
   display: inline-flex;
@@ -3804,29 +3831,30 @@ html:not(.js) .statement__text strong::after {
   background: rgb(255 255 255 / 0.14);
   color: #ffffff;
 }
+/* título leve, como o da home, com a barra amarela larga do hero */
 .dhero__title {
   margin-top: 18px;
-  font-size: clamp(2rem, 1.35rem + 2.2vw, 3.25rem);
-  line-height: 1.06;
-  letter-spacing: -0.035em;
-  font-weight: 600;
+  font-size: clamp(2.25rem, 1.5rem + 2.4vw, 3.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  font-weight: 300;
   text-wrap: balance;
 }
 .dhero__title::after {
   content: "";
   display: block;
-  width: 32px;
-  height: 4px;
-  margin-top: 20px;
-  border-radius: 2px;
+  width: 64px;
+  height: 6px;
+  margin-top: 26px;
+  border-radius: 1px;
   background: var(--brand-yellow);
 }
 .dhero__lead {
   max-width: 54ch;
-  margin-top: 20px;
+  margin-top: 22px;
   font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
   line-height: 1.55;
-  color: rgb(255 255 255 / 0.84);
+  color: rgb(255 255 255 / 0.9);
 }
 .dhero__facts {
   display: flex;
@@ -3834,28 +3862,56 @@ html:not(.js) .statement__text strong::after {
   gap: 14px 36px;
   margin: 30px 0 0;
   padding-top: 22px;
-  border-top: 1px solid rgb(255 255 255 / 0.16);
+  border-top: 1px solid rgb(255 255 255 / 0.18);
 }
 .dhero__facts dt {
   font-size: 0.75rem;
-  color: rgb(255 255 255 / 0.68);
+  color: rgb(255 255 255 / 0.82);
 }
 .dhero__facts dd {
   margin: 2px 0 0;
   font-weight: 560;
 }
-.dhero--skeleton {
+/* notebooks (até 900px de altura, como 1536×864 e 1366×768): topo mais compacto, para o
+   botão "Enviar proposta" do cartão de prazo aparecer na primeira tela */
+@media (max-height: 900px) and (min-width: 1024px) {
+  .dhero {
+    --fade: clamp(96px, 9vw, 128px);
+  }
+  .dhero__body {
+    padding-block: calc(var(--topbar-h) + var(--tab-h) + 18px) calc(var(--fade) + 28px);
+  }
+  .detail-grid {
+    --aside-lift: 340px;
+  }
+  .dhero__top {
+    margin-top: 18px;
+  }
+  .dhero__title {
+    font-size: clamp(2rem, 1.2rem + 2vw, 3rem);
+  }
+  .dhero__title::after {
+    margin-top: 20px;
+  }
+  .dhero__lead {
+    margin-top: 16px;
+  }
+  .dhero__facts {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+}
+.dhero--skeleton .dhero__content {
   display: grid;
-  align-content: start;
   gap: 16px;
 }
 .dhero--skeleton .skel--title {
   width: min(560px, 80%);
-  height: 40px;
+  height: 44px;
 }
 .dhero--skeleton .skel--title-2 {
   width: min(380px, 60%);
-  height: 40px;
+  height: 44px;
 }
 .dhero--skeleton .skel--text {
   width: min(520px, 80%);
@@ -3881,17 +3937,15 @@ html:not(.js) .statement__text strong::after {
   padding-top: 48px;
   border-top: 1px solid var(--line);
 }
-.prose-title {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-}
-.prose-num {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--accent-ink);
+/* títulos de seção com a barra amarela, como na página principal */
+.prose-title::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 4px;
+  margin-top: 14px;
+  border-radius: 2px;
+  background: var(--brand-yellow);
 }
 .prose-section > p {
   margin-top: 16px;
@@ -3974,14 +4028,6 @@ html:not(.js) .statement__text strong::after {
   border-radius: 18px;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--line);
-}
-.criterion__num {
-  position: absolute;
-  top: 20px;
-  right: 22px;
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--muted);
 }
 .criterion i {
   display: grid;
@@ -4260,11 +4306,6 @@ html:not(.js) .statement__text strong::after {
     background-color 200ms ease,
     color 200ms ease;
 }
-.toc__num {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--muted);
-}
 .toc a:hover {
   background: var(--surface-sunken);
   color: var(--ink);
@@ -4274,32 +4315,28 @@ html:not(.js) .statement__text strong::after {
   color: var(--accent-ink);
   font-weight: 600;
 }
-.toc a[aria-current="true"] .toc__num {
-  color: var(--accent-ink);
-}
-.related {
-  padding-top: clamp(64px, 8vw, 112px);
-}
-.related h2 {
-  margin-bottom: 24px;
+.showcase--related .sgrid {
+  margin-top: 40px;
 }
 
 .mobile-bar {
   display: none;
 }
 @media (max-width: 1023px) {
-  .dhero {
-    padding-bottom: 60px;
-  }
-  .dhero__body {
+  .dhero__content {
     max-width: none;
   }
-  .dhero__photo {
-    width: 100%;
-    height: 62%;
-    opacity: 0.45;
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
+  /* texto na largura toda: escurecimento por igual e sem as linhas atrás das frases */
+  .dhero__scrim {
+    background: linear-gradient(
+      180deg,
+      rgb(var(--hero-shade) / 0.7) 0%,
+      rgb(var(--hero-shade) / 0.62) 45%,
+      rgb(var(--hero-shade) / 0.74) 100%
+    );
+  }
+  .dhero__lines {
+    display: none;
   }
   .detail-grid {
     grid-template-columns: 1fr;
@@ -4352,10 +4389,6 @@ html:not(.js) .statement__text strong::after {
   }
 }
 @media (max-width: 639px) {
-  .dhero {
-    min-height: 0;
-    border-radius: 26px;
-  }
   .dhero__facts {
     display: grid;
     grid-template-columns: 1fr 1fr;

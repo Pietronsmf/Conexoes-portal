@@ -160,6 +160,47 @@
     );
   }
 
+  /* Cards de foto sobem e aparecem quando entram na tela, em sequência por coluna */
+  function revealCards(scope) {
+    var cards = $$(".pcard", scope);
+    if (reduceMotion.matches || !("IntersectionObserver" in window)) {
+      cards.forEach(function (c) {
+        c.classList.add("is-in");
+      });
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-in");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+    );
+    cards.forEach(function (c) {
+      io.observe(c);
+    });
+  }
+
+  /* Página do desafio: "Outros desafios abertos" no formato da vitrine da home */
+  function relatedShowcaseHTML(list) {
+    return (
+      '<section class="showcase showcase--related" aria-labelledby="rel-title">' +
+      '<div class="showcase__bg" aria-hidden="true"><div class="showcase__sticky">' +
+      '<img class="showcase__photo" src="assets/media/vitrine-1920.webp" srcset="assets/media/vitrine-1080.webp 1080w, assets/media/vitrine-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="1280" loading="lazy" decoding="async">' +
+      "</div></div>" +
+      '<div class="showcase__inner"><div class="container">' +
+      '<header class="showcase__head"><h2 class="title-xl" id="rel-title">Outros desafios abertos</h2>' +
+      '<div class="showcase__intro"><p>Chamadas do mesmo módulo aparecem primeiro; depois, os prazos mais próximos. Leia o desafio, confira o prazo e envie a sua proposta pelo portal.</p></div></header>' +
+      '<ul class="sgrid">' + list.map(photoCardHTML).join("") + "</ul>" +
+      '<div class="showcase__foot"><a class="btn-outline" href="desafios.html">Ver todos os desafios <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a></div>' +
+      "</div></div></section>"
+    );
+  }
+
   /* Quando um grupo tem menos de 3 desafios, o espaço vira um atalho para a lista */
   function moreCardHTML(href, label) {
     return (
@@ -276,7 +317,7 @@
        e nas páginas internas: ilha flutuante ("island"). */
     var onHero = header.classList.contains("site-header--hero");
     function syncLook() {
-      var bar = onHero && header.dataset.state === "top" && header.dataset.menu !== "open";
+      var bar = header.classList.contains("site-header--hero") && header.dataset.state === "top" && header.dataset.menu !== "open";
       header.dataset.look = bar ? "bar" : "island";
     }
     var sentinel = $("[data-top-sentinel]");
@@ -679,31 +720,6 @@
       }
       list.innerHTML = html;
       revealCards(list);
-    }
-
-    /* os cards sobem e aparecem quando entram na tela, em sequência por coluna */
-    function revealCards(scope) {
-      var cards = $$(".pcard", scope);
-      if (reduceMotion.matches || !("IntersectionObserver" in window)) {
-        cards.forEach(function (c) {
-          c.classList.add("is-in");
-        });
-        return;
-      }
-      var io = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) {
-              e.target.classList.add("is-in");
-              io.unobserve(e.target);
-            }
-          });
-        },
-        { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
-      );
-      cards.forEach(function (c) {
-        io.observe(c);
-      });
     }
 
     list.setAttribute("aria-busy", "true");
@@ -1145,6 +1161,11 @@
 
     if (!c) {
       doc.title = "Desafio não encontrado · Conexões para Inovação";
+      var hdr = $("[data-nav]");
+      if (hdr) {
+        hdr.classList.remove("site-header--hero");
+        hdr.dataset.look = "island";
+      }
       host.innerHTML =
         '<div class="container page-head">' +
         stateHTML({
@@ -1176,7 +1197,7 @@
         var sb = b.modulo === c.modulo ? 0 : 1;
         return sa - sb || a.prazoDias - b.prazoDias;
       })
-      .slice(0, 2);
+      .slice(0, 3);
 
     var cta = closed
       ? '<span class="btn btn--secondary btn--block" aria-disabled="true">Inscrições encerradas</span>'
@@ -1219,23 +1240,23 @@
       ["cronograma", "Cronograma"],
       ["documentos", "Documentos"],
     ];
-    function num(i) {
-      return String(i + 1).padStart(2, "0");
-    }
     function sec(i, body) {
       var id = secs[i][0];
       return (
         '<section class="prose-section" id="' + id + '" aria-labelledby="' + id + '-t">' +
-        '<h2 class="title-lg prose-title" id="' + id + '-t"><span class="prose-num" aria-hidden="true">' + num(i) + "</span>" + secs[i][1] + "</h2>" +
+        '<h2 class="title-lg prose-title" id="' + id + '-t">' + secs[i][1] + "</h2>" +
         body + "</section>"
       );
     }
 
     host.innerHTML =
-      '<div class="container">' +
       '<header class="dhero dhero--' + s.key + '">' +
-      '<img class="dhero__photo" src="assets/media/desafios/' + c.id + '.webp" alt="" width="1200" height="800">' +
-      '<div class="dhero__body">' +
+      '<img class="dhero__photo" src="assets/media/desafios/' + c.id + '.webp" alt="" width="1200" height="800" style="object-position:' + (c.foco == null ? 50 : c.foco) + '% 50%">' +
+      '<div class="dhero__scrim" aria-hidden="true"></div>' +
+      '<svg class="dhero__lines" viewBox="0 0 1600 900" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false">' +
+      '<path class="hero__line hero__line--brand" d="M1650 101L1220 931"/>' +
+      '<path class="hero__line hero__line--light" d="M1641 230L1465.4 606.6Q1440 661 1383.1 679.9L626.7 931"/></svg>' +
+      '<div class="container dhero__body"><div class="dhero__content">' +
       '<nav aria-label="Trilha de navegação"><ol class="crumbs">' +
       '<li><a href="index.html">Início</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +
       '<li><a href="desafios.html">Desafios</a></li><li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>' +
@@ -1249,8 +1270,8 @@
       "<div><dt>Tema</dt><dd>" + esc(c.tema) + "</dd></div>" +
       "<div><dt>Formato</dt><dd>" + esc(m.formato) + "</dd></div>" +
       "</dl>" +
-      "</div></header>" +
-      '<div class="detail-grid">' +
+      "</div></div></header>" +
+      '<div class="container"><div class="detail-grid">' +
       '<article class="prose">' +
       sec(0, "<p>" + esc(c.contexto) + "</p>") +
       sec(
@@ -1275,7 +1296,7 @@
           CI.criterios
             .map(function (cr, i) {
               return (
-                '<div class="criterion"><span class="criterion__num" aria-hidden="true">' + num(i) + '</span><i class="ph-light ph-' + cr.icone + '" aria-hidden="true"></i>' +
+                '<div class="criterion"><i class="ph-light ph-' + cr.icone + '" aria-hidden="true"></i>' +
                 "<h3>" + esc(cr.titulo) + "</h3><p>" + esc(cr.texto) + "</p></div>"
               );
             })
@@ -1317,21 +1338,20 @@
       '<nav class="toc" aria-label="Nesta página"><p class="toc__title">Nesta página</p><ol>' +
       secs
         .map(function (sc, i) {
-          return '<li><a href="#' + sc[0] + '"><span class="toc__num" aria-hidden="true">' + num(i) + "</span>" + sc[1] + "</a></li>";
+          return '<li><a href="#' + sc[0] + '">' + sc[1] + "</a></li>";
         })
         .join("") +
       "</ol></nav>" +
       "</div></div></aside>" +
-      "</div>" +
-      (related.length
-        ? '<section class="related" aria-labelledby="rel-title"><h2 class="title-lg" id="rel-title">Outros desafios abertos</h2><div class="cards">' + related.map(cardHTML).join("") + "</div></section>"
-        : "") +
-      "</div>" +
+      "</div></div>" +
+      (related.length ? relatedShowcaseHTML(related) : "") +
       (closed
         ? ""
         : '<div class="mobile-bar" data-mobile-bar inert>' +
           '<div class="mobile-bar__info"><strong>' + s.left + "</strong><span>Propostas até " + fmtShort(prazo) + "</span></div>" +
           '<a class="btn btn--primary btn--sm" href="' + nextUrl + '">Enviar proposta</a></div>');
+
+    revealCards(host);
 
     /* Salvar no navegador */
     var save = $("[data-save]", host);

@@ -121,6 +121,7 @@ Contraste medido (WCAG):
   - Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
   - Cards de foto dos desafios (todas as fotos, de 390 a 1440 px, com os filtros): módulo acima de 5,3:1, dias e data acima de 6,4:1, título acima de 6,9:1.
   - Textos da vitrine sobre a foto de fundo (10 posições de rolagem, de 390 a 1440 px): abertura acima de 5,6:1, descrição dos grupos acima de 6,2:1, rótulos acima de 8:1, nota final acima de 5,2:1.
+  - Topo da página do desafio (as 12 fotos, a 1440 px e no celular): trilha acima de 5,5:1, resumo e rótulos dos dados acima de 5,8:1, módulo, título e dados acima de 6,9:1.
 
 ### Tipografia
 
@@ -197,13 +198,18 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
   - Formulário num cartão branco: e-mail, botão e os temas em chips, com marcação múltipla.
   - Ao lado, uma prévia do aviso: um e-mail com um desafio real do tema escolhido, que muda junto com os chips.
   - O sucesso confirma o e-mail e os temas ("sobre Robótica e Corrosão").
-- **Página do desafio:**
-  - Cabeçalho em painel verde da marca, com a foto do módulo à direita, trilha, módulo e estado, título com barra amarela, resumo e os dados principais (área, tema, formato).
-  - O cartão de prazo sobe 300 px sobre o cabeçalho, para a contagem, a barra do prazo e "Enviar proposta" aparecerem sem rolar. Ao rolar, ele fica fixo.
+- **Página do desafio:** segue a home, sem numeração.
+  - Topo em tela cheia com a foto do próprio desafio (a mesma do card), escurecida como o hero da home: mais forte à esquerda, atrás do texto, e no alto, atrás do header. As linhas da marca ficam à direita.
+  - O header Petrobras fica sobre a foto e vira a ilha ao rolar, como na home.
+  - Por cima, a trilha, o módulo e o estado, o título leve com a barra amarela larga do hero, o resumo e os dados principais (área, tema e formato). Um degradê longo leva a foto ao fundo claro do conteúdo.
+  - O cartão de prazo sobe 300 px sobre o topo, para a contagem, a barra do prazo e "Enviar proposta" aparecerem sem rolar. Ao rolar, ele fica fixo.
+  - Em notebooks (até 900 px de altura, como 1536×864, 1440×900 e 1366×768), o topo fica mais compacto e o cartão sobe 340 px. Assim o botão aparece na primeira tela em todos os desafios, de 1024×768 a 1920×1080.
   - Junto do cartão, o índice "Nesta página" marca a seção atual (`IntersectionObserver`). Em telas baixas ou com texto em 125%, o cartão rola por dentro.
-  - As seções são numeradas (01 a 06), como num documento. "O que buscamos" vira uma grade de itens com check; "Quem pode participar", um destaque verde claro; os critérios ganham número e ícone.
+  - As seções têm título com barra amarela curta, como as da home. "O que buscamos" vira uma grade de itens com check; "Quem pode participar", um destaque verde claro; os critérios ganham ícone.
   - O cronograma é uma linha com os 4 marcos: o trecho já percorrido fica em verde, o próximo marco em destaque e o selo "Hoje" fica na posição real entre os marcos. No celular, a linha fica na vertical.
-  - Celular: o cartão de prazo vem logo após o cabeçalho e a barra fixa embaixo mostra os dias que faltam.
+  - "Outros desafios abertos" usa a vitrine da home: a mesma foto de fundo fixa, com degradês na entrada e na saída, e 3 cards de foto. Os desafios do mesmo módulo vêm primeiro; depois, os prazos mais próximos.
+  - Celular: o texto ocupa a largura toda, com escurecimento por igual e sem as linhas da marca. O cartão de prazo vem logo após o topo e a barra fixa embaixo mostra os dias que faltam.
+  - Desafio não encontrado: a página volta ao header em ilha, sem a foto.
 - **Dúvidas frequentes:**
   - Perguntas com ícone do tema, sem numeração. A pergunta aberta ganha o fio amarelo, o ícone em verde e a seta.
   - Painel com botões de anterior e próxima, a resposta com barra amarela, um link útil por pergunta (módulos, cadastro, jornada, desafios, Aquisição de Soluções) e um ícone grande e discreto do tema no canto.

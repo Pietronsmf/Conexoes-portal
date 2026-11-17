@@ -22,7 +22,7 @@ Depois abra `http://localhost:8000`.
 | --- | --- | --- |
 | Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, vitrine escura de desafios com uma foto para cada um, no estilo do petrobras.com.br, jornada, temas, dúvidas e avisos por e-mail com escolha de temas e prévia do aviso |
 | Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
-| Detalhe | `desafio.html?id=…` | Cabeçalho com a foto do módulo, cartão de prazo fixo com índice da página, seções numeradas, cronograma com o marcador "Hoje", documentos e outros desafios |
+| Detalhe | `desafio.html?id=…` | Topo em tela cheia com a foto do desafio, como a home; cartão de prazo fixo com índice da página; seções sem numeração; cronograma com o marcador "Hoje"; documentos; "Outros desafios abertos" na vitrine de cards de foto |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
 | 404 | `404.html` | Página não encontrada |
 
