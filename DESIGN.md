@@ -6,7 +6,7 @@ Releitura do portal [Petrobras Conexões para Inovação](https://conexoes-inova
 
 ## 1. Leitura do briefing
 
-**Lendo como:** redesign completo (overhaul) do portal de inovação aberta da Petrobras, para startups, ICTs e empresas fornecedoras. Segue a **linguagem visual do site institucional petrobras.com.br** (segmento branco do logo, cards com diagonal verde, barras amarelas), **sempre no tema claro**, com um primeiro impacto cinematográfico (o vídeo da plataforma). Base técnica: CSS próprio com tokens, sem framework.
+**Lendo como:** redesign completo (overhaul) do portal de inovação aberta da Petrobras, para startups, ICTs e empresas fornecedoras. Segue a **linguagem visual do site institucional petrobras.com.br** (segmento branco do logo, cards com diagonal verde, barras amarelas), **tema claro no site todo**, com um primeiro impacto cinematográfico: o vídeo da plataforma escurecido, com texto branco, como nos destaques do petrobras.com.br. Base técnica: CSS próprio com tokens, sem framework.
 
 | Dial | Valor | Por quê |
 | --- | --- | --- |
@@ -64,9 +64,11 @@ Títulos de seção em negrito (32 px, cinza `#373737`), seguidos de uma barra a
 | Padrão Petrobras | No protótipo |
 | --- | --- |
 | Barra de serviços | "Você está em: Conexões para Inovação", "Acesse também" com links reais dos sites da Petrobras e controle A- / A+ funcional. Escondida abaixo de 1024 px. |
-| Aba branca do logo | Vira o segmento branco da ilha flutuante: borda direita diagonal com o canto de baixo arredondado, logo oficial e nome do programa. |
-| Header compacto ao rolar | A barra de serviços sai de cena com `transform` e a ilha sobe para 12 px do topo, mais opaca. |
-| Menu verde | Links em verde Petrobras; o item atual e o hover ganham a barra amarela. |
+| Header sobre o destaque | No topo da home, como no site: barra de serviços translúcida com texto branco, aba branca do logo presa à esquerda (diagonal de 76 px em 104 px de altura, canto arredondado, base inclinada) e menu branco sobre o vídeo. |
+| Header compacto ao rolar | A barra de serviços sai de cena e o header vira a ilha flutuante da versão anterior, com o logo num segmento branco de borda diagonal. As páginas internas usam sempre a ilha. |
+| Menu | Branco sobre o vídeo, verde Petrobras na ilha; o item atual e o hover ganham a barra amarela. |
+| Destaque com vídeo | Vídeo escurecido, título grande em peso leve, barra amarela de 64×6 px, subtítulo em negrito e texto branco, alinhados à esquerda. |
+| Linhas da marca | Dois fios finos à direita do destaque: um branco, que desce em diagonal e faz uma curva, e um amarelo que o cruza. |
 | Barra amarela sob títulos | Em todos os títulos de seção e de página, no título do hero e nos títulos dos cards de desafio. |
 | Card "Acesse também" | Cards dos módulos: foto com filtro verde leve (a foto continua legível), painel verde diagonal e fio amarelo (SVG próprio, escalável), texto branco. |
 | Petrobras Sans | Não usada: é proprietária. O protótipo segue com Geist; na implementação, usar a fonte licenciada. |
@@ -113,7 +115,10 @@ Neutros levemente esverdeados, **um acento interativo** (verde Petrobras) e o **
 Contraste medido (WCAG):
 
 - **Fundo da página:** texto 16:1, apoio 9,5:1, metadados 5,2:1, links e menu 6,1:1. O texto branco sobre o verde dos botões e dos cards fica em 4,7:1.
-- **Texto sobre vídeo:** medido em 5 quadros de cada vídeo, nos 5% de pixels mais desfavoráveis sob o texto, de 390 a 1920 px. Hero: sobretítulo e apoio acima de 7,2:1. Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
+- **Texto sobre vídeo:** medido em 5 quadros de cada vídeo, nos 5% de pixels mais desfavoráveis sob o texto, de 390 a 1920 px.
+  - Hero: título acima de 8:1, subtítulo acima de 7,7:1, parágrafo acima de 5,6:1.
+  - Header sobre o vídeo: menu acima de 7,8:1, barra de serviços acima de 13:1.
+  - Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
 
 ### Tipografia
 
@@ -137,15 +142,19 @@ Geist (texto e títulos) e Geist Mono (contadores), auto-hospedadas, licença OF
 
 ### Header
 
-`--topbar-h` 40 px (0 abaixo de 1024 px), `--island-h` 64 px e `--island-gap` 12 px. Deles saem `--mainbar-h` (76 px, para âncoras e barras fixas) e `--header-offset` (116 px no desktop, 76 px no celular), que posiciona o conteúdo abaixo do header.
+- **Barra de serviços:** `--topbar-h` 40 px (0 abaixo de 1024 px).
+- **Barra sobre o vídeo (topo da home):** `--bar-h` 80 px, aba `--tab-h` 104 px e diagonal `--tab-dx` 76 px. No celular: 64, 80 e 58 px.
+- **Ilha:** `--island-h` 64 px e `--island-gap` 12 px. Deles saem `--mainbar-h` (76 px, para âncoras e barras fixas) e `--header-offset` (116 px no desktop, 76 px no celular), que posiciona o conteúdo das páginas internas.
+- **Aparência:** o atributo `data-look` (`bar` ou `island`) é definido pelo JS a partir do estado de rolagem e do menu.
 
 ## 6. Movimento: o que anima e por quê
 
 | Elemento | Animação | Propósito |
 | --- | --- | --- |
-| Header | A barra de serviços sai com `transform`; a ilha sobe e fica mais opaca | Ganhar espaço ao rolar |
+| Header | A barra de serviços sai com `transform`; a troca entre barra e ilha é um fade com leve descida (420 ms) | Ganhar espaço ao rolar, sem pulo de layout |
 | Menu | Barra amarela cresce no hover e marca a página atual | Localização |
 | Hero | Fade + subida + desfoque, escalonado | Hierarquia na primeira dobra |
+| Linhas da marca | Entram uma vez, de cima para baixo (recorte com `clip-path`), depois do texto | Assinatura da marca sem disputar com o título |
 | Vídeos | Hero e mar em loop vai-e-volta de 11 s a 0,8x; só tocam visíveis; os dois botões de pausa controlam ambos | Atmosfera e continuidade (WCAG 2.2.2) |
 | Ondas | Na saída do mar, espuma e borda na cor da página deslizam em sentidos opostos (19 s e 13 s); em retrato, uma onda também abre o mar | Passagem do mar para a página |
 | Seções e cards | Revelação no scroll, entrada escalonada após filtrar | Ritmo de leitura e mudança de estado |
@@ -155,10 +164,15 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
 
 ## 7. Componentes
 
-- **Header misto:** barra de serviços da Petrobras em cima e, abaixo, a ilha flutuante da versão anterior (pílula de vidro claro, até 1200 px). Dentro da ilha, o segmento branco diagonal com o logo, o menu verde com barra amarela, a busca e "Entrar". Ao rolar, a barra de serviços sai e a ilha sobe. Até 1023 px, menu de tela cheia.
+- **Header:**
+  - No topo da home, o header do site Petrobras sobre o vídeo: barra de serviços translúcida, aba branca do logo, menu branco, busca e "Entrar".
+  - Ao rolar, com o menu aberto e nas páginas internas, a ilha flutuante da versão anterior (pílula de vidro claro, até 1200 px), com o logo num segmento branco diagonal e o menu verde.
+  - Até 1023 px, menu de tela cheia.
 - **Hero:**
-  - No desktop, a composição aprovada: vídeo inteiro, véu claro só atrás do texto (à direita) e barra amarela sob o título. O pé do hero não tem mais fade para o fundo claro: o mar segue livre para a seção de baixo.
-  - Em retrato, o vídeo vira um bloco no topo, com o texto abaixo.
+  - No desktop, como os destaques do petrobras.com.br: vídeo escurecido (mais forte atrás do texto e no topo), texto branco à esquerda e as linhas da marca à direita.
+  - O vídeo é exibido espelhado, para a plataforma ficar à direita e o texto ficar sobre o mar calmo.
+  - O pé do hero não tem fade: o mar segue para a seção de baixo.
+  - Em retrato, o vídeo vira um bloco no topo que escurece até a cor do mar; o texto fica abaixo, sobre o fundo escuro, e as linhas ficam no canto do vídeo.
 - **Mar contínuo (busca e números):** a seção sobe 180 px por baixo do hero e o vídeo do mar entra em fusão com o mar do próprio hero, sem emenda. O mar escurece aos poucos até a frase, que fica na frente em branco, com os números sublinhados em amarelo. A busca continua sobre a linha d'água. Ondas na cor da página fecham a seção. Em retrato, o mar começa com uma onda.
 - **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque. Cada módulo tem uma foto que mostra o seu público: equipe de startup com braço robótico, laboratório (universidades e ICTs), torre de refinaria (problemas da operação), técnico em campo (soluções prontas) e peças impressas em 3D (tecnologia que sai para o mercado). Cada foto tem enquadramento próprio para o desktop e para cards estreitos (`--pos` e `--pos-sm`).
 - **Card de desafio:** moldura dupla, status, título com barra amarela, prazo e contagem regressiva.
@@ -178,7 +192,7 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
 - [x] Zero travessões no conteúdo
 - [x] Um tema (claro), um acento interativo, amarelo só em linhas finas
 - [x] Logo oficial sobre fundo branco, nas cores originais
-- [x] Hero da versão aprovada, sem fade no pé; título em 2 linhas de 1180 a 1920 px (3 em 1024 px); CTA visível sem rolar
+- [x] Hero escurecido no padrão Petrobras, sem fade no pé; título em 2 linhas de 1024 a 1920 px; CTA visível sem rolar
 - [x] 2 sobretítulos em 8 seções; um marquee
 - [x] Imagens reais: vídeo enviado (hero, mar e páginas internas) e fotos do Pexels com crédito nos módulos
 - [x] Estados de carregamento, vazio, erro e sucesso

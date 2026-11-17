@@ -1096,6 +1096,121 @@ button {
   }
 }
 
+/* Home, no topo (data-look="bar"): o header do site Petrobras sobre o vídeo escurecido.
+   Barra de serviços translúcida, aba branca do logo presa à esquerda, menu branco.
+   Ao rolar (ou com o menu aberto) volta a ser a ilha flutuante acima. */
+:root {
+  --bar-h: 80px;
+  --tab-h: 104px;
+  --tab-dx: 76px;
+}
+@media (max-width: 1023px) {
+  :root {
+    --bar-h: 64px;
+    --tab-h: 80px;
+    --tab-dx: 58px;
+  }
+}
+.site-header[data-look="bar"] {
+  --focus: #ffffff;
+}
+.site-header[data-look="bar"] .topbar {
+  background: rgb(2 10 8 / 0.34);
+  border-bottom-color: rgb(255 255 255 / 0.14);
+  color: #ffffff;
+}
+.site-header[data-look="bar"] .topbar__where strong,
+.site-header[data-look="bar"] .topbar__links a {
+  color: #ffffff;
+}
+.site-header[data-look="bar"] .topbar__links a:hover {
+  color: var(--brand-yellow);
+}
+.site-header[data-look="bar"] .topbar__label {
+  color: rgb(255 255 255 / 0.8);
+}
+.site-header[data-look="bar"] .topbar__font {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5);
+}
+.site-header[data-look="bar"] .topbar__font button:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+.site-header[data-look="bar"] .mainbar {
+  width: 100%;
+  height: var(--bar-h);
+  margin: 0;
+  padding: 0 max(var(--gutter), (100% - var(--container)) / 2);
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.site-header[data-look="bar"] .mainbar .brand {
+  position: relative;
+  isolation: isolate;
+  padding: 0;
+  background: none;
+  clip-path: none;
+}
+/* Aba branca: diagonal à direita, canto de baixo arredondado e base levemente inclinada */
+.site-header[data-look="bar"] .mainbar .brand::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: -100vw;
+  right: calc(-1 * (var(--tab-dx) + 28px));
+  height: var(--tab-h);
+  background: #ffffff;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - var(--tab-dx)) calc(var(--tab-h) * 0.907),
+    calc(100% - var(--tab-dx) - 3.5px) calc(var(--tab-h) * 0.946),
+    calc(100% - var(--tab-dx) - 8.5px) calc(var(--tab-h) * 0.977),
+    calc(100% - var(--tab-dx) - 14.5px) calc(var(--tab-h) * 0.993),
+    calc(100% - var(--tab-dx) - 20.5px) var(--tab-h),
+    calc(100% - var(--tab-dx) - 320px) calc(var(--tab-h) * 0.84),
+    0 calc(var(--tab-h) * 0.84)
+  );
+}
+.site-header[data-look="bar"] .nav__link {
+  color: #ffffff;
+  font-weight: 500;
+}
+.site-header[data-look="bar"] .nav__link:hover {
+  color: #ffffff;
+}
+.site-header[data-look="bar"] .nav__search,
+.site-header[data-look="bar"] .nav__toggle {
+  color: #ffffff;
+}
+.site-header[data-look="bar"] .nav__search:hover,
+.site-header[data-look="bar"] .nav__toggle:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+/* Troca entre barra e ilha: o header some e reaparece no novo formato, sem pulo visível */
+.site-header--hero.is-ready[data-look="bar"] .mainbar {
+  animation: header-bar-in 420ms var(--ease-out);
+}
+.site-header--hero.is-ready[data-look="island"] .mainbar {
+  animation: header-island-in 420ms var(--ease-out);
+}
+@keyframes header-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+@keyframes header-island-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
 /* Menu em tela cheia (mobile) */
 .menu {
   position: fixed;
@@ -1162,20 +1277,27 @@ button {
   }
 }
 
-/* ---------- Hero com vídeo: vídeo inteiro, véu claro à direita, mar livre embaixo ---------- */
+/* ---------- Hero com vídeo escurecido: texto branco à esquerda, linhas da marca à direita ---------- */
+/* Referência: destaques do site petrobras.com.br (título leve, barra amarela, subtítulo em negrito). */
 :root {
   /* faixa em que o mar da seção seguinte entra em fusão com o mar do hero */
   --sea-blend: 180px;
+  /* quanto a busca sobe sobre o pé do hero */
+  --dock-lift: 84px;
+  /* o conteúdo começa abaixo da barra de serviços e da aba branca do logo */
+  --hero-top: calc(var(--topbar-h) + var(--tab-h) + 28px);
+  --hero-shade: 3 14 12;
+  --hero-deep: #2c3738;
 }
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   display: grid;
-  align-items: start;
+  align-items: center;
   min-height: max(680px, calc(100vh - 56px));
   min-height: max(680px, calc(100dvh - 56px));
-  color: #ffffff;
+  color: var(--ink);
   background: var(--bg-tint);
 }
 .hero__media {
@@ -1183,6 +1305,7 @@ button {
   inset: 0;
   z-index: -2;
 }
+/* Vídeo espelhado: a plataforma vai para a direita e o texto fica sobre o mar calmo */
 .hero__media > img,
 .hero__media > video {
   position: absolute;
@@ -1191,6 +1314,7 @@ button {
   height: 100%;
   object-fit: cover;
   object-position: 100% 50%;
+  transform: scaleX(-1);
 }
 .hero__media > video {
   opacity: 0;
@@ -1199,34 +1323,52 @@ button {
 .hero__media > video.is-playing {
   opacity: 1;
 }
-/* Véu claro só onde está o texto; embaixo o mar fica livre e continua na seção seguinte */
+/* Escurecimento: mais forte atrás do texto e no topo (header); mais leve sobre a plataforma */
 .hero__scrim {
   position: absolute;
   inset: 0;
   z-index: -1;
+  background:
+    linear-gradient(270deg, rgb(var(--veil) / 0.8) 0%, rgb(var(--veil) / 0.68) 46%, rgb(var(--veil) / 0) 62%),
+    radial-gradient(78% 88% at 100% 0%, rgb(var(--veil) / 0.6) 0%, rgb(var(--veil) / 0) 70%);
   -webkit-mask-image: linear-gradient(0deg, transparent 0, transparent 60px, #000 240px);
   mask-image: linear-gradient(0deg, transparent 0, transparent 60px, #000 240px);
 }
 .hero__inner {
-  padding-block: calc(var(--header-offset) + 100px) 196px;
+  padding-block: calc(var(--header-offset) + 28px) 196px;
 }
-/* Em telas 16:9 a plataforma ocupa até ~56% da largura; o texto começa depois */
 .hero__content {
   width: min(500px, 44%);
   margin-left: auto;
 }
 .hero .eyebrow {
-  color: #ffffff;
+  color: var(--ink-2);
 }
 .hero h1 {
-  margin-top: 18px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+.hero h1::after {
+  width: 64px;
+  height: 6px;
+  margin-top: 30px;
+  border-radius: 1px;
+}
+.hero__kicker {
+  margin-top: 28px;
+  font-size: clamp(1.125rem, 1rem + 0.4vw, 1.375rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #ffffff;
 }
 .hero__sub {
-  margin-top: 22px;
+  margin-top: 10px;
   max-width: 44ch;
   font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
   line-height: 1.55;
-  color: #ffffff;
+  color: var(--ink-2);
 }
 .hero__actions {
   display: flex;
@@ -1234,6 +1376,18 @@ button {
   align-items: center;
   gap: 12px;
   margin-top: 34px;
+}
+.hero .btn--secondary {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero .btn--secondary:hover {
+    background: rgb(255 255 255 / 0.16);
+  }
 }
 .hero__toggle,
 .sea__toggle {
@@ -1244,37 +1398,36 @@ button {
   height: 44px;
   border-radius: var(--r-pill);
   font-size: 1.1rem;
+  color: var(--media-ink);
+  background: rgb(255 255 255 / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.32);
   transition:
     background-color 200ms ease,
     transform var(--dur-press) var(--ease-out);
+}
+.hero__toggle:hover,
+.sea__toggle:hover {
+  background: rgb(255 255 255 / 0.22);
 }
 .hero__toggle:active,
 .sea__toggle:active {
   transform: scale(0.94);
 }
+/* No canto, fora do caminho das linhas da marca */
 .hero__toggle {
-  left: max(var(--gutter), (100% - var(--container)) / 2);
-  bottom: calc(var(--sea-blend) + 20px);
-  color: var(--ink);
-  background: color-mix(in oklab, var(--surface) 82%, transparent);
-  box-shadow:
-    inset 0 0 0 1px var(--line),
-    var(--shadow-sm);
-}
-.hero__toggle:hover {
-  background: var(--surface);
+  right: var(--gutter);
+  bottom: calc(var(--sea-blend) - 8px);
 }
 /* Telas baixas (notebooks 16:9) */
 @media (max-height: 780px) and (min-aspect-ratio: 1/1) {
-  .hero__inner {
-    padding-top: calc(var(--header-offset) + 22px);
-  }
   .hero h1 {
-    margin-top: 12px;
     font-size: clamp(3rem, 10.5vh, 5.25rem);
   }
-  .hero__sub {
-    margin-top: 16px;
+  .hero h1::after {
+    margin-top: 24px;
+  }
+  .hero__kicker {
+    margin-top: 22px;
   }
   .hero__actions {
     margin-top: 26px;
@@ -1300,39 +1453,56 @@ button {
   }
 }
 
-/* Telas em retrato (celular e tablet): vídeo em bloco no topo, texto sobre o fundo claro */
+/* Retrato (celular e tablet): vídeo em bloco no topo, que escurece até virar mar; texto embaixo,
+   sobre o fundo escuro. A plataforma fica à esquerda e as linhas da marca no canto direito. */
 @media (max-width: 767px), (max-aspect-ratio: 1/1) {
+  :root {
+    --sea-blend: 120px;
+    --dock-lift: 64px;
+    --hero-media-h: clamp(280px, 46svh, 520px);
+  }
   .hero {
     display: block;
     min-height: 0;
-    background: var(--bg);
+    background: var(--hero-deep);
   }
   .hero__media {
     position: relative;
     inset: auto;
-    z-index: 0;
-    height: clamp(320px, 46svh, 520px);
-    overflow: hidden;
-    border-radius: 0 0 28px 28px;
-    background: var(--bg-tint);
+    height: var(--hero-media-h);
+  }
+  .hero__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(44 55 56 / 0) 52%, var(--hero-deep) 100%);
   }
   .hero__media > img,
   .hero__media > video {
-    object-position: 42% 50%;
+    object-position: 0% 50%;
   }
   .hero__scrim {
-    display: none;
+    bottom: auto;
+    height: var(--hero-media-h);
+    background: linear-gradient(180deg, rgb(var(--hero-shade) / 0.55) 0, rgb(var(--hero-shade) / 0.08) 150px);
+  }
+  .hero__lines {
+    inset: 0 0 auto auto;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
   .hero__inner {
-    padding-block: 28px 40px;
+    position: relative;
+    margin-top: -56px;
+    padding-block: 0 calc(var(--sea-blend) + 28px);
   }
   .hero__content {
     width: 100%;
   }
   .hero__toggle {
-    left: auto;
-    right: var(--gutter);
-    top: calc(var(--mainbar-h) + 32px);
+    top: calc(var(--bar-h) + 24px);
+    left: var(--gutter);
+    right: auto;
     bottom: auto;
   }
 }
@@ -1434,18 +1604,24 @@ html:not(.js) .statement__text strong::after {
 }
 
 /* ---------- Mar contínuo: busca e números sobre as ondas do vídeo ---------- */
-/* Em telas largas a seção sobe por baixo do hero (--sea-blend) e o vídeo do mar entra em fusão
-   com o mar do próprio hero: não há emenda, a página "afunda" no mar até a frase. */
+/* A seção sobe por baixo do hero (--sea-blend) e o vídeo do mar entra em fusão com o mar do
+   próprio hero: não há emenda, a página continua no mar até a frase. */
 .sea {
   --shore-h: 110px;
-  --surface-h: 0px;
   --sea-scrim: 4 24 26;
   position: relative;
   isolation: isolate;
   margin-top: calc(-1 * var(--sea-blend));
-  padding-top: calc(var(--sea-blend) - 84px);
+  padding-top: calc(var(--sea-blend) - var(--dock-lift));
   padding-bottom: calc(var(--shore-h) + clamp(48px, 7vw, 96px));
   color: var(--media-ink);
+  /* a faixa de fusão fica por cima do hero: só os conteúdos recebem clique */
+  pointer-events: none;
+}
+.sea > .dock-wrap,
+.sea > .sea__content,
+.sea > .sea__toggle {
+  pointer-events: auto;
 }
 .sea__media {
   position: absolute;
@@ -1464,6 +1640,8 @@ html:not(.js) .statement__text strong::after {
   height: 100%;
   object-fit: cover;
   object-position: 50% 50%;
+  /* espelhado como o hero, para as ondas seguirem no mesmo sentido */
+  transform: scaleX(-1);
 }
 .sea__media > video {
   opacity: 0;
@@ -1472,14 +1650,14 @@ html:not(.js) .statement__text strong::after {
 .sea__media > video.is-playing {
   opacity: 1;
 }
-/* Escurece o mar aos poucos: livre junto ao hero, mais fechado atrás da frase */
+/* Mesmo escurecimento do pé do hero, um pouco mais fechado atrás da frase */
 .sea__media::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgb(var(--sea-scrim) / 0) 0,
+    rgb(var(--sea-scrim) / 0.5) 0,
     rgb(var(--sea-scrim) / 0.56) calc(var(--sea-blend) + 24px),
     rgb(var(--sea-scrim) / 0.62) 100%
   );
@@ -1517,30 +1695,16 @@ html:not(.js) .statement__text strong::after {
 .sea__toggle {
   right: max(var(--gutter), (100% - var(--container)) / 2);
   bottom: calc(var(--shore-h) + 24px);
-  color: var(--media-ink);
-  background: rgb(255 255 255 / 0.14);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
 }
-.sea__toggle:hover {
-  background: rgb(255 255 255 / 0.24);
-}
-/* Ondas: superfície (só em retrato) e saída do mar na cor da página */
-.sea__surface,
+/* Saída do mar: espuma e borda na cor da página */
 .sea__shore {
   position: absolute;
   left: 0;
   right: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.sea__surface {
-  display: none;
-  top: -1px;
-  height: var(--surface-h);
-}
-.sea__shore {
   bottom: -1px;
   height: var(--shore-h);
+  overflow: hidden;
+  pointer-events: none;
 }
 .sea__wave {
   position: absolute;
@@ -1549,10 +1713,6 @@ html:not(.js) .statement__text strong::after {
   width: 200%;
   max-width: none;
   height: 100%;
-}
-.sea__wave--surf {
-  fill: var(--bg);
-  animation: wave-left 16s linear infinite;
 }
 .sea__wave--foam {
   fill: rgb(255 255 255 / 0.3);
@@ -1572,24 +1732,6 @@ html:not(.js) .statement__text strong::after {
 }
 .sea.is-paused .sea__wave {
   animation-play-state: paused;
-}
-/* Retrato (celular e tablet): o hero termina no fundo claro, então o mar começa com ondas */
-@media (max-width: 767px), (max-aspect-ratio: 1/1) {
-  .sea {
-    --surface-h: 56px;
-    margin-top: 0;
-    padding-top: calc(var(--surface-h) + 24px);
-  }
-  .sea__media {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-  .sea__media::after {
-    background: rgb(var(--sea-scrim) / 0.6);
-  }
-  .sea__surface {
-    display: block;
-  }
 }
 @media (max-width: 767px) {
   .sea {
@@ -3158,8 +3300,13 @@ html:not(.js) .statement__text strong::after {
   .site-header {
     transition: none;
   }
-  .sea__wave {
+  .sea__wave,
+  .site-header .mainbar {
     animation: none !important;
+  }
+  .hero__line {
+    animation: none !important;
+    clip-path: none !important;
   }
   .btn:active,
   .chip:active {
