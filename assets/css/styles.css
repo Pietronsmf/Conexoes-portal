@@ -1284,8 +1284,9 @@ button {
   --sea-blend: 180px;
   /* quanto a busca sobe sobre o pé do hero */
   --dock-lift: 84px;
-  /* o conteúdo começa abaixo da barra de serviços e da aba branca do logo */
-  --hero-top: calc(var(--topbar-h) + var(--tab-h) + 28px);
+  /* o conteúdo começa bem abaixo da barra de serviços e da aba branca do logo
+     (texto mais baixo, como no ajuste feito direto no repositório) */
+  --hero-top: calc(var(--topbar-h) + var(--tab-h) + 72px);
   --hero-shade: 3 14 12;
   --hero-deep: #2c3738;
 }
@@ -1297,8 +1298,9 @@ button {
   align-items: center;
   min-height: max(680px, calc(100vh - 56px));
   min-height: max(680px, calc(100dvh - 56px));
-  color: var(--ink);
-  background: var(--bg-tint);
+  color: var(--media-ink);
+  background: var(--media-bg);
+  --focus: #ffffff;
 }
 .hero__media {
   position: absolute;
@@ -1329,20 +1331,59 @@ button {
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(270deg, rgb(var(--veil) / 0.8) 0%, rgb(var(--veil) / 0.68) 46%, rgb(var(--veil) / 0) 62%),
-    radial-gradient(78% 88% at 100% 0%, rgb(var(--veil) / 0.6) 0%, rgb(var(--veil) / 0) 70%);
-  -webkit-mask-image: linear-gradient(0deg, transparent 0, transparent 60px, #000 240px);
-  mask-image: linear-gradient(0deg, transparent 0, transparent 60px, #000 240px);
+    linear-gradient(180deg, rgb(var(--hero-shade) / 0.6) 0, rgb(var(--hero-shade) / 0) 280px),
+    linear-gradient(
+      90deg,
+      rgb(var(--hero-shade) / 0.7) 0%,
+      rgb(var(--hero-shade) / 0.62) 40%,
+      rgb(var(--hero-shade) / 0.4) 62%,
+      rgb(var(--hero-shade) / 0.26) 100%
+    );
+}
+/* Linhas da marca (fio branco com curva e fio amarelo que o cruza), desenhadas na entrada */
+.hero__lines {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+.hero__line {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  /* espessura constante em qualquer tela */
+  vector-effect: non-scaling-stroke;
+}
+.hero__line--brand {
+  stroke: var(--brand-yellow);
+}
+.hero__line--light {
+  stroke: rgb(255 255 255 / 0.55);
+}
+/* entram de cima para baixo, como se fossem traçadas a partir do canto */
+.js .hero__line {
+  clip-path: inset(0 0 100% 0);
+  animation: hero-line 2200ms var(--ease-in-out) forwards;
+}
+.js .hero__line--brand {
+  animation-delay: 500ms;
+}
+.js .hero__line--light {
+  animation-delay: 800ms;
+}
+@keyframes hero-line {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
 }
 .hero__inner {
-  padding-block: calc(var(--header-offset) + 28px) 196px;
+  padding-block: var(--hero-top) calc(var(--sea-blend) + 64px);
 }
 .hero__content {
-  width: min(500px, 44%);
-  margin-left: auto;
-}
-.hero .eyebrow {
-  color: var(--ink-2);
+  width: min(600px, 48%);
 }
 .hero h1 {
   font-weight: 300;
@@ -1368,7 +1409,7 @@ button {
   max-width: 44ch;
   font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
   line-height: 1.55;
-  color: var(--ink-2);
+  color: var(--media-ink);
 }
 .hero__actions {
   display: flex;
