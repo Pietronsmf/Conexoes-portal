@@ -20,7 +20,7 @@ Depois abra `http://localhost:8000`.
 
 | Página | Arquivo | O que mostra |
 | --- | --- | --- |
-| Início | `index.html` | Hero com vídeo, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, desafios abertos, jornada, temas, dúvidas e avisos por e-mail |
+| Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, desafios abertos, jornada, temas, dúvidas e avisos por e-mail |
 | Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
 | Detalhe | `desafio.html?id=…` | Contexto, o que buscamos, critérios, cronograma, documentos e painel de inscrição |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
@@ -37,6 +37,7 @@ Depois abra `http://localhost:8000`.
 - Tema: o site é sempre claro, mesmo com o sistema em modo escuro.
 - Tamanho do texto: botões A- / A+ na barra do topo (desktop). A barra tem tamanho fixo, então o controle não sai do lugar.
 - Busca rápida: o ícone de lupa no header abre `desafios.html?buscar=1` com o campo em foco.
+- Header: no topo da home, o header da Petrobras sobre o vídeo; ao rolar (ou com o menu aberto), a ilha flutuante. As páginas internas usam sempre a ilha.
 - Vídeos: os botões de pausa do hero e do mar controlam os dois vídeos juntos.
 - Movimento reduzido: ative a preferência do sistema; os vídeos não iniciam (o botão passa a "reproduzir"), as ondas e o marquee ficam parados.
 
@@ -60,7 +61,7 @@ DESIGN.md               design system, análise do site petrobras.com.br e pre-f
 
 Os vídeos e os quadros das páginas internas vêm do arquivo `petroleo.mp4` enviado para este trabalho:
 
-- **Vídeo do hero:** trecho de 5,5 s em vai-e-volta, sem áudio. Pesa 2,3 MB em 1600 px e 0,8 MB em 960 px.
+- **Vídeo do hero:** trecho de 5,5 s em vai-e-volta, sem áudio. Pesa 2,3 MB em 1600 px e 0,8 MB em 960 px. É exibido espelhado (por CSS), para a plataforma ficar à direita do texto.
 - **Vídeo do mar:** recorte do mar no canto inferior direito do mesmo trecho, também em vai-e-volta. Pesa 1,1 MB em 1280 px e 0,3 MB em 640 px.
 - **Pôsteres e imagens das páginas internas:** quadros do mesmo vídeo.
 

@@ -33,7 +33,7 @@
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
   <span class="top-sentinel" aria-hidden="true" data-top-sentinel></span>
 
-  <header class="site-header" data-nav data-state="top">
+  <header class="site-header site-header--hero" data-nav data-state="top" data-look="bar">
     <div class="topbar">
       <div class="topbar__inner">
         <p class="topbar__where">Você está em: <strong>Conexões para Inovação</strong></p>
@@ -93,10 +93,14 @@
         <video class="hero__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-src-lg="assets/media/hero-1600" data-src-sm="assets/media/hero-960"></video>
       </div>
       <div class="hero__scrim"></div>
+      <svg class="hero__lines" viewBox="0 0 1600 900" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false">
+        <path class="hero__line hero__line--brand" d="M1650 101L1220 931"/>
+        <path class="hero__line hero__line--light" d="M1641 230L1465.4 606.6Q1440 661 1383.1 679.9L626.7 931"/>
+      </svg>
       <div class="container hero__inner">
         <div class="hero__content">
-          <p class="eyebrow" data-enter="1">Programa de inovação aberta</p>
-          <h1 class="display" id="hero-title" data-enter="2">Inove com a Petrobras.</h1>
+          <h1 class="display" id="hero-title" data-enter="1">Inove com a Petrobras.</h1>
+          <p class="hero__kicker" data-enter="2">Programa de inovação aberta</p>
           <p class="hero__sub" data-enter="3">Desafios tecnológicos reais, abertos a startups, ICTs e empresas, com recursos para P&amp;D e mentoria dos nossos especialistas.</p>
           <div class="hero__actions" data-enter="4">
             <a class="btn btn--primary btn--icon" href="desafios.html">
@@ -115,9 +119,6 @@
       <div class="sea__media" aria-hidden="true">
         <img src="assets/media/sea-poster.webp" alt="" width="1280" height="610" decoding="async">
         <video class="sea__video" muted loop playsinline preload="none" tabindex="-1" data-src-lg="assets/media/sea-1280" data-src-sm="assets/media/sea-640"></video>
-      </div>
-      <div class="sea__surface" aria-hidden="true">
-        <svg class="sea__wave sea__wave--surf" viewBox="0 0 2880 120" preserveAspectRatio="none" focusable="false"><path d="M0 52C80 39 160 39 240 52C320 65 400 65 480 52C560 44 640 44 720 52C800 60 880 60 960 52C1040 41 1120 41 1200 52C1280 63 1360 63 1440 52C1520 39 1600 39 1680 52C1760 65 1840 65 1920 52C2000 44 2080 44 2160 52C2240 60 2320 60 2400 52C2480 41 2560 41 2640 52C2720 63 2800 63 2880 52V0H0Z"/></svg>
       </div>
       <div class="container dock-wrap">
         <form class="shell dock" action="desafios.html" method="get" role="search" aria-label="Buscar desafios">

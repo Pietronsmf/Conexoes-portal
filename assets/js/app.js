@@ -197,13 +197,31 @@
     var header = $("[data-nav]");
     if (!header) return;
 
-    /* No topo: barra de serviços + aba do logo. Ao rolar: barra branca compacta. */
+    /* Home, no topo: header Petrobras sobre o vídeo ("bar"). Ao rolar, ou com o menu aberto,
+       e nas páginas internas: ilha flutuante ("island"). */
+    var onHero = header.classList.contains("site-header--hero");
+    function syncLook() {
+      var bar = onHero && header.dataset.state === "top" && header.dataset.menu !== "open";
+      header.dataset.look = bar ? "bar" : "island";
+    }
     var sentinel = $("[data-top-sentinel]");
     if (sentinel && "IntersectionObserver" in window) {
+      var first = true;
       new IntersectionObserver(function (entries) {
         header.dataset.state = entries[0].isIntersecting ? "top" : "solid";
+        syncLook();
+        if (first && onHero) {
+          first = false;
+          /* só anima as trocas seguintes, nunca o estado inicial */
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              header.classList.add("is-ready");
+            });
+          });
+        }
       }).observe(sentinel);
     }
+    syncLook();
 
     var toggle = $(".nav__toggle", header);
     var menu = $("#menu");
@@ -220,6 +238,7 @@
         el.inert = open;
       });
       header.dataset.menu = open ? "open" : "closed";
+      syncLook();
       root.classList.toggle("is-locked", open);
       if (open) {
         var first = $("a", menu);
