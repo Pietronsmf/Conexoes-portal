@@ -782,22 +782,17 @@ button {
   color: var(--muted);
 }
 
-/* ---------- Header no padrão Petrobras ---------- */
-/* Barra de serviços + aba branca do logo; ao rolar, barra branca compacta */
+/* ---------- Header misto: barra de serviços Petrobras + ilha flutuante ---------- */
 :root {
   --topbar-h: 40px;
-  --mainbar-h: 80px;
-  --tab-h: 104px;
-  --tab-dx: 76px;
-  --header-offset: 144px;
+  --island-h: 64px;
+  --island-gap: 12px;
+  --mainbar-h: calc(var(--island-h) + var(--island-gap));
+  --header-offset: calc(var(--topbar-h) + var(--island-gap) + var(--island-h));
 }
 @media (max-width: 1023px) {
   :root {
     --topbar-h: 0px;
-    --mainbar-h: 64px;
-    --tab-h: 80px;
-    --tab-dx: 58px;
-    --header-offset: 80px;
   }
 }
 .top-sentinel {
@@ -812,17 +807,20 @@ button {
   position: fixed;
   inset: 0 0 auto;
   z-index: var(--z-nav);
+  pointer-events: none;
   transition: transform 420ms var(--ease-drawer);
 }
 .site-header[data-state="solid"] {
   transform: translateY(calc(-1 * var(--topbar-h)));
 }
+/* Tamanho fixo em px: o controle A- / A+ não muda de lugar nem sai da tela enquanto é usado */
 .topbar {
+  pointer-events: auto;
   height: var(--topbar-h);
   background: var(--surface);
   border-bottom: 1px solid var(--line);
   color: var(--ink-2);
-  font-size: 0.6875rem;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -897,23 +895,36 @@ button {
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
+
+/* Ilha flutuante (header anterior), com o segmento branco diagonal do logo (aba Petrobras) */
 .mainbar {
+  pointer-events: auto;
   position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: var(--mainbar-h);
-  padding-inline: max(var(--gutter), (100% - var(--container)) / 2);
+  gap: 8px;
+  width: min(100% - 24px, 1200px);
+  height: var(--island-h);
+  margin: var(--island-gap) auto 0;
+  padding: 0 10px 0 0;
+  overflow: hidden;
+  border-radius: var(--r-pill);
+  background: color-mix(in oklab, var(--surface) 76%, transparent);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.55),
+    0 10px 32px -14px hsl(var(--shadow-tint) / 0.3);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
   transition:
     background-color 300ms ease,
     box-shadow 300ms ease;
 }
 .site-header[data-state="solid"] .mainbar,
 .site-header[data-menu="open"] .mainbar {
-  background: var(--surface);
+  background: color-mix(in oklab, var(--surface) 94%, transparent);
   box-shadow:
-    0 1px 0 var(--line),
-    0 12px 32px -20px hsl(var(--shadow-tint) / 0.4);
+    inset 0 0 0 1px var(--line),
+    var(--shadow-md);
 }
 
 /* Assinatura: logo oficial + nome do programa */
@@ -942,75 +953,27 @@ button {
 .brand--footer .brand__name {
   font-size: 0.875rem;
 }
-/* Aba branca (desenho do site Petrobras: diagonal, canto arredondado, base levemente inclinada) */
 .mainbar .brand {
-  position: relative;
-  isolation: isolate;
-  height: 100%;
+  align-self: stretch;
   margin-right: auto;
-}
-.mainbar .brand::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  left: -100vw;
-  right: calc(-1 * (var(--tab-dx) + 28px));
-  height: var(--tab-h);
+  padding: 0 64px 0 24px;
   background: #ffffff;
   clip-path: polygon(
     0 0,
     100% 0,
-    calc(100% - var(--tab-dx)) calc(var(--tab-h) * 0.907),
-    calc(100% - var(--tab-dx) - 3.5px) calc(var(--tab-h) * 0.946),
-    calc(100% - var(--tab-dx) - 8.5px) calc(var(--tab-h) * 0.977),
-    calc(100% - var(--tab-dx) - 14.5px) calc(var(--tab-h) * 0.993),
-    calc(100% - var(--tab-dx) - 20.5px) var(--tab-h),
-    calc(100% - var(--tab-dx) - 320px) calc(var(--tab-h) * 0.84),
-    0 calc(var(--tab-h) * 0.84)
+    calc(100% - 44px) 84%,
+    calc(100% - 46.5px) 91%,
+    calc(100% - 50px) 96.5%,
+    calc(100% - 55px) 100%,
+    0 100%
   );
-  transition: opacity 300ms ease;
-}
-.site-header[data-state="solid"] .brand::before,
-.site-header[data-menu="open"] .brand::before {
-  opacity: 0;
 }
 
 .nav {
-  position: relative;
-  isolation: isolate;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   height: 100%;
-}
-/* Aba espelhada atrás do menu: garante contraste quando o vídeo passa por baixo */
-@media (min-width: 1024px) {
-  .nav::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: calc(-1 * (var(--tab-dx) + 28px));
-    right: -100vw;
-    height: var(--tab-h);
-    background: #ffffff;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(var(--tab-h) * 0.84),
-      calc(var(--tab-dx) + 320px) calc(var(--tab-h) * 0.84),
-      calc(var(--tab-dx) + 20.5px) var(--tab-h),
-      calc(var(--tab-dx) + 14.5px) calc(var(--tab-h) * 0.993),
-      calc(var(--tab-dx) + 8.5px) calc(var(--tab-h) * 0.977),
-      calc(var(--tab-dx) + 3.5px) calc(var(--tab-h) * 0.946),
-      var(--tab-dx) calc(var(--tab-h) * 0.907)
-    );
-    transition: opacity 300ms ease;
-  }
-  .site-header[data-state="solid"] .nav::before {
-    opacity: 0;
-  }
 }
 .nav__links {
   display: flex;
@@ -1023,6 +986,7 @@ button {
   align-items: center;
   height: 44px;
   padding: 0 12px;
+  border-radius: 12px;
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--accent-ink);
@@ -1071,10 +1035,10 @@ button {
   height: 44px;
   border-radius: var(--r-pill);
   color: var(--ink);
-  background: var(--surface);
-  box-shadow:
-    inset 0 0 0 1px var(--line),
-    var(--shadow-sm);
+  transition: background-color 200ms ease;
+}
+.nav__toggle:hover {
+  background: var(--surface-sunken);
 }
 .nav__toggle span {
   position: absolute;
@@ -1116,6 +1080,9 @@ button {
   .brand__name {
     padding-left: 12px;
     font-size: 0.75rem;
+  }
+  .mainbar .brand {
+    padding: 0 60px 0 20px;
   }
 }
 @media (max-width: 479px) {
@@ -1195,7 +1162,11 @@ button {
   }
 }
 
-/* ---------- Hero com vídeo: janela com corte diagonal, sem degradê ---------- */
+/* ---------- Hero com vídeo: vídeo inteiro, véu claro à direita, mar livre embaixo ---------- */
+:root {
+  /* faixa em que o mar da seção seguinte entra em fusão com o mar do hero */
+  --sea-blend: 180px;
+}
 .hero {
   position: relative;
   isolation: isolate;
@@ -1205,14 +1176,12 @@ button {
   min-height: max(680px, calc(100vh - 56px));
   min-height: max(680px, calc(100dvh - 56px));
   color: var(--ink);
-  background: var(--bg);
+  background: var(--bg-tint);
 }
 .hero__media {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: var(--bg-tint);
-  clip-path: polygon(0 0, 56% 0, 61.5% 100%, 0 100%);
 }
 .hero__media > img,
 .hero__media > video {
@@ -1230,20 +1199,30 @@ button {
 .hero__media > video.is-playing {
   opacity: 1;
 }
-/* O texto fica sobre o fundo claro, à direita do corte diagonal */
-.hero__inner {
-  padding: calc(var(--header-offset) + 28px) clamp(24px, 5vw, 96px) 196px 63%;
+/* Véu claro só onde está o texto; embaixo o mar fica livre e continua na seção seguinte */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(270deg, rgb(var(--veil) / 0.8) 0%, rgb(var(--veil) / 0.68) 46%, rgb(var(--veil) / 0) 62%),
+    radial-gradient(78% 88% at 100% 0%, rgb(var(--veil) / 0.6) 0%, rgb(var(--veil) / 0) 70%);
+  -webkit-mask-image: linear-gradient(0deg, transparent 0, transparent 60px, #000 240px);
+  mask-image: linear-gradient(0deg, transparent 0, transparent 60px, #000 240px);
 }
+.hero__inner {
+  padding-block: calc(var(--header-offset) + 28px) 196px;
+}
+/* Em telas 16:9 a plataforma ocupa até ~56% da largura; o texto começa depois */
 .hero__content {
-  width: 100%;
-  max-width: 500px;
+  width: min(500px, 44%);
+  margin-left: auto;
 }
 .hero .eyebrow {
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .hero h1 {
   margin-top: 18px;
-  font-size: clamp(3rem, 1.2rem + 3.9vw, 5rem);
 }
 .hero__sub {
   margin-top: 22px;
@@ -1259,48 +1238,43 @@ button {
   gap: 12px;
   margin-top: 34px;
 }
-.hero__toggle {
+.hero__toggle,
+.sea__toggle {
   position: absolute;
-  left: max(var(--gutter), (100% - var(--container)) / 2);
-  bottom: 112px;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
   border-radius: var(--r-pill);
-  color: var(--ink);
-  background: color-mix(in oklab, var(--surface) 82%, transparent);
-  box-shadow:
-    inset 0 0 0 1px var(--line),
-    var(--shadow-sm);
   font-size: 1.1rem;
   transition:
     background-color 200ms ease,
     transform var(--dur-press) var(--ease-out);
 }
-.hero__toggle:hover {
-  background: var(--surface);
-}
-.hero__toggle:active {
+.hero__toggle:active,
+.sea__toggle:active {
   transform: scale(0.94);
 }
-/* Telas 4:3 e 3:2: a plataforma fica mais à esquerda, então o corte e o texto também */
-@media (min-aspect-ratio: 1/1) and (max-aspect-ratio: 3/2) {
-  .hero__media {
-    clip-path: polygon(0 0, 48% 0, 53.5% 100%, 0 100%);
-  }
-  .hero__inner {
-    padding-left: 55.5%;
-  }
+.hero__toggle {
+  left: max(var(--gutter), (100% - var(--container)) / 2);
+  bottom: calc(var(--sea-blend) + 20px);
+  color: var(--ink);
+  background: color-mix(in oklab, var(--surface) 82%, transparent);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--shadow-sm);
+}
+.hero__toggle:hover {
+  background: var(--surface);
 }
 /* Telas baixas (notebooks 16:9) */
 @media (max-height: 780px) and (min-aspect-ratio: 1/1) {
   .hero__inner {
-    padding-top: calc(var(--header-offset) + 8px);
+    padding-top: calc(var(--header-offset) + 22px);
   }
   .hero h1 {
     margin-top: 12px;
-    font-size: clamp(3rem, 10vh, 4.5rem);
+    font-size: clamp(3rem, 10.5vh, 5.25rem);
   }
   .hero__sub {
     margin-top: 16px;
@@ -1334,6 +1308,7 @@ button {
   .hero {
     display: block;
     min-height: 0;
+    background: var(--bg);
   }
   .hero__media {
     position: relative;
@@ -1342,17 +1317,20 @@ button {
     height: clamp(320px, 46svh, 520px);
     overflow: hidden;
     border-radius: 0 0 28px 28px;
-    clip-path: none;
+    background: var(--bg-tint);
   }
   .hero__media > img,
   .hero__media > video {
     object-position: 42% 50%;
   }
+  .hero__scrim {
+    display: none;
+  }
   .hero__inner {
-    padding: 28px var(--gutter) 96px;
+    padding-block: 28px 40px;
   }
   .hero__content {
-    max-width: none;
+    width: 100%;
   }
   .hero__toggle {
     left: auto;
@@ -1458,55 +1436,132 @@ html:not(.js) .statement__text strong::after {
   margin-left: clamp(0px, 9vw, 160px);
 }
 
-/* ---------- Números debaixo das ondas ---------- */
-.undersea {
-  --wave-h: 120px;
-  --sea-1: #d3ebe6;
-  --sea-2: #c0e2dc;
-  --sea-3: #b0dad3;
+/* ---------- Mar contínuo: busca e números sobre as ondas do vídeo ---------- */
+/* Em telas largas a seção sobe por baixo do hero (--sea-blend) e o vídeo do mar entra em fusão
+   com o mar do próprio hero: não há emenda, a página "afunda" no mar até a frase. */
+.sea {
+  --shore-h: 110px;
+  --surface-h: 0px;
+  --sea-scrim: 4 24 26;
   position: relative;
   isolation: isolate;
-  overflow: hidden;
-  padding-top: calc(var(--wave-h) + clamp(48px, 7vw, 96px));
-  padding-bottom: clamp(140px, 16vw, 220px);
-  background: linear-gradient(180deg, var(--sea-1) 0, var(--sea-1) 90px, var(--sea-2) 48%, var(--sea-3) 78%, var(--bg) 100%);
+  margin-top: calc(-1 * var(--sea-blend));
+  padding-top: calc(var(--sea-blend) - 84px);
+  padding-bottom: calc(var(--shore-h) + clamp(48px, 7vw, 96px));
+  color: var(--media-ink);
 }
-.undersea__content {
-  position: relative;
-  z-index: 1;
-}
-.undersea .statement__source,
-.undersea .statement__source .text-link {
-  color: var(--ink-2);
-}
-.undersea__fx {
+.sea__media {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--media-bg);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--sea-blend));
+  mask-image: linear-gradient(180deg, transparent 0, #000 var(--sea-blend));
 }
-/* Superfície do mar: duas ondas periódicas que deslizam em sentidos opostos */
-.undersea__surface {
+.sea__media > img,
+.sea__media > video {
   position: absolute;
-  top: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+.sea__media > video {
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.sea__media > video.is-playing {
+  opacity: 1;
+}
+/* Escurece o mar aos poucos: livre junto ao hero, mais fechado atrás da frase */
+.sea__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--sea-scrim) / 0) 0,
+    rgb(var(--sea-scrim) / 0.56) calc(var(--sea-blend) + 24px),
+    rgb(var(--sea-scrim) / 0.62) 100%
+  );
+}
+.sea .dock-wrap {
+  margin-top: 0;
+}
+.sea .dock__quick {
+  color: var(--media-ink);
+}
+.sea__content {
+  position: relative;
+  padding-top: clamp(56px, 8vw, 112px);
+}
+.sea .statement__text {
+  color: var(--media-ink-2);
+}
+.sea .statement__text strong {
+  color: #ffffff;
+}
+.sea .statement__text strong::after {
+  background: var(--brand-yellow);
+}
+.sea .statement__source,
+.sea .statement__source .text-link {
+  color: var(--media-ink);
+}
+.sea .statement__source .text-link {
+  text-decoration-color: rgb(244 248 246 / 0.55);
+}
+.sea a:focus-visible,
+.sea button:focus-visible {
+  --focus: #ffffff;
+}
+.sea__toggle {
+  right: max(var(--gutter), (100% - var(--container)) / 2);
+  bottom: calc(var(--shore-h) + 24px);
+  color: var(--media-ink);
+  background: rgb(255 255 255 / 0.14);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+}
+.sea__toggle:hover {
+  background: rgb(255 255 255 / 0.24);
+}
+/* Ondas: superfície (só em retrato) e saída do mar na cor da página */
+.sea__surface,
+.sea__shore {
+  position: absolute;
   left: 0;
   right: 0;
-  height: var(--wave-h);
   overflow: hidden;
+  pointer-events: none;
 }
-.undersea__wave {
+.sea__surface {
+  display: none;
+  top: -1px;
+  height: var(--surface-h);
+}
+.sea__shore {
+  bottom: -1px;
+  height: var(--shore-h);
+}
+.sea__wave {
   position: absolute;
-  top: 0;
   left: 0;
+  top: 0;
   width: 200%;
   max-width: none;
   height: 100%;
 }
-.undersea__wave--foam {
-  fill: rgb(255 255 255 / 0.55);
+.sea__wave--surf {
+  fill: var(--bg);
+  animation: wave-left 16s linear infinite;
+}
+.sea__wave--foam {
+  fill: rgb(255 255 255 / 0.3);
   animation: wave-left 19s linear infinite;
 }
-.undersea__wave--air {
+.sea__wave--land {
   fill: var(--bg);
   animation: wave-right 13s linear infinite;
 }
@@ -1518,117 +1573,33 @@ html:not(.js) .statement__text strong::after {
   from { transform: translate3d(-50%, 0, 0); }
   to { transform: translate3d(0, 0, 0); }
 }
-/* Reflexos de luz (caustics): duas texturas que se repetem e se cruzam */
-.undersea__caustics {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.75) 45%, transparent 92%);
-  mask-image: linear-gradient(180deg, #000 0%, rgb(0 0 0 / 0.75) 45%, transparent 92%);
-}
-.undersea__caustics::before,
-.undersea__caustics::after {
-  content: "";
-  position: absolute;
-  inset: -540px;
-  background-repeat: repeat;
-  background-size: 520px;
-  will-change: transform;
-}
-.undersea__caustics::before {
-  background-image: url("../media/caustics-a.webp");
-  opacity: 0.6;
-  animation: caustic-a 30s linear infinite;
-}
-.undersea__caustics::after {
-  background-image: url("../media/caustics-b.webp");
-  opacity: 0.4;
-  animation: caustic-b 44s linear infinite;
-}
-@keyframes caustic-a {
-  to { transform: translate3d(-520px, 0, 0); }
-}
-@keyframes caustic-b {
-  to { transform: translate3d(520px, -520px, 0); }
-}
-/* Feixes de luz vindos da superfície */
-.undersea__rays {
-  position: absolute;
-  inset: 40px 0 0;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
-}
-.undersea__rays span {
-  position: absolute;
-  top: -10%;
-  height: 120%;
-  width: 12%;
-  background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.5), rgb(255 255 255 / 0));
-  transform: skewX(-16deg);
-  opacity: 0.45;
-  animation: ray-sway 9s ease-in-out infinite alternate;
-}
-.undersea__rays span:nth-child(1) { left: 12%; width: 9%; animation-duration: 8s; }
-.undersea__rays span:nth-child(2) { left: 34%; width: 14%; animation-duration: 11s; animation-delay: -4s; }
-.undersea__rays span:nth-child(3) { left: 61%; width: 8%; animation-duration: 9.5s; animation-delay: -2s; }
-.undersea__rays span:nth-child(4) { left: 80%; width: 12%; animation-duration: 12s; animation-delay: -6s; }
-@keyframes ray-sway {
-  from { opacity: 0.2; transform: skewX(-16deg) translate3d(-18px, 0, 0); }
-  to { opacity: 0.6; transform: skewX(-12deg) translate3d(18px, 0, 0); }
-}
-/* Bolhas subindo */
-.undersea__bubbles span {
-  --x: 50%;
-  --s: 8px;
-  --d: 14s;
-  --delay: 0s;
-  position: absolute;
-  left: var(--x);
-  bottom: 10%;
-  width: var(--s);
-  height: var(--s);
-  border-radius: 50%;
-  background: radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.95) 0 18%, rgb(255 255 255 / 0.35) 45%, rgb(255 255 255 / 0.08) 72%);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.65);
-  opacity: 0;
-  animation:
-    bubble-rise var(--d) linear var(--delay) infinite,
-    bubble-wobble 2.6s ease-in-out var(--delay) infinite alternate;
-}
-.undersea__bubbles span:nth-child(1) { --x: 6%; --s: 6px; --d: 13s; --delay: -2s; }
-.undersea__bubbles span:nth-child(2) { --x: 14%; --s: 10px; --d: 17s; --delay: -9s; }
-.undersea__bubbles span:nth-child(3) { --x: 22%; --s: 5px; --d: 12s; --delay: -5s; }
-.undersea__bubbles span:nth-child(4) { --x: 31%; --s: 8px; --d: 15s; --delay: -12s; }
-.undersea__bubbles span:nth-child(5) { --x: 43%; --s: 4px; --d: 11s; --delay: -7s; }
-.undersea__bubbles span:nth-child(6) { --x: 52%; --s: 12px; --d: 19s; --delay: -3s; }
-.undersea__bubbles span:nth-child(7) { --x: 63%; --s: 6px; --d: 14s; --delay: -10s; }
-.undersea__bubbles span:nth-child(8) { --x: 71%; --s: 9px; --d: 16s; --delay: -1s; }
-.undersea__bubbles span:nth-child(9) { --x: 79%; --s: 5px; --d: 12.5s; --delay: -6s; }
-.undersea__bubbles span:nth-child(10) { --x: 86%; --s: 11px; --d: 18s; --delay: -14s; }
-.undersea__bubbles span:nth-child(11) { --x: 92%; --s: 7px; --d: 13.5s; --delay: -4s; }
-.undersea__bubbles span:nth-child(12) { --x: 97%; --s: 4px; --d: 10.5s; --delay: -8s; }
-@keyframes bubble-rise {
-  0% { transform: translate3d(0, 0, 0); opacity: 0; }
-  10% { opacity: 0.9; }
-  80% { opacity: 0.7; }
-  100% { transform: translate3d(0, -560px, 0); opacity: 0; }
-}
-@keyframes bubble-wobble {
-  from { translate: -5px 0; }
-  to { translate: 5px 0; }
-}
-.undersea.is-paused *,
-.undersea.is-paused *::before,
-.undersea.is-paused *::after {
+.sea.is-paused .sea__wave {
   animation-play-state: paused;
 }
-@media (max-width: 767px) {
-  .undersea {
-    --wave-h: 72px;
+/* Retrato (celular e tablet): o hero termina no fundo claro, então o mar começa com ondas */
+@media (max-width: 767px), (max-aspect-ratio: 1/1) {
+  .sea {
+    --surface-h: 56px;
+    margin-top: 0;
+    padding-top: calc(var(--surface-h) + 24px);
   }
-  .undersea__bubbles span:nth-child(n + 8) {
-    display: none;
+  .sea__media {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .sea__media::after {
+    background: rgb(var(--sea-scrim) / 0.6);
+  }
+  .sea__surface {
+    display: block;
+  }
+}
+@media (max-width: 767px) {
+  .sea {
+    --shore-h: 64px;
+  }
+  .sea__toggle {
+    bottom: calc(var(--shore-h) + 12px);
   }
 }
 
@@ -1661,7 +1632,7 @@ html:not(.js) .statement__text strong::after {
 .tile--b { grid-column: 8 / span 5; }
 .tile--c { grid-column: 8 / span 5; }
 .tile--d { grid-column: 1 / span 5; }
-.tile--e { grid-column: 6 / span 7; }
+.tile--e { grid-column: 6 / span 7; --band: 68%; }
 .tile__photo {
   position: absolute;
   inset: 0;
@@ -1672,18 +1643,18 @@ html:not(.js) .statement__text strong::after {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.2) brightness(0.92) contrast(1.05);
+  object-position: var(--pos, 50% 50%);
+  filter: saturate(0.72) contrast(1.03);
   transition: transform 1200ms var(--ease-out);
 }
-/* Filtro de cor da marca sobre a foto (verde + amarelo + escurecimento leve) */
+/* Filtro da marca mais leve: a foto continua legível, só puxa para o verde Petrobras */
 .tile__photo::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(0deg, rgb(0 133 66 / 0.32), rgb(0 133 66 / 0.32)),
-    linear-gradient(0deg, rgb(253 200 47 / 0.08), rgb(253 200 47 / 0.08)),
-    rgb(3 30 20 / 0.42);
+    linear-gradient(180deg, rgb(0 133 66 / 0.08) 0%, rgb(0 133 66 / 0.3) 100%),
+    rgb(4 30 20 / 0.14);
 }
 .tile__shape {
   position: absolute;
@@ -1766,6 +1737,10 @@ html:not(.js) .statement__text strong::after {
   .bento {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* cards estreitos: enquadramento próprio quando o assunto fica fora do recorte */
+  .tile__photo img {
+    object-position: var(--pos-sm, var(--pos, 50% 50%));
+  }
   .tile--a {
     grid-column: 1 / -1;
     grid-row: auto;
@@ -1778,6 +1753,7 @@ html:not(.js) .statement__text strong::after {
   .tile--e {
     grid-column: auto;
     min-height: 400px;
+    --band: 82%;
   }
 }
 @media (max-width: 639px) {
@@ -3185,13 +3161,8 @@ html:not(.js) .statement__text strong::after {
   .site-header {
     transition: none;
   }
-  .undersea *,
-  .undersea *::before,
-  .undersea *::after {
+  .sea__wave {
     animation: none !important;
-  }
-  .undersea__bubbles {
-    display: none;
   }
   .btn:active,
   .chip:active {

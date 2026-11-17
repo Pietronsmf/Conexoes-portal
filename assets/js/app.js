@@ -274,9 +274,9 @@
     apply();
   }
 
-  /* ---------- Seção debaixo das ondas: anima só quando visível ---------- */
-  function initUndersea() {
-    var sea = $("[data-undersea]");
+  /* ---------- Ondas da seção do mar: animam só quando visíveis ---------- */
+  function initSeaWaves() {
+    var sea = $("[data-sea]");
     if (!sea || !("IntersectionObserver" in window)) return;
     sea.classList.add("is-paused");
     new IntersectionObserver(
@@ -317,72 +317,89 @@
     });
   }
 
-  /* ---------- Vídeo do hero ---------- */
-  function initHeroVideo() {
-    var video = $(".hero__video");
-    if (!video) return;
-    var btn = $("[data-video-toggle]");
-    var icon = btn && $("i", btn);
+  /* ---------- Vídeos de fundo (hero e mar): só tocam visíveis, um botão pausa todos ---------- */
+  function initBgVideos() {
+    var videos = $$("video[data-src-lg]");
+    if (!videos.length) return;
+    var buttons = $$("[data-video-toggle]");
+    var probe = videos[0];
+    /* H.264 quando houver suporte; VP9/WebM como alternativa */
+    var ext = probe.canPlayType('video/mp4; codecs="avc1.640028"') ? ".mp4" : probe.canPlayType('video/webm; codecs="vp9"') ? ".webm" : "";
+    if (!ext) {
+      buttons.forEach(function (b) {
+        b.hidden = true;
+      });
+      return;
+    }
     var small = window.matchMedia("(max-width: 767px)").matches;
     var saveData = navigator.connection && navigator.connection.saveData;
     var userPaused = reduceMotion.matches || !!saveData;
+    var visible = new Map();
 
-    function setBtn(playing) {
-      if (!btn) return;
-      btn.setAttribute("aria-label", playing ? "Pausar vídeo de fundo" : "Reproduzir vídeo de fundo");
-      icon.className = "ph-light " + (playing ? "ph-pause" : "ph-play");
-    }
-    /* H.264 quando houver suporte; VP9/WebM como alternativa */
-    var ext = video.canPlayType('video/mp4; codecs="avc1.640028"') ? ".mp4" : video.canPlayType('video/webm; codecs="vp9"') ? ".webm" : "";
-    if (!ext) {
-      if (btn) btn.hidden = true;
-      return;
-    }
-    function load() {
-      if (!video.getAttribute("src") && ext) {
-        video.src = (small ? video.dataset.srcSm : video.dataset.srcLg) + ext;
-        video.defaultPlaybackRate = 0.8;
-        video.playbackRate = 0.8;
+    function load(v) {
+      if (!v.getAttribute("src")) {
+        v.src = (small ? v.dataset.srcSm : v.dataset.srcLg) + ext;
+        v.defaultPlaybackRate = 0.8;
+        v.playbackRate = 0.8;
       }
     }
-    function play() {
-      load();
-      var p = video.play();
+    function sync(v) {
+      if (userPaused || !visible.get(v)) {
+        v.pause();
+        return;
+      }
+      load(v);
+      var p = v.play();
       if (p && p.catch) {
-        p.catch(function () {
-          setBtn(false);
+        p.catch(function (err) {
+          /* autoplay bloqueado (modo economia, política do navegador): botão passa a "reproduzir" */
+          if (err && err.name === "NotAllowedError" && !userPaused) {
+            userPaused = true;
+            paint();
+          }
         });
       }
-      setBtn(true);
     }
-
-    video.addEventListener("playing", function () {
-      video.classList.add("is-playing");
-    });
-
-    if (userPaused) setBtn(false);
-    else play();
-
-    if (btn) {
-      btn.addEventListener("click", function () {
-        if (video.paused) {
-          userPaused = false;
-          play();
-        } else {
-          userPaused = true;
-          video.pause();
-          setBtn(false);
-        }
+    function paint() {
+      buttons.forEach(function (b) {
+        b.setAttribute("aria-label", userPaused ? "Reproduzir vídeos de fundo" : "Pausar vídeos de fundo");
+        $("i", b).className = "ph-light " + (userPaused ? "ph-play" : "ph-pause");
       });
     }
 
+    videos.forEach(function (v) {
+      visible.set(v, false);
+      v.addEventListener("playing", function () {
+        v.classList.add("is-playing");
+      });
+    });
     if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entries) {
-        if (userPaused || !video.getAttribute("src")) return;
-        if (entries[0].isIntersecting) video.play().catch(function () {});
-        else video.pause();
-      }).observe(video);
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            visible.set(e.target, e.isIntersecting);
+            sync(e.target);
+          });
+        },
+        { rootMargin: "200px 0px" }
+      );
+      videos.forEach(function (v) {
+        io.observe(v);
+      });
+    } else {
+      videos.forEach(function (v) {
+        visible.set(v, true);
+        sync(v);
+      });
     }
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        userPaused = !userPaused;
+        paint();
+        videos.forEach(sync);
+      });
+    });
+    paint();
   }
 
   /* ---------- Filtro segmentado com recorte animado ---------- */
@@ -1228,10 +1245,10 @@
   function init() {
     initNav();
     initFontSize();
-    initUndersea();
+    initSeaWaves();
     initMarquee();
     initReveal();
-    initHeroVideo();
+    initBgVideos();
     initHome();
     initSteps();
     initFaq();

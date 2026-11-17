@@ -6,12 +6,12 @@ Releitura do portal [Petrobras Conexões para Inovação](https://conexoes-inova
 
 ## 1. Leitura do briefing
 
-**Lendo como:** redesign completo (overhaul) do portal de inovação aberta da Petrobras, para startups, ICTs e empresas fornecedoras. Segue a **linguagem visual do site institucional petrobras.com.br** (aba branca do logo, cards com diagonal verde, barras amarelas), **sempre no tema claro**, com um primeiro impacto cinematográfico (o vídeo da plataforma). Base técnica: CSS próprio com tokens, sem framework.
+**Lendo como:** redesign completo (overhaul) do portal de inovação aberta da Petrobras, para startups, ICTs e empresas fornecedoras. Segue a **linguagem visual do site institucional petrobras.com.br** (segmento branco do logo, cards com diagonal verde, barras amarelas), **sempre no tema claro**, com um primeiro impacto cinematográfico (o vídeo da plataforma). Base técnica: CSS próprio com tokens, sem framework.
 
 | Dial | Valor | Por quê |
 | --- | --- | --- |
 | `DESIGN_VARIANCE` | 6 | Empresa de capital aberto e público técnico pedem confiança (3 a 4). O overhaul soma +2. |
-| `MOTION_INTENSITY` | 5 | Movimento só onde comunica: entrada do hero, revelação no scroll, filtros, jornada e a seção debaixo das ondas. |
+| `MOTION_INTENSITY` | 5 | Movimento só onde comunica: entrada do hero, vídeos do hero e do mar, ondas, revelação no scroll, filtros e jornada. |
 | `VISUAL_DENSITY` | 4 | Página de marketing que também é ferramenta (lista de desafios). |
 
 ### Limitação da auditoria
@@ -64,11 +64,11 @@ Títulos de seção em negrito (32 px, cinza `#373737`), seguidos de uma barra a
 | Padrão Petrobras | No protótipo |
 | --- | --- |
 | Barra de serviços | "Você está em: Conexões para Inovação", "Acesse também" com links reais dos sites da Petrobras e controle A- / A+ funcional. Escondida abaixo de 1024 px. |
-| Aba branca do logo | Mesma geometria (diagonal de 76 px em 104 px de altura, canto arredondado, base inclinada), com o logo oficial e o nome do programa. Uma aba espelhada atrás do menu garante contraste quando o vídeo passa por baixo. |
-| Header compacto ao rolar | Barra branca de 80 px com sombra; a barra de serviços sai de cena com `transform`. |
+| Aba branca do logo | Vira o segmento branco da ilha flutuante: borda direita diagonal com o canto de baixo arredondado, logo oficial e nome do programa. |
+| Header compacto ao rolar | A barra de serviços sai de cena com `transform` e a ilha sobe para 12 px do topo, mais opaca. |
 | Menu verde | Links em verde Petrobras; o item atual e o hover ganham a barra amarela. |
 | Barra amarela sob títulos | Em todos os títulos de seção e de página, no título do hero e nos títulos dos cards de desafio. |
-| Card "Acesse também" | Cards dos módulos: foto dessaturada com filtro verde, painel verde diagonal e fio amarelo (SVG próprio, escalável), texto branco. |
+| Card "Acesse também" | Cards dos módulos: foto com filtro verde leve (a foto continua legível), painel verde diagonal e fio amarelo (SVG próprio, escalável), texto branco. |
 | Petrobras Sans | Não usada: é proprietária. O protótipo segue com Geist; na implementação, usar a fonte licenciada. |
 | Barra de navegação inferior no celular | Não adotada nesta versão, porque o detalhe do desafio já usa uma barra fixa embaixo. Fica como próximo passo. |
 
@@ -83,7 +83,7 @@ Títulos de seção em negrito (32 px, cinza `#373737`), seguidos de uma barra a
 
 ## 4. Marca
 
-- **Assinatura:** logo oficial Petrobras horizontal (símbolo BR + PETROBRAS), fio vertical e o nome do programa em duas linhas, dentro da aba branca do header. Tamanhos: 26 px de altura no header, 22 px no celular e 30 px no rodapé.
+- **Assinatura:** logo oficial Petrobras horizontal (símbolo BR + PETROBRAS), fio vertical e o nome do programa em duas linhas, dentro do segmento branco da ilha do header. Tamanhos: 26 px de altura no header, 22 px no celular e 30 px no rodapé.
 - **Favicon:** símbolo BR sobre quadrado branco.
 - **Uso:** o logo aparece sempre sobre branco, nas cores originais. Não recolorir, não aplicar sombra, não colocar sobre foto.
 - **Origem e regras:** ver [`assets/brand/README.md`](assets/brand/README.md). Na versão final, usar os arquivos do manual de marca oficial.
@@ -100,19 +100,20 @@ Neutros levemente esverdeados, **um acento interativo** (verde Petrobras) e o **
 
 | Token | Valor | Uso |
 | --- | --- | --- |
-| `--bg` | `#f2f5f3` | Fundo da página, painel do hero |
-| `--surface` | `#fbfcfb` | Barra de serviços, header rolado, cards |
+| `--bg` | `#f2f5f3` | Fundo da página, ondas de saída do mar |
+| `--surface` | `#fbfcfb` | Barra de serviços, ilha do header, cards |
 | `--ink` / `--ink-2` / `--muted` | `#0e1c17` / `#33433d` / `#5a6a64` | Texto principal, apoio, metadados |
 | `--accent` | `#008542` | CTA, painel verde dos cards de módulo |
 | `--accent-ink` | `#006b35` | Links e menu |
 | `--brand-yellow` | `#fdc82f` | Barras sob títulos, fio dos cards, sublinhado do menu |
-| `--sea-1` / `--sea-2` / `--sea-3` | `#d3ebe6` / `#c0e2dc` / `#b0dad3` | Água da seção dos números |
+| `--sea-scrim` | `4 24 26` | Escurecimento do vídeo do mar (de 0 a 62%) |
+| `--sea-blend` | `180px` | Faixa em que o mar entra em fusão com o mar do hero |
 | `--warn-*` / `--danger-*` | | Somente estados |
 
 Contraste medido (WCAG):
 
 - **Fundo da página:** texto 16:1, apoio 9,5:1, metadados 5,2:1, links e menu 6,1:1. O texto branco sobre o verde dos botões e dos cards fica em 4,7:1.
-- **Água da seção dos números:** o texto de apoio fica acima de 6,5:1 no ponto mais escuro.
+- **Texto sobre vídeo:** medido em 5 quadros de cada vídeo, nos 5% de pixels mais desfavoráveis sob o texto, de 390 a 1920 px. Hero: sobretítulo e apoio acima de 7,2:1. Mar: frase acima de 7,3:1, fonte e "Buscas frequentes" acima de 8,5:1.
 
 ### Tipografia
 
@@ -136,43 +137,39 @@ Geist (texto e títulos) e Geist Mono (contadores), auto-hospedadas, licença OF
 
 ### Header
 
-`--topbar-h` 40 px, `--mainbar-h` 80 px, `--tab-h` 104 px e `--tab-dx` 76 px. No celular: 0, 64, 80 e 58 px. `--header-offset` posiciona o conteúdo das páginas internas.
+`--topbar-h` 40 px (0 abaixo de 1024 px), `--island-h` 64 px e `--island-gap` 12 px. Deles saem `--mainbar-h` (76 px, para âncoras e barras fixas) e `--header-offset` (116 px no desktop, 76 px no celular), que posiciona o conteúdo abaixo do header.
 
 ## 6. Movimento: o que anima e por quê
 
 | Elemento | Animação | Propósito |
 | --- | --- | --- |
-| Header | A barra de serviços sai com `transform`; o fundo branco entra com fade | Ganhar espaço ao rolar |
+| Header | A barra de serviços sai com `transform`; a ilha sobe e fica mais opaca | Ganhar espaço ao rolar |
 | Menu | Barra amarela cresce no hover e marca a página atual | Localização |
 | Hero | Fade + subida + desfoque, escalonado | Hierarquia na primeira dobra |
-| Vídeo | Loop vai-e-volta de 11 s a 0,8x, pausa fora da tela, botão de pausa | Atmosfera (WCAG 2.2.2) |
-| Ondas | Duas ondas periódicas deslizam em sentidos opostos (13 s e 19 s) | Superfície do mar |
-| Reflexos de luz | Duas texturas de caustics se cruzam (30 s e 44 s) | Luz debaixo d'água |
-| Feixes de luz | Balanço lento de opacidade e posição | Profundidade |
-| Bolhas | 12 bolhas sobem com leve oscilação (8 no celular) | Sensação de estar debaixo das ondas |
+| Vídeos | Hero e mar em loop vai-e-volta de 11 s a 0,8x; só tocam visíveis; os dois botões de pausa controlam ambos | Atmosfera e continuidade (WCAG 2.2.2) |
+| Ondas | Na saída do mar, espuma e borda na cor da página deslizam em sentidos opostos (19 s e 13 s); em retrato, uma onda também abre o mar | Passagem do mar para a página |
 | Seções e cards | Revelação no scroll, entrada escalonada após filtrar | Ritmo de leitura e mudança de estado |
 | Filtro segmentado | Recorte `clip-path` desliza até o ativo | Continuidade |
 
-A seção debaixo das ondas só anima quando está visível (`IntersectionObserver`). Com `prefers-reduced-motion`, o vídeo não inicia, ondas, reflexos e feixes ficam parados, as bolhas somem e o marquee vira lista.
+As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`). Com `prefers-reduced-motion` ou economia de dados, os vídeos não iniciam (o botão passa a "reproduzir"), as ondas ficam paradas e o marquee vira lista.
 
 ## 7. Componentes
 
-- **Header Petrobras:** barra de serviços, aba branca com logo, aba espelhada atrás do menu, busca, "Entrar". Ao rolar, barra branca compacta. Até 1023 px, menu de tela cheia.
+- **Header misto:** barra de serviços da Petrobras em cima e, abaixo, a ilha flutuante da versão anterior (pílula de vidro claro, até 1200 px). Dentro da ilha, o segmento branco diagonal com o logo, o menu verde com barra amarela, a busca e "Entrar". Ao rolar, a barra de serviços sai e a ilha sobe. Até 1023 px, menu de tela cheia.
 - **Hero:**
-  - No desktop, o vídeo aparece numa janela com corte diagonal, sem degradê. O texto fica sobre o fundo claro à direita, com a barra amarela sob o título.
-  - Em telas 4:3 e 3:2, o corte vai para a esquerda.
+  - No desktop, a composição aprovada: vídeo inteiro, véu claro só atrás do texto (à direita) e barra amarela sob o título. O pé do hero não tem mais fade para o fundo claro: o mar segue livre para a seção de baixo.
   - Em retrato, o vídeo vira um bloco no topo, com o texto abaixo.
-- **Números debaixo das ondas:** água clara em degradê, superfície ondulada, reflexos de luz gerados por código, feixes e bolhas.
-- **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque.
+- **Mar contínuo (busca e números):** a seção sobe 180 px por baixo do hero e o vídeo do mar entra em fusão com o mar do próprio hero, sem emenda. O mar escurece aos poucos até a frase, que fica na frente em branco, com os números sublinhados em amarelo. A busca continua sobre a linha d'água. Ondas na cor da página fecham a seção. Em retrato, o mar começa com uma onda.
+- **Cards de módulo:** padrão "Acesse também" da Petrobras, em grade assimétrica, com Startups em destaque. Cada módulo tem uma foto que mostra o seu público: equipe de startup com braço robótico, laboratório (universidades e ICTs), torre de refinaria (problemas da operação), técnico em campo (soluções prontas) e peças impressas em 3D (tecnologia que sai para o mercado). Cada foto tem enquadramento próprio para o desktop e para cards estreitos (`--pos` e `--pos-sm`).
 - **Card de desafio:** moldura dupla, status, título com barra amarela, prazo e contagem regressiva.
 - **Outros:** filtro segmentado, estados (skeleton, vazio, erro), dúvidas em abas, avisos por e-mail em duas colunas, formulários com validação (CNPJ numérico e alfanumérico), painel do desafio com barra fixa no celular, toast.
 
 ## 8. Acessibilidade
 
 - **Navegação:** link "Pular para o conteúdo", landmarks semânticos e `aria-current` no menu.
-- **Tamanho do texto:** controle A- / A+ de 87,5% a 125%, lembrado no navegador. A página não vaza para os lados em nenhum nível.
+- **Tamanho do texto:** controle A- / A+ de 87,5% a 125%, lembrado no navegador. A barra de serviços tem tamanho fixo, para o controle não mudar de lugar nem sair da tela. A página não vaza para os lados em nenhum nível.
 - **Foco e hover:** foco visível em todos os interativos. Hover só com `(hover: hover) and (pointer: fine)`.
-- **Mídia e animação:** vídeo decorativo com botão de pausa. Elementos decorativos com `aria-hidden` e sem captura de clique.
+- **Mídia e animação:** vídeos decorativos com botão de pausa (um no hero e um no mar, sincronizados). Elementos decorativos com `aria-hidden` e sem captura de clique.
 - **Contraste:** AA verificado (seção 5).
 
 ## 9. Pre-flight
@@ -181,9 +178,9 @@ A seção debaixo das ondas só anima quando está visível (`IntersectionObserv
 - [x] Zero travessões no conteúdo
 - [x] Um tema (claro), um acento interativo, amarelo só em linhas finas
 - [x] Logo oficial sobre fundo branco, nas cores originais
-- [x] Hero sem degradê, título em 2 linhas de 1024 a 1920 px, CTA visível sem rolar
+- [x] Hero da versão aprovada, sem fade no pé; título em 2 linhas de 1180 a 1920 px (3 em 1024 px); CTA visível sem rolar
 - [x] 2 sobretítulos em 8 seções; um marquee
-- [x] Imagens reais (quadros do vídeo enviado); texturas de luz geradas por código
+- [x] Imagens reais: vídeo enviado (hero, mar e páginas internas) e fotos do Pexels com crédito nos módulos
 - [x] Estados de carregamento, vazio, erro e sucesso
 - [x] Sem `scroll` listeners; só `IntersectionObserver`
 - [x] Sem rolagem horizontal de 390 a 1920 px, inclusive com texto em 125%
