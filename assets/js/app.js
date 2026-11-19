@@ -201,6 +201,172 @@
     );
   }
 
+  /* ---------- Projetos de chamadas anteriores: o retorno de quem participou ---------- */
+  function caseById(id) {
+    return (CI.projetos || []).find(function (p) {
+      return p.id === id;
+    });
+  }
+
+  /* Na lista: os projetos do módulo filtrado vêm primeiro; depois, os mais recentes */
+  function sortedCases(modulo) {
+    return (CI.projetos || []).slice().sort(function (a, b) {
+      var ma = a.modulo === modulo ? 0 : 1;
+      var mb = b.modulo === modulo ? 0 : 1;
+      return ma - mb || b.ano - a.ano;
+    });
+  }
+
+  /* No desafio: mesmo módulo pesa mais, depois mesmo tema e mesma área */
+  function relatedCases(c, n) {
+    return (CI.projetos || [])
+      .map(function (p) {
+        return { p: p, s: (p.modulo === c.modulo ? 4 : 0) + (p.tema === c.tema ? 2 : 0) + (p.area === c.area ? 1 : 0) };
+      })
+      .sort(function (a, b) {
+        return b.s - a.s || b.p.ano - a.p.ano;
+      })
+      .slice(0, n || 2)
+      .map(function (x) {
+        return x.p;
+      });
+  }
+
+  function caseCardHTML(p, i) {
+    var m = CI.modulos[p.modulo];
+    return (
+      '<article class="case case--' + p.etapa + '" style="--i:' + (i || 0) + '">' +
+      '<div class="shell"><div class="core">' +
+      '<div class="card__top">' +
+      '<span class="card__module"><span class="card__icon"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i></span>' + esc(m.nome) + "</span>" +
+      '<span class="case__stage case__stage--' + p.etapa + '">' + esc(CI.etapas[p.etapa]) + "</span>" +
+      "</div>" +
+      '<h3 class="case__title"><button type="button" data-case="' + esc(p.id) + '" aria-haspopup="dialog">' + esc(p.titulo) + "</button></h3>" +
+      '<p class="case__who"><strong>' + esc(p.empresa) + "</strong> · " + esc(p.perfil) + "</p>" +
+      '<dl class="case__metrics">' +
+      p.metricas
+        .slice(0, 2)
+        .map(function (mt) {
+          return '<div class="case__metric"><dt>' + esc(mt[1]) + "</dt><dd>" + esc(mt[0]) + "</dd></div>";
+        })
+        .join("") +
+      "</dl>" +
+      '<div class="case__foot"><span class="case__year">Chamada de ' + p.ano + "</span>" +
+      '<span class="case__more" aria-hidden="true">Ver resultados <i class="ph-light ph-arrow-right"></i></span></div>' +
+      "</div></div></article>"
+    );
+  }
+
+  function caseDialogHTML(p) {
+    var m = CI.modulos[p.modulo];
+    function list(arr) {
+      return (
+        '<ul class="case-x__list">' +
+        arr
+          .map(function (t) {
+            return '<li><i class="ph-light ph-check-circle" aria-hidden="true"></i><span>' + esc(t) + "</span></li>";
+          })
+          .join("") +
+        "</ul>"
+      );
+    }
+    var quem = p.modulo === "parcerias" ? "Para o grupo de pesquisa" : "Para a empresa";
+    return (
+      '<div class="case-x__bar"><button class="case-x__close" type="button" data-case-close aria-label="Fechar"><i class="ph-light ph-x" aria-hidden="true"></i></button></div>' +
+      '<header class="case-x__head">' +
+      '<div class="case-x__meta"><span class="card__module"><span class="card__icon"><i class="ph-light ph-' + m.icone + '" aria-hidden="true"></i></span>' + esc(m.nome) + "</span>" +
+      '<span class="case__stage case__stage--' + p.etapa + '">' + esc(CI.etapas[p.etapa]) + "</span></div>" +
+      '<h2 class="case-x__title" id="case-x-title">' + esc(p.titulo) + "</h2>" +
+      '<p class="case-x__who"><strong>' + esc(p.empresa) + "</strong> · " + esc(p.perfil) + " · chamada de " + p.ano + "</p>" +
+      '<p class="case-x__summary">' + esc(p.resumo) + "</p>" +
+      "</header>" +
+      '<dl class="case-x__metrics">' +
+      p.metricas
+        .map(function (mt) {
+          return '<div class="case-x__metric"><dt>' + esc(mt[1]) + "</dt><dd>" + esc(mt[0]) + "</dd></div>";
+        })
+        .join("") +
+      "</dl>" +
+      '<div class="case-x__grid">' +
+      '<section class="case-x__block"><h3>O problema</h3><p>' + esc(p.desafio) + "</p></section>" +
+      '<section class="case-x__block"><h3>A solução</h3><p>' + esc(p.solucao) + "</p></section>" +
+      "</div>" +
+      '<section class="case-x__block"><h3>Do aceite ao resultado</h3><ol class="case-x__path">' +
+      p.caminho
+        .map(function (st) {
+          return '<li><span class="case-x__when">' + esc(st[1]) + "</span><span>" + esc(st[0]) + "</span></li>";
+        })
+        .join("") +
+      "</ol></section>" +
+      '<div class="case-x__grid">' +
+      '<section class="case-x__block"><h3>' + quem + "</h3>" + list(p.retornoEmpresa) + "</section>" +
+      '<section class="case-x__block"><h3>Para a Petrobras</h3>' + list(p.retornoPetrobras) + "</section>" +
+      "</div>" +
+      '<figure class="case-x__quote"><span class="case-x__quote-icon" aria-hidden="true"><i class="ph-light ph-quotes"></i></span>' +
+      "<blockquote><p>" + esc(p.depoimento[0]) + "</p></blockquote><figcaption>" + esc(p.depoimento[1]) + ", " + esc(p.empresa) + "</figcaption></figure>" +
+      '<dl class="case-x__facts">' +
+      "<div><dt>Recursos</dt><dd>" + esc(p.aporte) + "</dd></div>" +
+      "<div><dt>Duração</dt><dd>" + esc(p.duracao) + "</dd></div>" +
+      "<div><dt>Área</dt><dd>" + esc(p.area) + "</dd></div>" +
+      "</dl>" +
+      '<footer class="case-x__foot"><p class="proto-note"><i class="ph-light ph-info" aria-hidden="true"></i>Caso ilustrativo: empresa e números fictícios.</p>' +
+      '<a class="btn btn--primary btn--sm" href="desafios.html?modulo=' + p.modulo + '">Ver desafios de ' + esc(m.nome) + "</a></footer>"
+    );
+  }
+
+  /* Painel com o caso completo (dialog nativo: foco preso, Esc fecha, fundo inerte) */
+  var caseDlg = null;
+  function closeCase() {
+    if (!caseDlg || !caseDlg.open) return;
+    caseDlg.classList.remove("is-in");
+    var opener = caseDlg._opener;
+    setTimeout(
+      function () {
+        if (caseDlg.open) caseDlg.close();
+        /* o assistente aberto em tela cheia (celular) mantém a rolagem travada */
+        if (!doc.querySelector('.assist__panel[aria-modal="true"]')) root.classList.remove("is-locked");
+        if (opener && doc.contains(opener)) opener.focus();
+      },
+      reduceMotion.matches ? 0 : 200
+    );
+  }
+  function openCase(id, opener) {
+    var p = caseById(id);
+    if (!p) return;
+    if (!caseDlg) {
+      caseDlg = doc.createElement("dialog");
+      caseDlg.className = "case-x";
+      caseDlg.setAttribute("aria-labelledby", "case-x-title");
+      doc.body.appendChild(caseDlg);
+      caseDlg.addEventListener("click", function (e) {
+        if (e.target === caseDlg || e.target.closest("[data-case-close]")) closeCase();
+      });
+      caseDlg.addEventListener("cancel", function (e) {
+        e.preventDefault();
+        closeCase();
+      });
+    }
+    caseDlg.innerHTML = '<div class="case-x__panel">' + caseDialogHTML(p) + "</div>";
+    caseDlg._opener = opener || doc.activeElement;
+    if (typeof caseDlg.showModal === "function") {
+      if (!caseDlg.open) caseDlg.showModal();
+    } else caseDlg.setAttribute("open", "");
+    root.classList.add("is-locked");
+    requestAnimationFrame(function () {
+      caseDlg.classList.add("is-in");
+    });
+  }
+  CI.openCase = openCase;
+
+  function initCases() {
+    doc.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-case]");
+      if (!b) return;
+      e.preventDefault();
+      openCase(b.getAttribute("data-case"), b);
+    });
+  }
+
   /* Quando um grupo tem menos de 3 desafios, o espaço vira um atalho para a lista */
   function moreCardHTML(href, label) {
     return (
@@ -1029,8 +1195,25 @@
       return stateHTML({ icon: "magnifying-glass", title: title, text: text, actions: actions });
     }
 
+    /* Projetos anteriores: seguem o módulo do filtro (os dele aparecem primeiro) */
+    var casesHost = $("[data-cases]");
+    var casesNote = $("[data-cases-note]");
+    var casesFor = null;
+    function paintCases() {
+      if (!casesHost || casesFor === state.modulo) return;
+      var first = casesFor === null;
+      casesFor = state.modulo;
+      casesHost.innerHTML = sortedCases(state.modulo).map(caseCardHTML).join("");
+      casesHost.classList.toggle("is-new", !first);
+      if (casesNote) {
+        casesNote.innerHTML = state.modulo ? "Os projetos de <strong>" + esc(CI.modulos[state.modulo].nome) + "</strong> aparecem primeiro, como no filtro acima." : "";
+        casesNote.hidden = !state.modulo;
+      }
+    }
+
     function update() {
       syncURL();
+      paintCases();
       if (!loaded) return;
       var base = pool();
       seg.setCounts(countByModule(base));
@@ -1178,6 +1361,7 @@
       return;
     }
 
+    CI.current = c;
     var m = CI.modulos[c.modulo];
     var s = status(c);
     var prazo = addDays(c.prazoDias);
@@ -1239,6 +1423,7 @@
       ["avaliacao", "Como avaliamos"],
       ["cronograma", "Cronograma"],
       ["documentos", "Documentos"],
+      ["resultados", "Resultados anteriores"],
     ];
     function sec(i, body) {
       var id = secs[i][0];
@@ -1321,6 +1506,12 @@
             .join("") +
           "</ul>"
       ) +
+      sec(
+        6,
+        '<p class="prose-note">Projetos de chamadas anteriores do mesmo módulo ou tema, e o que quem participou conseguiu depois.</p>' +
+          '<div class="cases cases--two">' + relatedCases(c, 2).map(caseCardHTML).join("") + "</div>" +
+          '<p class="cases-more"><a class="link-arrow" href="desafios.html#projetos">Ver todos os projetos <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a></p>'
+      ) +
       "</article>" +
       '<aside class="aside aside--' + s.key + '" aria-label="Prazo e inscrição" style="--p:' + progress(c) + '"><div class="shell"><div class="core" data-panel>' +
       (closed
@@ -1401,6 +1592,7 @@
         var show = !e.isIntersecting && e.boundingClientRect.top < 0;
         bar.classList.toggle("is-visible", show);
         bar.inert = !show;
+        doc.body.classList.toggle("mobile-bar-on", show);
       }).observe(panel);
     }
 
@@ -1584,8 +1776,27 @@
     });
   }
 
+  /* Utilitários usados pelo assistente de dúvidas (assistente.js) */
+  CI.util = {
+    esc: esc,
+    norm: norm,
+    status: status,
+    countdown: countdown,
+    addDays: addDays,
+    fmtShort: fmtShort,
+    fmtLong: fmtLong,
+    proposalHref: proposalHref,
+    matches: matches,
+    byDeadline: byDeadline,
+    relatedCases: relatedCases,
+    sortedCases: sortedCases,
+    caseById: caseById,
+    reduceMotion: reduceMotion,
+  };
+
   /* ---------- Início ---------- */
   function init() {
+    initCases();
     initNav();
     initFontSize();
     initSeaWaves();
