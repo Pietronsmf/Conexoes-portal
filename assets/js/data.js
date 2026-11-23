@@ -530,7 +530,7 @@
     ILUSTRATIVOS: empresas, grupos de pesquisa, valores e resultados são fictícios.
     Na versão final, viriam de casos reais autorizados pelos participantes.
     etapa: onde o projeto está hoje (rótulos em CI.etapas)
-    metricas: [número, o que ele mede] — os dois primeiros aparecem no card
+    impacto: { petrobras, empresa }, cada um com [número, o que ele mede]; o primeiro de cada lado aparece no card
     caminho: marcos do projeto, do aceite ao resultado
   */
   CI.etapas = {
@@ -555,11 +555,16 @@
       aporte: "R$ 1,4 milhão",
       duracao: "12 meses",
       resumo: "Drones com câmera térmica e um modelo de visão computacional que aponta vazamentos, erosão e obras irregulares na faixa dos dutos.",
-      metricas: [
-        ["−42%", "no tempo de inspeção por quilômetro"],
-        ["R$ 3,8 mi", "em contrato de serviço por três anos"],
-        ["11 → 34", "pessoas na equipe da startup"],
-      ],
+      impacto: {
+        petrobras: [
+          ["−42%", "no tempo de inspeção por quilômetro"],
+          ["2×", "mais inspeções nos trechos críticos"],
+        ],
+        empresa: [
+          ["R$ 3,8 mi", "em contrato de serviço por três anos"],
+          ["11 → 34", "pessoas na equipe"],
+        ],
+      },
       desafio: "As faixas de dutos terrestres eram percorridas a pé ou de carro, com relatórios em papel e semanas entre uma visita e outra.",
       solucao: "A startup adaptou drones de longo alcance e treinou um modelo que encontra manchas de vazamento, erosão e obras na faixa, com cada ponto georreferenciado no relatório.",
       caminho: [
@@ -592,11 +597,16 @@
       aporte: "R$ 900 mil",
       duracao: "10 meses",
       resumo: "Modelos que cruzam vibração, temperatura e dados de operação para avisar, com dias de antecedência, quando uma bomba vai falhar.",
-      metricas: [
-        ["3", "falhas evitadas durante o piloto"],
-        ["R$ 1,6 mi", "no contrato de expansão"],
-        ["R$ 5 mi", "captados em rodada seed depois do piloto"],
-      ],
+      impacto: {
+        petrobras: [
+          ["3", "falhas de bombas evitadas no piloto"],
+          ["120", "bombas monitoradas na expansão"],
+        ],
+        empresa: [
+          ["R$ 1,6 mi", "no contrato de expansão"],
+          ["R$ 5 mi", "captados em rodada seed depois do piloto"],
+        ],
+      },
       desafio: "Paradas inesperadas de bombas centrífugas interrompiam o escoamento e geravam reparos caros e urgentes.",
       solucao: "A startup integrou dados históricos e de tempo real e criou alertas que chegam à equipe de manutenção com a causa provável da falha.",
       caminho: [
@@ -629,11 +639,16 @@
       aporte: "R$ 3,2 milhões",
       duracao: "30 meses",
       resumo: "Um revestimento compósito aplicado com a linha em operação, para reparar trechos com perda de espessura sem parar a produção.",
-      metricas: [
-        ["+60%", "de vida útil no ensaio acelerado"],
-        ["2", "patentes depositadas em cotitularidade"],
-        ["14", "pesquisadores e bolsistas no projeto"],
-      ],
+      impacto: {
+        petrobras: [
+          ["+60%", "de vida útil do reparo no ensaio acelerado"],
+          ["0", "paradas de produção para aplicar o reparo"],
+        ],
+        empresa: [
+          ["2", "patentes depositadas em cotitularidade"],
+          ["14", "pesquisadores e bolsistas no projeto"],
+        ],
+      },
       desafio: "Reparar dutos com perda de espessura exigia parar a linha ou instalar abraçadeiras metálicas pesadas.",
       solucao: "O grupo desenvolveu uma formulação polimérica e um método de aplicação em campo, testados em ensaios acelerados de pressão e temperatura.",
       caminho: [
@@ -666,11 +681,15 @@
       aporte: "R$ 4,8 milhões",
       duracao: "36 meses",
       resumo: "Redes neurais treinadas com dados da Petrobras que sugerem horizontes e falhas sísmicas para o intérprete revisar.",
-      metricas: [
-        ["5×", "mais rápido para mapear horizontes sísmicos"],
-        ["9", "artigos publicados em revistas internacionais"],
-        ["22", "alunos formados no projeto"],
-      ],
+      impacto: {
+        petrobras: [
+          ["5×", "mais rápido para mapear horizontes sísmicos"],
+        ],
+        empresa: [
+          ["9", "artigos em revistas internacionais"],
+          ["22", "alunos formados no projeto"],
+        ],
+      },
       desafio: "Interpretar os dados sísmicos do pré-sal exigia semanas de trabalho manual em cada bloco.",
       solucao: "O grupo treinou modelos com dados reais e entregou uma ferramenta que propõe a interpretação inicial, com a decisão final sempre do intérprete.",
       caminho: [
@@ -703,11 +722,16 @@
       aporte: "R$ 6,5 milhões",
       duracao: "24 meses",
       resumo: "Um sensor ultrassônico a bateria que mede a espessura da tubulação todos os dias e envia os dados para o sistema de integridade.",
-      metricas: [
-        ["3", "refinarias com o sensor em operação"],
-        ["R$ 9 mi", "em vendas para outros clientes"],
-        ["−70%", "de inspeções manuais nos pontos monitorados"],
-      ],
+      impacto: {
+        petrobras: [
+          ["−70%", "de inspeções manuais nos pontos monitorados"],
+          ["3", "refinarias com o sensor em operação"],
+        ],
+        empresa: [
+          ["R$ 9 mi", "em vendas para outros clientes"],
+          ["12 → 30", "pessoas na engenharia"],
+        ],
+      },
       desafio: "Medir a perda de espessura dependia de inspeções manuais, com andaimes, trabalho em altura e paradas programadas.",
       solucao: "A empresa desenvolveu o sensor, o rádio de baixo consumo e a integração com o sistema de integridade, até a homologação do produto.",
       caminho: [
@@ -740,11 +764,15 @@
       aporte: "R$ 2,1 milhões em contrato",
       duracao: "8 meses do edital ao contrato",
       resumo: "Um software que reúne as detecções de vazamento, prioriza os reparos e gera o inventário de emissões no formato exigido pelos órgãos reguladores.",
-      metricas: [
-        ["8 meses", "da publicação do edital à assinatura"],
-        ["R$ 2,1 mi", "no primeiro contrato"],
-        ["5", "unidades atendidas no primeiro ano"],
-      ],
+      impacto: {
+        petrobras: [
+          ["5", "unidades com inventário de emissões no primeiro ano"],
+        ],
+        empresa: [
+          ["R$ 2,1 mi", "no primeiro contrato"],
+          ["8 meses", "da publicação do edital à assinatura"],
+        ],
+      },
       desafio: "Os vazamentos detectados em campo ficavam espalhados em planilhas, o que atrasava os reparos e os relatórios de emissões.",
       solucao: "Como a solução já existia, a empresa fez uma prova de conceito com dados reais e adaptou os relatórios ao padrão da Petrobras.",
       caminho: [
@@ -776,11 +804,15 @@
       aporte: "Licença com pagamento de royalties",
       duracao: "18 meses até a primeira venda",
       resumo: "A fabricante licenciou um separador desenvolvido pela Petrobras, adaptou o projeto para produção em série e passou a vendê-lo a outras empresas.",
-      metricas: [
-        ["18 meses", "da licença à primeira venda"],
-        ["R$ 12 mi", "em vendas no segundo ano"],
-        ["40", "unidades instaladas no Brasil e no exterior"],
-      ],
+      impacto: {
+        petrobras: [
+          ["40", "unidades instaladas no Brasil e no exterior"],
+        ],
+        empresa: [
+          ["R$ 12 mi", "em vendas no segundo ano"],
+          ["18 meses", "da licença à primeira venda"],
+        ],
+      },
       desafio: "A Petrobras desenvolveu um separador compacto de água e óleo e buscou uma empresa para produzi-lo e vendê-lo.",
       solucao: "A fabricante licenciou a tecnologia, recebeu o conhecimento da equipe do CENPES e adaptou o projeto para a produção em série.",
       caminho: [

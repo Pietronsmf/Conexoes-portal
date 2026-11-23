@@ -5275,6 +5275,11 @@ html:not(.js) .statement__text strong::after {
   animation: card-in 560ms var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 45ms);
 }
+/* cartão estreito: o selo da etapa desce para a linha de baixo em vez de ser cortado */
+.case .card__top {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
 .case__stage {
   display: inline-flex;
   flex: none;
@@ -5344,36 +5349,70 @@ html:not(.js) .statement__text strong::after {
   font-weight: 560;
   color: var(--ink-2);
 }
-.case__metrics {
+/* Impacto no cartão: o número principal de cada lado, a Petrobras e quem executou */
+.case .core {
+  container-type: inline-size;
+}
+.impact {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
   margin: auto 0 0;
-  padding: 14px 16px;
+  overflow: hidden;
   border-radius: 16px;
   background: var(--surface-sunken);
 }
-.case__metric {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-end;
+.impact__side {
+  display: grid;
+  align-content: start;
   gap: 4px;
   min-width: 0;
+  padding: 14px 16px 16px;
 }
-.case__metric dd {
-  margin: 0;
+.impact__side--petro {
+  background: var(--accent-soft);
+}
+.impact__who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+.impact__who i {
+  flex: none;
+  font-size: 1rem;
+}
+.impact__side--petro .impact__who i {
+  color: var(--accent-ink);
+}
+.impact__side--empresa .impact__who i {
+  color: var(--warn-ink);
+}
+.impact__num {
+  margin-top: 4px;
   font-size: clamp(1.25rem, 0.95rem + 0.5vw, 1.5rem);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  color: var(--accent-ink);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  color: var(--ink);
 }
-.case__metric dt {
+.impact__side--petro .impact__num {
+  color: var(--accent-ink);
+}
+.impact__label {
   font-size: 0.8125rem;
   line-height: 1.4;
   color: var(--ink-2);
+}
+/* cartão estreito: os dois lados um sobre o outro */
+@container (max-width: 280px) {
+  .impact {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .case__foot {
   display: flex;
@@ -5527,41 +5566,92 @@ html:not(.js) .statement__text strong::after {
   line-height: 1.6;
   color: var(--ink-2);
 }
-.case-x__panel > .case-x__metrics,
+.case-x__panel > .case-x__impact,
 .case-x__panel > .case-x__grid,
 .case-x__panel > .case-x__block,
 .case-x__panel > .case-x__quote,
 .case-x__panel > .case-x__facts {
   margin: 28px clamp(20px, 4vw, 40px) 0;
 }
-.case-x__metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+/* Impacto no painel: um bloco para cada lado, com os números e o que mudou */
+.case-x__impact-title {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
 }
-.case-x__metric {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-end;
-  gap: 6px;
-  padding: 16px;
-  border-radius: 16px;
+.case-x__sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.case-x__side {
+  padding: 18px 18px 20px;
+  border-radius: 18px;
+  background: var(--surface-sunken);
+}
+.case-x__side--petro {
   background: var(--accent-soft);
 }
-.case-x__metric dd {
+.case-x__side-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.case-x__side-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 1.15rem;
+  color: var(--warn-ink);
+}
+.case-x__side--petro .case-x__side-icon {
+  color: var(--accent-ink);
+}
+.case-x__side-head h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.case-x__side-head p {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.case-x__nums {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.case-x__nums div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+}
+.case-x__nums dd {
   margin: 0;
   font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
-  color: var(--accent-ink);
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  color: var(--ink);
 }
-.case-x__metric dt {
+.case-x__side--petro .case-x__nums dd {
+  color: var(--accent-ink);
+}
+.case-x__nums dt {
   font-size: 0.8125rem;
   line-height: 1.4;
   color: var(--ink-2);
+}
+.case-x__side .case-x__list {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 .case-x__grid {
   display: grid;
@@ -5941,6 +6031,12 @@ html:not(.js) .statement__text strong::after {
   display: block;
   color: var(--ink);
 }
+.assist__case-petro {
+  display: block;
+  margin-top: 2px;
+  color: var(--accent-ink);
+  font-weight: 520;
+}
 .assist__case i {
   color: var(--accent-ink);
 }
@@ -6080,7 +6176,7 @@ html:not(.js) .statement__text strong::after {
     border-radius: 24px 24px 0 0;
     transform: translateY(32px);
   }
-  .case-x__metrics,
+  .case-x__sides,
   .case-x__grid {
     grid-template-columns: minmax(0, 1fr);
   }

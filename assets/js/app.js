@@ -232,6 +232,33 @@
       });
   }
 
+  /* O outro lado do impacto, conforme quem executou o projeto */
+  function caseSide(p) {
+    return (
+      {
+        startups: { rotulo: "Para a startup", icone: "rocket-launch" },
+        parcerias: { rotulo: "Para o grupo de pesquisa", icone: "graduation-cap" },
+      }[p.modulo] || { rotulo: "Para a empresa", icone: "storefront" }
+    );
+  }
+  /* Impacto no cartão: o número principal de cada lado, Petrobras e quem executou */
+  function impactHTML(p) {
+    var side = caseSide(p);
+    function col(cls, icon, who, mt) {
+      return (
+        '<div class="impact__side impact__side--' + cls + '">' +
+        '<p class="impact__who"><i class="ph-light ph-' + icon + '" aria-hidden="true"></i>' + who + "</p>" +
+        '<p class="impact__num">' + esc(mt[0]) + '</p><p class="impact__label">' + esc(mt[1]) + "</p></div>"
+      );
+    }
+    return (
+      '<div class="impact" role="group" aria-label="Impacto do projeto">' +
+      col("petro", "factory", "Para a Petrobras", p.impacto.petrobras[0]) +
+      col("empresa", side.icone, side.rotulo, p.impacto.empresa[0]) +
+      "</div>"
+    );
+  }
+
   function caseCardHTML(p, i) {
     var m = CI.modulos[p.modulo];
     return (
@@ -243,16 +270,9 @@
       "</div>" +
       '<h3 class="case__title"><button type="button" data-case="' + esc(p.id) + '" aria-haspopup="dialog">' + esc(p.titulo) + "</button></h3>" +
       '<p class="case__who"><strong>' + esc(p.empresa) + "</strong> · " + esc(p.perfil) + "</p>" +
-      '<dl class="case__metrics">' +
-      p.metricas
-        .slice(0, 2)
-        .map(function (mt) {
-          return '<div class="case__metric"><dt>' + esc(mt[1]) + "</dt><dd>" + esc(mt[0]) + "</dd></div>";
-        })
-        .join("") +
-      "</dl>" +
+      impactHTML(p) +
       '<div class="case__foot"><span class="case__year">Chamada de ' + p.ano + "</span>" +
-      '<span class="case__more" aria-hidden="true">Ver resultados <i class="ph-light ph-arrow-right"></i></span></div>' +
+      '<span class="case__more" aria-hidden="true">Ver o impacto <i class="ph-light ph-arrow-right"></i></span></div>' +
       "</div></div></article>"
     );
   }
@@ -270,7 +290,24 @@
         "</ul>"
       );
     }
-    var quem = p.modulo === "parcerias" ? "Para o grupo de pesquisa" : "Para a empresa";
+    var side = caseSide(p);
+    /* Um lado do impacto: os números e o que mudou, em lista */
+    function sideHTML(cls, icon, who, sub, nums, items) {
+      return (
+        '<section class="case-x__side case-x__side--' + cls + '" aria-label="' + esc(who) + '">' +
+        '<div class="case-x__side-head"><span class="case-x__side-icon" aria-hidden="true"><i class="ph-light ph-' + icon + '"></i></span>' +
+        "<div><h4>" + who + "</h4><p>" + esc(sub) + "</p></div></div>" +
+        '<dl class="case-x__nums">' +
+        nums
+          .map(function (mt) {
+            return "<div><dt>" + esc(mt[1]) + "</dt><dd>" + esc(mt[0]) + "</dd></div>";
+          })
+          .join("") +
+        "</dl>" +
+        list(items) +
+        "</section>"
+      );
+    }
     return (
       '<div class="case-x__bar"><button class="case-x__close" type="button" data-case-close aria-label="Fechar"><i class="ph-light ph-x" aria-hidden="true"></i></button></div>' +
       '<header class="case-x__head">' +
@@ -280,13 +317,12 @@
       '<p class="case-x__who"><strong>' + esc(p.empresa) + "</strong> · " + esc(p.perfil) + " · chamada de " + p.ano + "</p>" +
       '<p class="case-x__summary">' + esc(p.resumo) + "</p>" +
       "</header>" +
-      '<dl class="case-x__metrics">' +
-      p.metricas
-        .map(function (mt) {
-          return '<div class="case-x__metric"><dt>' + esc(mt[1]) + "</dt><dd>" + esc(mt[0]) + "</dd></div>";
-        })
-        .join("") +
-      "</dl>" +
+      '<section class="case-x__impact" aria-labelledby="case-x-impact">' +
+      '<h3 class="case-x__impact-title" id="case-x-impact">Impacto do projeto</h3>' +
+      '<div class="case-x__sides">' +
+      sideHTML("petro", "factory", "Para a Petrobras", "Quem lançou o desafio", p.impacto.petrobras, p.retornoPetrobras) +
+      sideHTML("empresa", side.icone, side.rotulo, p.empresa, p.impacto.empresa, p.retornoEmpresa) +
+      "</div></section>" +
       '<div class="case-x__grid">' +
       '<section class="case-x__block"><h3>O problema</h3><p>' + esc(p.desafio) + "</p></section>" +
       '<section class="case-x__block"><h3>A solução</h3><p>' + esc(p.solucao) + "</p></section>" +
@@ -298,10 +334,6 @@
         })
         .join("") +
       "</ol></section>" +
-      '<div class="case-x__grid">' +
-      '<section class="case-x__block"><h3>' + quem + "</h3>" + list(p.retornoEmpresa) + "</section>" +
-      '<section class="case-x__block"><h3>Para a Petrobras</h3>' + list(p.retornoPetrobras) + "</section>" +
-      "</div>" +
       '<figure class="case-x__quote"><span class="case-x__quote-icon" aria-hidden="true"><i class="ph-light ph-quotes"></i></span>' +
       "<blockquote><p>" + esc(p.depoimento[0]) + "</p></blockquote><figcaption>" + esc(p.depoimento[1]) + ", " + esc(p.empresa) + "</figcaption></figure>" +
       '<dl class="case-x__facts">' +

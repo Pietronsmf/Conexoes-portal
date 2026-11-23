@@ -184,8 +184,9 @@
     function caseLine(p) {
       return (
         '<li><button class="assist__case" type="button" data-case="' + esc(p.id) + '" aria-haspopup="dialog">' +
-        '<span class="assist__case-num">' + esc(p.metricas[0][0]) + "</span>" +
-        '<span class="assist__case-text"><strong>' + esc(p.metricas[0][1]) + "</strong>" + esc(p.titulo) + " · " + esc(p.empresa) + "</span>" +
+        '<span class="assist__case-num">' + esc(p.impacto.empresa[0][0]) + "</span>" +
+        '<span class="assist__case-text"><strong>' + esc(p.impacto.empresa[0][1]) + "</strong>" + esc(p.titulo) + " · " + esc(p.empresa) +
+        '<span class="assist__case-petro">Para a Petrobras: ' + esc(p.impacto.petrobras[0][0]) + " " + esc(p.impacto.petrobras[0][1]) + "</span></span>" +
         '<i class="ph-light ph-arrow-right" aria-hidden="true"></i></button></li>'
       );
     }
@@ -435,7 +436,7 @@
         var list = c && !mod ? U.relatedCases(c, 2) : U.sortedCases(mod || "").slice(0, 2);
         return {
           html:
-            "<p>Em chamadas anteriores, os projetos terminaram em contrato com a Petrobras, piloto em operação, patente ou tecnologia licenciada. " +
+            "<p>Em chamadas anteriores, os projetos terminaram em contrato com a Petrobras, piloto em operação, patente ou tecnologia licenciada, com ganhos dos dois lados: para quem executou e para a Petrobras. " +
             (c && !mod ? "Dois casos parecidos com este desafio" : "Dois exemplos") + " (ilustrativos):</p>" +
             '<ul class="assist__cases">' + list.map(caseLine).join("") + "</ul>" +
             "<p>" + (onListing ? jump("projetos", "Ver todos os projetos") : link("desafios.html#projetos", "Ver todos os projetos")) + "</p>",
