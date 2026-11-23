@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Desafios · Conexões para Inovação · Protótipo</title>
+  <meta name="description" content="Desafios tecnológicos abertos e encerrados do programa Petrobras Conexões para Inovação (protótipo).">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f2f5f3">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Desafios · Conexões para Inovação · Protótipo">
+  <meta property="og:description" content="Desafios tecnológicos abertos e encerrados do programa Petrobras Conexões para Inovação (protótipo).">
+  <meta property="og:image" content="assets/media/og-image.jpg">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/icons/phosphor/light.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add("js");
+      try {
+        var f = localStorage.getItem("ci-font");
+        if (f && f !== "100") d.style.fontSize = f + "%";
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-page="desafios">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <span class="top-sentinel" aria-hidden="true" data-top-sentinel></span>
+
+  <header class="site-header" data-nav data-state="top">
+    <div class="topbar">
+      <div class="topbar__inner">
+        <p class="topbar__where">Você está em: <strong>Conexões para Inovação</strong></p>
+        <nav class="topbar__links" aria-label="Outros sites da Petrobras">
+          <span class="topbar__label">Acesse também:</span>
+          <a href="https://petrobras.com.br/" target="_blank" rel="noopener">Site Petrobras</a>
+          <a href="https://transparencia.petrobras.com.br/" target="_blank" rel="noopener">Acesso à informação</a>
+          <a href="https://www.investidorpetrobras.com.br/" target="_blank" rel="noopener">Investidores</a>
+          <a href="https://agencia.petrobras.com.br/" target="_blank" rel="noopener">Imprensa</a>
+          <a href="https://canalfornecedor.petrobras.com.br/" target="_blank" rel="noopener">Fornecedores</a>
+        </nav>
+        <div class="topbar__font" role="group" aria-label="Tamanho do texto">
+          <button type="button" data-font-step="-1" aria-label="Diminuir o texto">A-</button>
+          <span data-font-label>100%</span>
+          <button type="button" data-font-step="1" aria-label="Aumentar o texto">A+</button>
+        </div>
+      </div>
+    </div>
+    <div class="mainbar">
+      <a class="brand" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
+        <img class="brand__logo" src="assets/brand/petrobras-horizontal.svg" alt="" width="133" height="26">
+        <span class="brand__name">Conexões para<br>Inovação</span>
+      </a>
+      <nav class="nav" aria-label="Principal">
+        <ul class="nav__links">
+          <li><a class="nav__link" href="index.html#modulos">Módulos</a></li>
+          <li><a class="nav__link" href="desafios.html" aria-current="page">Desafios</a></li>
+          <li><a class="nav__link" href="index.html#como-funciona">Como funciona</a></li>
+          <li><a class="nav__link" href="index.html#duvidas">Dúvidas</a></li>
+        </ul>
+        <a class="nav__search" href="desafios.html?buscar=1" aria-label="Buscar desafios"><i class="ph-light ph-magnifying-glass" aria-hidden="true"></i></a>
+        <a class="btn btn--primary btn--sm nav__signin" href="entrar.html">Entrar</a>
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu"><span></span><span></span></button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="menu" id="menu" inert>
+    <ul class="menu__links">
+      <li><a href="index.html#modulos">Módulos</a></li>
+      <li><a href="desafios.html">Desafios</a></li>
+      <li><a href="index.html#como-funciona">Como funciona</a></li>
+      <li><a href="index.html#duvidas">Dúvidas</a></li>
+      <li><a href="entrar.html">Entrar</a></li>
+    </ul>
+    <div class="menu__foot small">
+      <span>Dúvidas sobre o programa</span>
+      <a class="text-link" href="mailto:canal.startups@petrobras.com.br">canal.startups@petrobras.com.br</a>
+    </div>
+  </div>
+
+  <main id="conteudo" data-listing>
+    <div class="container">
+      <header class="page-head">
+        <nav aria-label="Trilha de navegação">
+          <ol class="crumbs">
+            <li><a href="index.html">Início</a></li>
+            <li aria-hidden="true"><i class="ph-light ph-caret-right"></i></li>
+            <li><span aria-current="page">Desafios</span></li>
+          </ol>
+        </nav>
+        <h1 class="title-xl">Desafios</h1>
+        <p class="lead">Chamadas de todos os módulos do programa. Filtre por tema, módulo ou área e veja os prazos de cada uma.</p>
+        <p class="page-head__more"><a class="link-arrow" href="#projetos">Veja o retorno de projetos anteriores <i class="ph-light ph-arrow-down" aria-hidden="true"></i></a></p>
+        <p class="proto-note"><i class="ph-light ph-info" aria-hidden="true"></i>Protótipo: desafios e prazos ilustrativos.</p>
+      </header>
+
+      <form class="shell toolbar" data-filters role="search" aria-label="Filtrar desafios">
+        <div class="core">
+          <div class="toolbar__row">
+            <div class="field">
+              <label class="field__label" for="f-q">Buscar</label>
+              <div class="control">
+                <i class="ph-light ph-magnifying-glass" aria-hidden="true"></i>
+                <input class="input" id="f-q" name="q" type="search" placeholder="Tema, tecnologia ou palavra-chave" autocomplete="off">
+                <button class="input-action" type="button" data-clear-q aria-label="Limpar busca" hidden><i class="ph-light ph-x" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-area">Área</label>
+              <div class="control control--select">
+                <select class="select" id="f-area" name="area">
+                  <option value="">Todas as áreas</option>
+                </select>
+                <i class="ph-light ph-caret-down" aria-hidden="true"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-ordem">Ordenar por</label>
+              <div class="control control--select">
+                <select class="select" id="f-ordem" name="ordem">
+                  <option value="prazo">Prazo mais próximo</option>
+                  <option value="recentes">Publicados recentemente</option>
+                </select>
+                <i class="ph-light ph-caret-down" aria-hidden="true"></i>
+              </div>
+            </div>
+          </div>
+          <div class="toolbar__row--2">
+            <div class="seg" data-seg="listing" role="group" aria-label="Filtrar por módulo">
+              <div class="seg__inner">
+                <div class="seg__track">
+                  <button class="seg__btn" type="button" data-value="" aria-pressed="true">Todos <span class="seg__count"></span></button>
+                  <button class="seg__btn" type="button" data-value="startups" aria-pressed="false">Startups <span class="seg__count"></span></button>
+                  <button class="seg__btn" type="button" data-value="parcerias" aria-pressed="false">Parcerias <span class="seg__count"></span></button>
+                  <button class="seg__btn" type="button" data-value="encomendas" aria-pressed="false">Encomendas <span class="seg__count"></span></button>
+                  <button class="seg__btn" type="button" data-value="aquisicao" aria-pressed="false">Aquisição <span class="seg__count"></span></button>
+                  <button class="seg__btn" type="button" data-value="transferencia" aria-pressed="false">Transferência <span class="seg__count"></span></button>
+                </div>
+                <div class="seg__active" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="toolbar__meta">
+              <label class="switch"><input type="checkbox" id="f-abertos" checked> Somente abertos</label>
+              <p class="results-count" data-count aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <section aria-labelledby="resultados-title" class="section section--flush-top">
+        <h2 class="visually-hidden" id="resultados-title">Resultados</h2>
+        <div class="cards" data-list></div>
+      </section>
+    </div>
+
+    <!-- Projetos de chamadas anteriores: o retorno de quem já participou -->
+    <section class="results-band" id="projetos" aria-labelledby="projetos-title">
+      <div class="container">
+        <header class="section-head results-band__head">
+          <h2 class="title-xl" id="projetos-title">Projetos que já saíram do papel</h2>
+          <p class="lead">Veja o que startups, universidades e empresas conseguiram em chamadas anteriores: contratos, pilotos em operação, patentes e tecnologias licenciadas.</p>
+        </header>
+        <ul class="returns">
+          <li><span class="returns__icon" aria-hidden="true"><i class="ph-light ph-handshake"></i></span><strong>Contrato com a Petrobras</strong><span>Serviço ou fornecimento depois do piloto.</span></li>
+          <li><span class="returns__icon" aria-hidden="true"><i class="ph-light ph-factory"></i></span><strong>Piloto em operação real</strong><span>Teste em unidade, com a equipe e os dados de campo.</span></li>
+          <li><span class="returns__icon" aria-hidden="true"><i class="ph-light ph-seal-check"></i></span><strong>Patente ou licença</strong><span>Propriedade intelectual registrada ou tecnologia licenciada.</span></li>
+          <li><span class="returns__icon" aria-hidden="true"><i class="ph-light ph-trend-up"></i></span><strong>Novos clientes e investimento</strong><span>Uma referência que abre portas no mercado.</span></li>
+        </ul>
+        <p class="results-band__fact"><span class="results-band__fact-icon" aria-hidden="true"><i class="ph-light ph-chart-line-up"></i></span><span>Desde 2019, o Módulo Startups, feito em parceria com o Sebrae, já investiu cerca de <strong>R$ 54 milhões</strong> em <strong>53 startups</strong> de 10 estados. <span class="results-band__source">Fonte: Secom, Governo Federal, setembro de 2024.</span></span></p>
+        <p class="cases-note" data-cases-note hidden></p>
+        <div class="cases" data-cases></div>
+        <p class="proto-note"><i class="ph-light ph-info" aria-hidden="true"></i>Protótipo: os projetos, as empresas e os números dos casos são ilustrativos.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a class="brand brand--footer" href="index.html" aria-label="Petrobras Conexões para Inovação, página inicial">
+            <img class="brand__logo" src="assets/brand/petrobras-horizontal.svg" alt="" width="153" height="30" loading="lazy">
+            <span class="brand__name">Conexões para<br>Inovação</span>
+          </a>
+          <p>Programa de inovação aberta da Petrobras para startups, ICTs e empresas.</p>
+        </div>
+        <nav aria-labelledby="f-programa">
+          <h2 id="f-programa">Programa</h2>
+          <ul class="footer__links">
+            <li><a href="index.html#modulos">Módulos</a></li>
+            <li><a href="desafios.html">Desafios</a></li>
+            <li><a href="index.html#como-funciona">Como funciona</a></li>
+            <li><a href="index.html#duvidas">Dúvidas</a></li>
+          </ul>
+        </nav>
+        <div>
+          <h2>Contato</h2>
+          <ul class="footer__links">
+            <li><a href="mailto:canal.startups@petrobras.com.br">canal.startups@petrobras.com.br</a></li>
+            <li><a href="https://petrobras.com.br" target="_blank" rel="noopener">petrobras.com.br <i class="ph-light ph-arrow-up-right" aria-hidden="true"></i></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>Protótipo conceitual de redesign. Não é o site oficial da Petrobras.</p>
+        <ul class="footer__legal">
+          <li><span class="is-disabled" aria-disabled="true" title="Disponível na versão final">Privacidade</span></li>
+          <li><span class="is-disabled" aria-disabled="true" title="Disponível na versão final">Termos de uso</span></li>
+          <li><span class="is-disabled" aria-disabled="true" title="Disponível na versão final">Acessibilidade</span></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-region" aria-live="polite" data-toasts></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/assistente.js"></script>
+</body>
+</html>
