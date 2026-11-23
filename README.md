@@ -21,8 +21,8 @@ Depois abra `http://localhost:8000`.
 | Página | Arquivo | O que mostra |
 | --- | --- | --- |
 | Início | `index.html` | Hero com vídeo escurecido no padrão petrobras.com.br, busca e números sobre o mar que continua do hero, módulos em cards no padrão Petrobras, vitrine escura de desafios com uma foto para cada um, no estilo do petrobras.com.br, jornada, temas, dúvidas e avisos por e-mail com escolha de temas e prévia do aviso |
-| Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos |
-| Detalhe | `desafio.html?id=…` | Topo em tela cheia com a foto do desafio, como a home; cartão de prazo fixo com índice da página; seções sem numeração; cronograma com o marcador "Hoje"; documentos; "Outros desafios abertos" na vitrine de cards de foto |
+| Desafios | `desafios.html` | Busca, filtros por módulo e área, ordenação, só abertos ou todos; projetos de chamadas anteriores com o retorno de cada um |
+| Detalhe | `desafio.html?id=…` | Topo com a foto do desafio e os dados que mais importam (valor, duração, maturidade); cartão de prazo fixo com resultado previsto e índice; seções na ordem do benchmark: o desafio, o que você recebe, quem pode participar (com checagem rápida), como participar, como avaliamos (pesos), depois do envio, propriedade intelectual, perguntas e respostas e resultados anteriores; "Outros desafios abertos" |
 | Entrar | `entrar.html` | Login e cadastro com validação (CNPJ numérico e alfanumérico) |
 | 404 | `404.html` | Página não encontrada |
 
@@ -35,6 +35,9 @@ Depois abra `http://localhost:8000`.
 - Erro: [`desafios.html?simular=erro`](desafios.html?simular=erro), depois "Tentar novamente".
 - Não encontrado: [`desafio.html?id=nao-existe`](desafio.html?id=nao-existe).
 - Inscrição a partir de um desafio: "Enviar proposta" leva a `entrar.html?…&acao=proposta`.
+- Checagem rápida: em "Quem pode participar", responda Sim ou Não; com um Não, a dica aponta outro módulo. Veja também uma chamada de transferência, sem pergunta de maturidade: [`desafio.html?id=licenciamento-sensor-fibra-optica`](desafio.html?id=licenciamento-sensor-fibra-optica).
+- Chamada encerrada: o cartão mostra a etapa atual, por exemplo [`desafio.html?id=gemeo-digital-compressores`](desafio.html?id=gemeo-digital-compressores).
+- Assistente: "Tire suas dúvidas" (ou "Perguntar ao assistente", na página do desafio). Experimente "quem fica com a propriedade intelectual?" ou "como as propostas são avaliadas?".
 - Cadastro direto: [`entrar.html?aba=cadastro`](entrar.html?aba=cadastro).
 - Tema: o site é sempre claro, mesmo com o sistema em modo escuro.
 - Tamanho do texto: botões A- / A+ na barra do topo (desktop). A barra tem tamanho fixo, então o controle não sai do lugar.
@@ -49,8 +52,9 @@ Depois abra `http://localhost:8000`.
 index.html, desafios.html, desafio.html, entrar.html, 404.html
 assets/
   css/styles.css        tokens, base, componentes e páginas
-  js/data.js            módulos, temas e desafios ilustrativos
-  js/app.js             navegação, vídeos, filtros, estados, formulários
+  js/data.js            módulos (com o conteúdo da página do desafio), temas, desafios e projetos ilustrativos
+  js/app.js             navegação, vídeos, filtros, estados, formulários, página do desafio
+  js/assistente.js      assistente de dúvidas (respostas por palavras-chave, sem IA)
   brand/                logo oficial Petrobras (horizontal e símbolo BR)
   fonts/                Geist e Geist Mono (OFL)
   icons/phosphor/       Phosphor Icons, peso light (MIT)

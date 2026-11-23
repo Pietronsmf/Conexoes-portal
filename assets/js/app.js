@@ -1332,6 +1332,14 @@
     }
   }
 
+  /* Primeira letra maiúscula ou minúscula, para encaixar textos dos dados numa frase */
+  function cap(t) {
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+  }
+  function lower(t) {
+    return t ? t.charAt(0).toLowerCase() + t.slice(1) : t;
+  }
+
   function initDetail() {
     var host = $("[data-detail]");
     if (!host) return;
@@ -1388,11 +1396,12 @@
       : '<a class="btn btn--primary btn--icon btn--block" href="' + nextUrl + '"><span class="btn__label">Enviar proposta</span><span class="btn__icon"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></span></a>';
 
     /* Linha do tempo: marcos em dias a partir de hoje; "Hoje" fica entre o último marco passado e o próximo */
+    var inicio = { aquisicao: "Início do teste", transferencia: "Início da licença" }[c.modulo] || "Início dos projetos";
     var marcos = [
       { d: -c.publicadoDias, label: "Publicação da chamada" },
       { d: c.prazoDias, label: "Fim das inscrições" },
       { d: c.prazoDias + 30, label: "Resultado preliminar", prev: true },
-      { d: c.prazoDias + 75, label: "Início dos projetos", prev: true },
+      { d: c.prazoDias + 75, label: inicio, prev: true },
     ];
     var k = -1;
     marcos.forEach(function (mc, j) {
@@ -1401,7 +1410,7 @@
     var pos = k < 0 ? 0 : k >= marcos.length - 1 ? marcos.length - 1 : k + (0 - marcos[k].d) / (marcos[k + 1].d - marcos[k].d);
     var nowX = (12.5 + 25 * pos).toFixed(2) + "%";
     var timeline =
-      '<ol class="tl" style="--now-x:' + nowX + '">' +
+      '<ol class="tl" id="cronograma" style="--now-x:' + nowX + '">' +
       marcos
         .map(function (mc, j) {
           var dt = addDays(mc.d);
@@ -1416,13 +1425,21 @@
         .join("") +
       "</ol>";
 
+    /*
+      Estrutura da página, vinda do benchmark de portais de desafios (Enel, HeroX, EIC, SBIR e outros):
+      o problema, o que se recebe, quem pode (com checagem rápida), como participar, como avaliamos
+      (pesos, nota mínima e devolutiva), o que acontece depois do envio, PI em linguagem simples,
+      perguntas públicas e o retorno de projetos anteriores.
+    */
     var secs = [
-      ["contexto", "Contexto"],
-      ["buscamos", "O que buscamos"],
+      ["desafio", "O desafio"],
+      ["recebe", "O que você recebe"],
       ["participar", "Quem pode participar"],
+      ["como", "Como participar"],
       ["avaliacao", "Como avaliamos"],
-      ["cronograma", "Cronograma"],
-      ["documentos", "Documentos"],
+      ["depois", "Depois do envio"],
+      ["pi", "Propriedade intelectual"],
+      ["perguntas", "Perguntas e respostas"],
       ["resultados", "Resultados anteriores"],
     ];
     function sec(i, body) {
@@ -1433,6 +1450,220 @@
         body + "</section>"
       );
     }
+    function icon(name) {
+      return '<i class="ph-light ph-' + name + '" aria-hidden="true"></i>';
+    }
+    var protoNote = function (text) {
+      return '<p class="proto-note">' + icon("info") + text + "</p>";
+    };
+
+    /* Maturidade tecnológica (TRL) em número e em palavras */
+    var petro = !!m.tecnologiaPetrobras;
+    var trlA = c.trl ? c.trl[0] : 0;
+    var trlB = c.trl ? c.trl[1] : 0;
+    var trlShort = !c.trl ? "" : trlA === trlB ? "TRL " + trlA : "TRL " + trlA + " a " + trlB;
+    var trlLong = !c.trl
+      ? ""
+      : trlA === trlB
+        ? cap(CI.trl[trlA][0]) + " (TRL " + trlA + ")"
+        : "De " + CI.trl[trlA][0] + " (TRL " + trlA + ") a " + CI.trl[trlB][0] + " (TRL " + trlB + ")";
+    var rotuloValor = m.rotuloValor || "Valor";
+
+    /* O desafio */
+    var bodyDesafio =
+      "<p>" + esc(c.contexto) + "</p>" +
+      '<h3 class="prose-sub">O que buscamos</h3>' +
+      '<ul class="wants">' +
+      c.buscamos
+        .map(function (b) {
+          return '<li><span class="wants__icon" aria-hidden="true"><i class="ph-light ph-check"></i></span><span>' + esc(b) + "</span></li>";
+        })
+        .join("") +
+      "</ul>" +
+      '<ul class="notes">' +
+      (c.trl
+        ? "<li>" + icon("gauge") + "<p><strong>" + (petro ? "Maturidade da tecnologia" : "Maturidade esperada") + ":</strong> " + esc(lower(trlLong)) + ".</p></li>"
+        : "") +
+      (petro
+        ? ""
+        : "<li>" + icon("arrows-split") + "<p><strong>Vale solução de outro setor.</strong> Tecnologias já usadas em outras indústrias são bem-vindas, desde que atendam aos requisitos.</p></li>") +
+      "</ul>";
+
+    /* O que você recebe */
+    var bodyRecebe =
+      '<ul class="gains">' +
+      m.recebe
+        .map(function (g) {
+          return '<li class="gain"><span class="gain__icon" aria-hidden="true"><i class="ph-light ph-' + g[0] + '"></i></span><h3>' + esc(g[1]) + "</h3><p>" + esc(g[2]) + "</p></li>";
+        })
+        .join("") +
+      "</ul>" +
+      protoNote("Valores e prazos ilustrativos do protótipo. Os oficiais ficam no edital.");
+
+    /* Quem pode participar, com a checagem rápida (perguntas do módulo + maturidade pedida) */
+    var checks = (m.checagem || []).slice();
+    if (c.trl && !petro) {
+      checks.push({ q: CI.trl[trlA][1] + " (TRL " + trlA + ")?", nao: m.cedo ? m.cedo[0] : "", alt: m.cedo ? m.cedo[1] : null });
+    }
+    var bodyParticipar =
+      '<div class="callout"><span class="callout__icon" aria-hidden="true"><i class="ph-light ph-users-three"></i></span><div>' +
+      '<p class="callout__title">' + esc(m.publico) + "</p>" +
+      "<p>Os requisitos completos de elegibilidade e documentação estão no edital.</p></div></div>" +
+      (checks.length
+        ? '<form class="quick" data-check aria-labelledby="check-t" novalidate>' +
+          '<div class="quick__head"><span class="quick__icon" aria-hidden="true"><i class="ph-light ph-list-checks"></i></span>' +
+          '<div><h3 id="check-t">Confira em um minuto</h3><p>Responda e veja se esta chamada combina com você. Nada é enviado.</p></div></div>' +
+          '<ul class="quick__list">' +
+          checks
+            .map(function (q, i) {
+              return (
+                '<li class="quick__item"><p class="quick__q" id="chk-' + i + '-q">' + esc(q.q) + "</p>" +
+                '<div class="yn" role="radiogroup" aria-labelledby="chk-' + i + '-q">' +
+                '<label class="yn__opt"><input type="radio" name="chk-' + i + '" value="sim"><span>Sim</span></label>' +
+                '<label class="yn__opt"><input type="radio" name="chk-' + i + '" value="nao"><span>Não</span></label>' +
+                "</div></li>"
+              );
+            })
+            .join("") +
+          "</ul>" +
+          '<div class="quick__result" data-check-result role="status" aria-live="polite"></div>' +
+          "</form>"
+        : "");
+
+    /* Como participar: passos, o que a proposta precisa ter e documentos */
+    var proposta = m.proposta || CI.propostaPadrao;
+    var bodyComo =
+      '<ol class="join-steps">' +
+      '<li class="join-step"><span class="join-step__icon" aria-hidden="true"><i class="ph-light ph-user-plus"></i></span>' +
+      '<h3>Crie seu cadastro</h3><p>Um cadastro por empresa ou instituição vale para todos os módulos.</p>' +
+      '<a class="text-link" href="entrar.html?aba=cadastro">Criar cadastro</a></li>' +
+      '<li class="join-step"><span class="join-step__icon" aria-hidden="true"><i class="ph-light ph-note-pencil"></i></span>' +
+      "<h3>Monte a proposta</h3><p>Use o modelo do desafio. O rascunho fica salvo e pode ser editado até o fim das inscrições.</p></li>" +
+      '<li class="join-step"><span class="join-step__icon" aria-hidden="true"><i class="ph-light ph-paper-plane-tilt"></i></span>' +
+      "<h3>Envie e acompanhe</h3><p>A confirmação chega por e-mail, e cada etapa aparece no seu painel.</p></li>" +
+      "</ol>" +
+      '<h3 class="prose-sub">O que a proposta precisa ter</h3>' +
+      '<dl class="needs">' +
+      proposta
+        .map(function (p) {
+          return "<div><dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd></div>";
+        })
+        .join("") +
+      "</dl>" +
+      '<h3 class="prose-sub" id="documentos">Documentos</h3>' +
+      '<ul class="docs">' +
+      [
+        ["file-pdf", "Edital completo", "PDF"],
+        ["file-text", "Anexo técnico do desafio", "PDF"],
+        ["file-text", "Modelo de proposta", "DOCX"],
+      ]
+        .map(function (dc) {
+          return (
+            '<li class="doc" aria-disabled="true"><i class="ph-light ph-' + dc[0] + '" aria-hidden="true"></i>' +
+            "<div><strong>" + dc[1] + "</strong><span>" + dc[2] + '</span></div><span class="doc__state">Disponível na versão final</span></li>'
+          );
+        })
+        .join("") +
+      "</ul>" +
+      '<p class="doc-log">' + icon("clock-counter-clockwise") +
+      "<span>Edital publicado em " + '<time datetime="' + isoDate(pub) + '">' + fmtLong(pub) + "</time>. " +
+      (closed ? "Inscrições encerradas em " + fmtLong(prazo) + "." : "Nenhuma alteração até agora.") + "</span></p>";
+
+    /* Como avaliamos: pesos, quem avalia, nota mínima e devolutiva */
+    var bodyAvaliacao =
+      "<p>Cada proposta recebe uma nota de 0 a 10 em quatro critérios. A nota final é a média ponderada pelos pesos.</p>" +
+      '<div class="criteria">' +
+      CI.criterios
+        .map(function (cr) {
+          return (
+            '<div class="criterion"><div class="criterion__top"><i class="ph-light ph-' + cr.icone + '" aria-hidden="true"></i>' +
+            '<span class="criterion__w"><strong>' + cr.peso + "%</strong> da nota</span></div>" +
+            "<h3>" + esc(cr.titulo) + "</h3><p>" + esc(cr.texto) + "</p>" +
+            '<span class="wbar" aria-hidden="true"><span style="width:' + cr.peso + '%"></span></span></div>'
+          );
+        })
+        .join("") +
+      "</div>" +
+      '<ul class="rules">' +
+      "<li>" + icon("users-three") + "<div><h3>Quem avalia</h3><p>" + esc(m.avaliadores) + "</p></div></li>" +
+      "<li>" + icon("gauge") + "<div><h3>Nota mínima</h3><p>Média " + CI.notas.minima + " de 10 para seguir, sem nota zero em nenhum critério.</p></div></li>" +
+      "<li>" + icon("chat-centered-text") + "<div><h3>Devolutiva para todos</h3><p>Toda proposta recebe a nota por critério e um comentário, selecionada ou não.</p></div></li>" +
+      "</ul>" +
+      protoNote("Pesos e notas ilustrativos do protótipo. Os oficiais ficam no edital.");
+
+    /* Depois do envio: linha do tempo, caminho depois da seleção e o que acontece se não for selecionada */
+    var bodyDepois =
+      "<p>Datas previstas para esta chamada. A linha mostra onde ela está hoje.</p>" +
+      timeline +
+      '<h3 class="prose-sub">Se a proposta for selecionada</h3>' +
+      '<ol class="path">' +
+      m.caminho
+        .map(function (st) {
+          var when = st[2].replace("{duracao}", lower(c.duracao));
+          return (
+            '<li class="path__step"><span class="path__icon" aria-hidden="true"><i class="ph-light ph-' + st[0] + '"></i></span>' +
+            "<div><h4>" + esc(st[1]) + "</h4>" +
+            (when ? '<span class="path__when">' + esc(cap(when)) + "</span>" : "") +
+            "<p>" + esc(st[3]) + "</p></div></li>"
+          );
+        })
+        .join("") +
+      "</ol>" +
+      '<p class="fact">' + icon("chart-line-up") + "<span>" +
+      (m.fato
+        ? esc(m.fato.texto) + ' <a class="text-link" href="' + m.fato.url + '" target="_blank" rel="noopener">Fonte: ' + esc(m.fato.fonte) + "</a>"
+        : 'Veja o que aconteceu com projetos parecidos em <a class="text-link" href="#resultados">Resultados anteriores</a>.') +
+      "</span></p>" +
+      '<h3 class="prose-sub">Se não for selecionada</h3>' +
+      '<ul class="plain-list">' +
+      "<li>Você recebe a devolutiva com a nota de cada critério.</li>" +
+      "<li>A proposta fica no seu painel e pode ser adaptada para as próximas chamadas.</li>" +
+      "<li>Propostas com média " + CI.notas.qualificada + " ou mais entram no banco de soluções qualificadas, consultado por outras áreas da Petrobras.</li>" +
+      "</ul>";
+
+    /* Propriedade intelectual em linguagem simples */
+    var bodyPi =
+      "<p>Resumo em linguagem simples. Em caso de dúvida, vale o que está no edital e no contrato.</p>" +
+      '<ul class="ip">' +
+      m.pi
+        .map(function (r) {
+          return '<li><span class="ip__icon" aria-hidden="true"><i class="ph-light ph-' + r[0] + '"></i></span><div><h3>' + esc(r[1]) + "</h3><p>" + esc(r[2]) + "</p></div></li>";
+        })
+        .join("") +
+      "</ul>";
+
+    /* Perguntas e respostas públicas: todos veem a mesma informação */
+    var perguntasAbertas = !closed && c.prazoDias >= 7;
+    var qa = m.perguntas.concat([
+      [
+        "Até quando posso enviar perguntas?",
+        perguntasAbertas
+          ? "Até " + fmtLong(addDays(c.prazoDias - 7)) + ". As respostas são publicadas aqui em até 3 dias úteis."
+          : closed
+            ? "O prazo de perguntas terminou junto com as inscrições."
+            : "O prazo de perguntas terminou uma semana antes do fim das inscrições. As respostas publicadas continuam valendo.",
+      ],
+    ]);
+    var bodyPerguntas =
+      "<p>Respostas públicas: todos os participantes veem a mesma informação.</p>" +
+      '<div class="qa">' +
+      qa
+        .map(function (x) {
+          return '<details><summary><span>' + esc(x[0]) + '</span><i class="ph-light ph-caret-down" aria-hidden="true"></i></summary><div class="qa__body"><p>' + esc(x[1]) + "</p></div></details>";
+        })
+        .join("") +
+      "</div>" +
+      '<div class="qa__actions">' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-ask>' + icon("chats-circle") + '<span class="btn__label">Perguntar ao assistente</span></button>' +
+      (perguntasAbertas
+        ? '<a class="text-link" href="mailto:canal.startups@petrobras.com.br?subject=' + encodeURIComponent("Pergunta sobre o desafio: " + c.titulo) + '">Enviar pergunta à equipe</a>'
+        : "") +
+      "</div>";
+
+    /* Cartão de prazo: quando sai o resultado (aberto) ou em que etapa a chamada está (encerrado) */
+    var since = -c.prazoDias;
+    var etapaAtual = since <= 30 ? "avaliação das propostas" : since <= 75 ? "resultado e contratação" : "projetos em andamento";
+    var resultadoPrev = addDays(c.prazoDias + 30);
 
     host.innerHTML =
       '<header class="dhero dhero--' + s.key + '">' +
@@ -1451,63 +1682,24 @@
       '<h1 class="dhero__title">' + esc(c.titulo) + "</h1>" +
       '<p class="dhero__lead">' + esc(c.resumo) + "</p>" +
       '<dl class="dhero__facts">' +
+      (c.valor ? "<div><dt>" + rotuloValor + "</dt><dd>" + esc(c.valor) + "</dd></div>" : "") +
+      (c.duracao ? "<div><dt>Duração</dt><dd>" + esc(c.duracao) + "</dd></div>" : "") +
+      (c.trl ? '<div><dt>Maturidade</dt><dd><abbr title="' + esc(trlLong) + '">' + trlShort + "</abbr></dd></div>" : "") +
       "<div><dt>Área</dt><dd>" + esc(c.area) + "</dd></div>" +
-      "<div><dt>Tema</dt><dd>" + esc(c.tema) + "</dd></div>" +
-      "<div><dt>Formato</dt><dd>" + esc(m.formato) + "</dd></div>" +
       "</dl>" +
       "</div></div></header>" +
       '<div class="container"><div class="detail-grid">' +
       '<article class="prose">' +
-      sec(0, "<p>" + esc(c.contexto) + "</p>") +
+      sec(0, bodyDesafio) +
+      sec(1, bodyRecebe) +
+      sec(2, bodyParticipar) +
+      sec(3, bodyComo) +
+      sec(4, bodyAvaliacao) +
+      sec(5, bodyDepois) +
+      sec(6, bodyPi) +
+      sec(7, bodyPerguntas) +
       sec(
-        1,
-        '<ul class="wants">' +
-          c.buscamos
-            .map(function (b) {
-              return '<li><span class="wants__icon" aria-hidden="true"><i class="ph-light ph-check"></i></span><span>' + esc(b) + "</span></li>";
-            })
-            .join("") +
-          "</ul>"
-      ) +
-      sec(
-        2,
-        '<div class="callout"><span class="callout__icon" aria-hidden="true"><i class="ph-light ph-users-three"></i></span><div>' +
-          '<p class="callout__title">' + esc(m.publico) + "</p>" +
-          "<p>Os requisitos completos de elegibilidade, documentação e propriedade intelectual estão no edital.</p></div></div>"
-      ) +
-      sec(
-        3,
-        '<div class="criteria">' +
-          CI.criterios
-            .map(function (cr, i) {
-              return (
-                '<div class="criterion"><i class="ph-light ph-' + cr.icone + '" aria-hidden="true"></i>' +
-                "<h3>" + esc(cr.titulo) + "</h3><p>" + esc(cr.texto) + "</p></div>"
-              );
-            })
-            .join("") +
-          "</div>"
-      ) +
-      sec(4, timeline) +
-      sec(
-        5,
-        '<ul class="docs">' +
-          [
-            ["file-pdf", "Edital completo", "PDF"],
-            ["file-text", "Anexo técnico do desafio", "PDF"],
-            ["file-text", "Modelo de proposta", "DOCX"],
-          ]
-            .map(function (dc) {
-              return (
-                '<li class="doc" aria-disabled="true"><i class="ph-light ph-' + dc[0] + '" aria-hidden="true"></i>' +
-                "<div><strong>" + dc[1] + "</strong><span>" + dc[2] + '</span></div><span class="doc__state">Disponível na versão final</span></li>'
-              );
-            })
-            .join("") +
-          "</ul>"
-      ) +
-      sec(
-        6,
+        8,
         '<p class="prose-note">Projetos de chamadas anteriores do mesmo módulo ou tema, e o que quem participou conseguiu depois.</p>' +
           '<div class="cases cases--two">' + relatedCases(c, 2).map(caseCardHTML).join("") + "</div>" +
           '<p class="cases-more"><a class="link-arrow" href="desafios.html#projetos">Ver todos os projetos <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a></p>'
@@ -1515,11 +1707,13 @@
       "</article>" +
       '<aside class="aside aside--' + s.key + '" aria-label="Prazo e inscrição" style="--p:' + progress(c) + '"><div class="shell"><div class="core" data-panel>' +
       (closed
-        ? '<div class="aside__count"><span class="small">Inscrições encerradas em</span><time class="aside__date" datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time></div>"
+        ? '<div class="aside__count"><span class="small">Inscrições encerradas em</span><time class="aside__date" datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time>" +
+          '<p class="aside__line">Etapa atual: <strong>' + etapaAtual + "</strong></p></div>"
         : '<div class="aside__count">' +
           '<p class="countdown countdown--xl"><span class="countdown__num">' + cd.num + '</span><span class="countdown__unit">' + cd.long + "</span></p>" +
           '<span class="meter meter--xl' + (s.key === "prazo" ? " meter--warn" : "") + '" aria-hidden="true"><span class="meter__bar"></span></span>' +
           '<p class="aside__line">Propostas até <time datetime="' + isoDate(prazo) + '">' + fmtLong(prazo) + "</time></p>" +
+          '<p class="aside__line aside__line--next">Resultado previsto em <time datetime="' + isoDate(resultadoPrev) + '">' + fmtShort(resultadoPrev) + "</time></p>" +
           "</div>") +
       '<div class="aside__actions">' + cta +
       '<div class="aside__secondary">' +
@@ -1541,6 +1735,60 @@
         : '<div class="mobile-bar" data-mobile-bar inert>' +
           '<div class="mobile-bar__info"><strong>' + s.left + "</strong><span>Propostas até " + fmtShort(prazo) + "</span></div>" +
           '<a class="btn btn--primary btn--sm" href="' + nextUrl + '">Enviar proposta</a></div>');
+
+    /* Checagem rápida: o resultado muda a cada resposta, sem enviar nada */
+    var chk = $("[data-check]", host);
+    if (chk) {
+      var chkOut = $("[data-check-result]", chk);
+      var paintCheck = function () {
+        var answered = 0;
+        var fails = [];
+        checks.forEach(function (q, i) {
+          var v = chk.querySelector('input[name="chk-' + i + '"]:checked');
+          if (!v) return;
+          answered++;
+          if (v.value === "nao") fails.push(q);
+        });
+        chkOut.className = "quick__result";
+        if (fails.length) {
+          chkOut.classList.add("is-warn");
+          chkOut.innerHTML =
+            '<p class="quick__verdict">' + icon("warning-circle") + "Esta chamada pode não ser para você agora.</p>" +
+            '<ul class="quick__tips">' +
+            fails
+              .map(function (q) {
+                var more = q.alt
+                  ? ' <a class="text-link" href="desafios.html?modulo=' + q.alt + '">Ver chamadas de ' + esc(CI.modulos[q.alt].nome) + "</a>"
+                  : q.url
+                    ? ' <a class="text-link" href="' + q.url + '" target="_blank" rel="noopener">' + esc(q.rotulo) + "</a>"
+                    : "";
+                return "<li>" + esc(q.nao) + more + "</li>";
+              })
+              .join("") +
+            "</ul>";
+        } else if (answered === checks.length) {
+          chkOut.classList.add("is-ok");
+          chkOut.innerHTML = '<p class="quick__verdict">' + icon("check-circle") + "Tudo certo com os requisitos básicos.</p><p>Confira os detalhes no edital antes de enviar.</p>";
+        } else {
+          var left = checks.length - answered;
+          chkOut.innerHTML = "<p>" + (answered ? (left > 1 ? "Faltam " + left + " respostas." : "Falta 1 resposta.") : "Responda às perguntas para ver o resultado.") + "</p>";
+        }
+      };
+      chk.addEventListener("change", paintCheck);
+      chk.addEventListener("submit", function (e) {
+        e.preventDefault();
+      });
+      paintCheck();
+    }
+
+    /* Perguntar ao assistente (o widget de dúvidas expõe CI.perguntar) */
+    var askBtn = $("[data-ask]", host);
+    if (askBtn) {
+      askBtn.addEventListener("click", function () {
+        if (CI.perguntar) CI.perguntar();
+        else location.href = "mailto:canal.startups@petrobras.com.br";
+      });
+    }
 
     revealCards(host);
 

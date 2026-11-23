@@ -290,7 +290,9 @@
                 ? "<p>Este desafio é do módulo <strong>" + esc(M.nome) + "</strong>, voltado a " + lc(M.publico) + ".</p>"
                 : "<p>Sim, há um módulo para isso: <strong>" + esc(M.nome) + "</strong>, voltado a " + lc(M.publico) + ". " + esc(M.descricao) + "</p>") +
               "<p>Na maioria das chamadas, a proposta é enviada por uma pessoa jurídica, e pesquisadores participam pela sua instituição. Os requisitos completos estão no edital.</p>" +
-              (here ? "" : "<p>" + link("desafios.html?modulo=" + mod, "Ver desafios de " + esc(M.nome)) + "</p>"),
+              (here
+                ? "<p>Na seção Quem pode participar, a checagem rápida diz em um minuto se a chamada combina com você. " + jump("participar", "Fazer a checagem") + "</p>"
+                : "<p>" + link("desafios.html?modulo=" + mod, "Ver desafios de " + esc(M.nome)) + "</p>"),
             chips: ["Preciso ter CNPJ?", "Quais documentos preciso?", "Qual a diferença entre os módulos?"],
           };
         }
@@ -341,10 +343,12 @@
       criterios: function () {
         return {
           html:
-            "<p>As propostas são avaliadas em quatro critérios:</p>" +
+            "<p>Cada proposta recebe uma nota de 0 a 10 em quatro critérios, com pesos diferentes:</p>" +
             '<ul class="assist__list">' +
-            CI.criterios.map(function (cr) { return "<li><strong>" + esc(cr.titulo) + ".</strong> " + esc(cr.texto) + "</li>"; }).join("") +
-            "</ul>" + (c ? "<p>" + jump("avaliacao", "Ver na página") + "</p>" : ""),
+            CI.criterios.map(function (cr) { return "<li><strong>" + esc(cr.titulo) + " (" + cr.peso + "%).</strong> " + esc(cr.texto) + "</li>"; }).join("") +
+            "</ul>" +
+            "<p>Para seguir, a média precisa ser " + CI.notas.minima + " de 10. Toda proposta recebe a nota por critério, selecionada ou não. Pesos e notas são ilustrativos neste protótipo.</p>" +
+            (c ? "<p>" + jump("avaliacao", "Ver na página") + "</p>" : ""),
           chips: ["Quando sai o resultado?", retornoChip],
         };
       },
@@ -354,7 +358,8 @@
             html:
               "<p>Pelo cronograma deste desafio, o resultado preliminar está previsto para <strong>" + U.fmtLong(U.addDays(c.prazoDias + 30)) +
               "</strong>, e o início dos projetos, para <strong>" + U.fmtLong(U.addDays(c.prazoDias + 75)) + "</strong>. As datas oficiais estão no edital.</p>" +
-              "<p>" + jump("cronograma", "Ver o cronograma") + "</p>",
+              "<p>Na seção Depois do envio, você vê cada etapa até o contrato e o que acontece se a proposta não for selecionada.</p>" +
+              "<p>" + jump("depois", "Ver o que acontece depois") + "</p>",
             chips: [retornoChip, "Como as propostas são avaliadas?"],
           };
         }
@@ -377,13 +382,29 @@
         return {
           html:
             "<p>Boa parte dos projetos é financiada com recursos da cláusula de PD&amp;I dos contratos de exploração e produção, regulada pela ANP. Valores e formas de repasse variam por edital.</p>" +
-            (k ? "<p>" + extra[k] + "</p>" : ""),
+            (k ? "<p>" + extra[k] + "</p>" : "") +
+            (c && c.valor && k === c.modulo
+              ? "<p>Neste desafio, " + lc(CI.modulos[k].rotuloValor || "Valor") + ": " + lc(c.valor) + ". Duração: " + lc(c.duracao) + ". Valores ilustrativos do protótipo. " + jump("recebe", "Ver o que você recebe") + "</p>"
+              : ""),
           chips: [retornoChip, "Quem fica com a propriedade intelectual?"],
         };
       },
-      pi: function () {
+      pi: function (t, mod) {
+        var k = mod || (c && c.modulo);
+        var P = k && CI.modulos[k].pi;
+        if (P) {
+          return {
+            html:
+              "<p>Em " + esc(CI.modulos[k].nome) + ", em linguagem simples:</p>" +
+              '<ul class="assist__list">' +
+              P.map(function (r) { return "<li><strong>" + esc(r[1]) + ".</strong> " + esc(r[2]) + "</li>"; }).join("") +
+              "</ul><p>Em caso de dúvida, vale o que está no edital e no contrato.</p>" +
+              (c && k === c.modulo ? "<p>" + jump("pi", "Ver na página") + "</p>" : ""),
+            chips: ["Quais documentos preciso?", retornoChip],
+          };
+        }
         return {
-          html: "<p>As regras de propriedade intelectual variam por módulo e estão descritas em cada edital. Leia essa seção com atenção antes de enviar a proposta.</p>",
+          html: "<p>As regras de propriedade intelectual variam por módulo e estão descritas em cada edital. Na página de cada desafio, há um resumo em linguagem simples.</p>",
           chips: ["Quais documentos preciso?", retornoChip],
         };
       },
@@ -623,6 +644,12 @@
       );
       if (restore !== false) launch.focus();
     }
+
+    /* A página do desafio abre o assistente pelo botão "Perguntar ao assistente" */
+    CI.perguntar = function (text) {
+      if (!isOpen()) open();
+      if (text) ask(text);
+    };
 
     launch.addEventListener("click", function () {
       if (isOpen()) close();

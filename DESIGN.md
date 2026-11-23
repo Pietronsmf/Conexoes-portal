@@ -201,11 +201,22 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
 - **Página do desafio:** segue a home, sem numeração.
   - Topo em tela cheia com a foto do próprio desafio (a mesma do card), escurecida como o hero da home: mais forte à esquerda, atrás do texto, e no alto, atrás do header. As linhas da marca ficam à direita.
   - O header Petrobras fica sobre a foto e vira a ilha ao rolar, como na home.
-  - Por cima, a trilha, o módulo e o estado, o título leve com a barra amarela larga do hero, o resumo e os dados principais (área, tema e formato). Um degradê longo leva a foto ao fundo claro do conteúdo.
+  - Por cima, a trilha, o módulo e o estado, o título leve com a barra amarela larga do hero, o resumo e os dados principais (valor, duração, maturidade e área). Um degradê longo leva a foto ao fundo claro do conteúdo.
   - O cartão de prazo sobe 300 px sobre o topo, para a contagem, a barra do prazo e "Enviar proposta" aparecerem sem rolar. Ao rolar, ele fica fixo.
   - Em notebooks (até 900 px de altura, como 1536×864, 1440×900 e 1366×768), o topo fica mais compacto e o cartão sobe 340 px. Assim o botão aparece na primeira tela em todos os desafios, de 1024×768 a 1920×1080.
   - Junto do cartão, o índice "Nesta página" marca a seção atual (`IntersectionObserver`). Em telas baixas ou com texto em 125%, o cartão rola por dentro.
-  - As seções têm título com barra amarela curta, como as da home. "O que buscamos" vira uma grade de itens com check; "Quem pode participar", um destaque verde claro; os critérios ganham ícone.
+  - Os dados principais do topo respondem primeiro o que o participante pergunta: valor (ou pagamento, na transferência), duração, maturidade pedida (TRL, com o nome do nível ao passar o mouse) e área. Abaixo do prazo, o cartão mostra quando sai o resultado; nas chamadas encerradas, em que etapa a chamada está.
+  - As seções seguem a estrutura do benchmark de portais de desafios (Enel Open Innovability, HeroX, EIC Accelerator, SBIR e outros), na ordem das dúvidas de quem vai participar:
+    1. **O desafio:** contexto, "O que buscamos" em grade com check, a maturidade esperada em palavras ("de validação em laboratório (TRL 4) a demonstração em ambiente relevante (TRL 6)") e o aviso de que soluções de outros setores são bem-vindas.
+    2. **O que você recebe:** 4 cartões por módulo (recursos, apoio técnico, teste em ambiente real, apoio do Sebrae...).
+    3. **Quem pode participar:** o público em destaque verde e a checagem rápida: perguntas de sim ou não do módulo (Marco Legal das Startups, credenciamento na ANP, cadastro de fornecedor...) e uma de maturidade, gerada do TRL do desafio. O resultado aparece na hora; quando a resposta é não, a dica aponta o módulo que combina melhor.
+    4. **Como participar:** 3 passos (cadastro, proposta, envio e acompanhamento), o que a proposta precisa ter (com limites, por módulo), os documentos e o histórico do edital.
+    5. **Como avaliamos:** critérios com peso e barra, quem avalia, nota mínima e devolutiva para todos.
+    6. **Depois do envio:** a linha do tempo com o selo "Hoje", o caminho depois da seleção (contrato, projeto, teste, o que pode vir depois) com prazos, um número real do programa com fonte e o que acontece se a proposta não for selecionada.
+    7. **Propriedade intelectual:** resumo em linguagem simples, por módulo (o que você já tinha, o que for criado, depois do projeto).
+    8. **Perguntas e respostas:** públicas, iguais para todos, com o prazo para perguntar e o botão que abre o assistente.
+    9. **Resultados anteriores:** projetos parecidos e o que quem participou conseguiu depois.
+  - Valores, pesos e notas são ilustrativos e levam um aviso âmbar. Os textos do Módulo Startups seguem o edital de 2024 divulgado pela Agência Sebrae.
   - O cronograma é uma linha com os 4 marcos: o trecho já percorrido fica em verde, o próximo marco em destaque e o selo "Hoje" fica na posição real entre os marcos. No celular, a linha fica na vertical.
   - "Outros desafios abertos" usa a vitrine da home: a mesma foto de fundo fixa, com degradês na entrada e na saída, e 3 cards de foto. Os desafios do mesmo módulo vêm primeiro; depois, os prazos mais próximos.
   - Celular: o texto ocupa a largura toda, com escurecimento por igual e sem as linhas da marca. O cartão de prazo vem logo após o topo e a barra fixa embaixo mostra os dias que faltam.
@@ -214,6 +225,8 @@ As ondas e os vídeos só animam quando estão visíveis (`IntersectionObserver`
   - Perguntas com ícone do tema, sem numeração. A pergunta aberta ganha o fio amarelo, o ícone em verde e a seta.
   - Painel com botões de anterior e próxima, a resposta com barra amarela, um link útil por pergunta (módulos, cadastro, jornada, desafios, Aquisição de Soluções) e um ícone grande e discreto do tema no canto.
   - Abaixo, um contato para quem não achou a resposta. No celular e sem JS, as mesmas perguntas em lista que abre e fecha.
+- **Projetos de chamadas anteriores:** na lista de desafios e no fim de cada desafio, cartões com a etapa alcançada (virou contrato, em operação...), duas métricas e o caminho até o resultado. O cartão abre um painel (`dialog`) com desafio, solução, retorno para a empresa e para a Petrobras e um depoimento. Os casos são ilustrativos; o número do programa vem da Secom.
+- **Assistente de dúvidas:** botão "Tire suas dúvidas" nas páginas de desafios, com respostas automáticas por palavras-chave (sem inteligência artificial), sugestões em chips e links que levam à seção certa da página. No celular, abre em tela cheia.
 - **Outros:** filtro segmentado, estados (skeleton, vazio, erro), formulários com validação (CNPJ numérico e alfanumérico), toast.
 
 ## 8. Acessibilidade
